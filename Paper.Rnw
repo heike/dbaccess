@@ -56,7 +56,7 @@ xtd.data <- function(x) {
 }
 d1.ext <- xtd.data(d1)
 @
-<<scatterplots, dependson='setup', echo=F, fig.keep='none', results='hide'>>=
+<<scatterplots, dependson='setup', echo=F, results='hide'>>=
 qplot(data=d1.ext, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", alpha=I(.05), size=I(3)) + theme_bw()
   ggsave("./figure/OverplottingAlpha.pdf", width=5, height=5)
 qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", size=I(3)) + theme_bw()
@@ -199,7 +199,7 @@ Alternate binning parameterizations include dividing up the range of data by a s
 % $b_X   \cdot \lfloor (x_{(n)}-O_X)/b_X + 0.5\rfloor + O_X$. 
 
 Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process.
-<<binningDemo,echo=F, fig.keep='none', cache=T>>=
+<<binningDemo,echo=F, results='none', cache=T>>=
       library(mvtnorm)
       set.seed(33)
       d <- rmvnorm(200, c(5, 25), matrix(c(100, 50, 50, 100), nrow=2))
@@ -248,7 +248,7 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
                             labels=c("(5,25)", "(15, 25)"),guide=FALSE)+
         annotate("segment", x=temp$x, y=temp$y, 
                  xend=temp$xend, yend=temp$yend, group=temp$group)  + ylim(c(0, 50))
-      ggsave("./figure/Binning-DataAndBin.pdf", width=5, height=5, units="in")
+      #ggsave("./figure/Binning-DataAndBin.pdf", width=5, height=5, units="in")
       
       d.orig$bin <- dnew$x==15 & dnew$y==25
       d.orig$a <- .33+.66*d.orig$bin
@@ -285,24 +285,25 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
 #                  label=expression(paste('(', over(phantom(0),x)[i], ',', over(phantom(0),y)[i],')'))) +
         scale_x_continuous(breaks=c(10, 15, 20), limits=c(8, 22), labels=c(expression(x^{"*"}-b[x]/2), expression(x^{"*"}), expression(x^{"*"}+b[x]/2)), name='') + 
         scale_y_continuous(breaks=c(20, 25, 30), limits=c(18, 32), labels=c(expression(y^{"*"}-b[y]/2), expression(y^{"*"}), expression(y^{"*"}+b[y]/2)), name='')
-      ggsave("./figure/Binning-DataVisualNumericalCenter.pdf", width=5.5, height=3.25, units="in")
+      #ggsave("./figure/Binning-DataVisualNumericalCenter.pdf", width=5.5, height=3.25, units="in")
+
 @
 
 The method described above is the standard binning algorithm. As a different approach, we define the random binning algorithm below.
 
 \begin{figure}[hbtp]
   \centering
-  \subfloat[Standard Algorithm]{\includegraphics[keepaspectratio=true, width=3in]{./figure/Binning-DataAndBin.pdf}}
+  \subfloat[Standard Algorithm]{\includegraphics[keepaspectratio=true, width=3in]{./figure/binningDemo1.pdf}}
 %   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
 %   {./figure/RandomBinningDataPoints1}}
   \subfloat[Random Algorithm]{\includegraphics[keepaspectratio=TRUE, width=3in]
-  {./figure/RandomBinningDataPoints2.pdf}}
+  {./figure/RandomBinDemo.pdf}}
   \caption{Points are assigned to bin (0, 20) and bin (10,20). Points in the standard algorithm are all contained within the bin region, where points in the random algorithm may be outside the direct region.}
   \label{fig:BinningTutorial}
 \end{figure}
 
 \subsection{Random Binning Algorithm}
-<<RandomBinDemo,echo=F,include=FALSE,fig.keep='none', cache=TRUE>>=
+<<RandomBinDemo,echo=F,include=FALSE,results='hide',  cache=TRUE>>=
 nl <- ncol(d.rand)
 dnew <- d.rand
 binning <- c(10, 10)
@@ -342,7 +343,7 @@ qplot(data=d.rand[,], x=x, y=y, alpha=a,  geom="point", xlim=c(-20, 40), ylim=c(
   scale_shape_manual(name="Bin", values=c("5"=16, "15"=15), labels=c("(5,25)", "(15, 25)"),guide=FALSE) +
   scale_colour_manual(values=c("5"="green", "15"="blue"), name="Bin", labels=c("(5,25)", "(15, 25)"),guide=FALSE)+
   annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + ylim(c(0, 50))
-ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
+#ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 @
 An interesting variation which results in statistically nice properties is a random, non-deterministic bin function $b^r(\cdot)$ which maps value $x$ to one of several bin centers $x^\ast$ with probability $p$. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x$ to bin center $x^\ast$ with a probability depending on the distance to that bin center;  the closer a value is to a bin center, the higher the probability that the value is assigned to this bin center. 
 More formally,
@@ -516,7 +517,7 @@ The loss as a function of bin width for both algorithms is shown in Figure~\ref{
 
 \begin{figure}[hbtp]
     \centering
-		\subfloat[Spatial Loss]{\includegraphics[keepaspectratio=true, width=.54\textwidth]{./Binning-DataVisualNumericalCenter.pdf}}
+		\subfloat[Spatial Loss]{\includegraphics[keepaspectratio=true, width=.54\textwidth]{binningDemo2}}
     \subfloat[Frequency Loss]{\includegraphics[keepaspectratio=true, width=.45\textwidth]{./figure/FreqLoss.pdf}}
 \caption{\label{fig:stdBinTutorial2} Types of loss due to binning: (a) The visual center of the bin is different from the numerical center of the bin, leading to two different sources of loss.  (b) Frequency loss associated with a change of bin width to 1 from 0.25 in the example of Figure~\ref{binning}.}   
 	\end{figure}
