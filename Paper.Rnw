@@ -10,6 +10,8 @@
 \usepackage{natbib}
 \usepackage{hyperref}
 
+%Karsten was here
+
 \newcommand{\hh}[1]{{\color{blue} #1}} %blue comments: Heike
 \newcommand{\svp}[1]{{\color{red}#1}} %green: Susan (It's more fun that way - comment roulette)
 
