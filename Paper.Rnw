@@ -822,7 +822,7 @@ In spite of the costs, information recovery is still useful for very large data,
 LossTable <- NULL
 bins <- rbind(c(2,2), c(5,25))
 computeLoss <- function(binning, data){
-  lRandom <- lossCalc(data, binning=binning, type="random", newData = TRUE)
+  lRandom <- lossCalc(data, binning=binning, type="random", newData=TRUE)
   lMean <- lossCalc(data, binning=binning, type="standard", newData=TRUE)
   datplot <- rbind(cbind(lRandom$NewData, Algorithm="Random"), cbind(lMean$NewData, Algorithm="Standard"))
   qplot(G, SO, fill = Freq, geom="tile", data = datplot, 
@@ -841,7 +841,7 @@ computeLoss <- function(binning, data){
 
 LossTable <- do.call("rbind", lapply(1:nrow(bins), function(i) computeLoss(bins[i,], d1)))
 LossTable <- as.data.frame(LossTable)
-names(LossTable2) <- c("binX", "binY", "Function", "G", "SO", "Freq")
+names(LossTable) <- c("binX", "binY", "Function", "G", "SO", "Freq")
 tab <- xtable(LossTable[order(LossTable[,3], LossTable[,1]),], digits=c(0, 0, 0, 0, 8, 8, 8))
 @
 
