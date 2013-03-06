@@ -820,11 +820,12 @@ In spite of the costs, information recovery is still useful for very large data,
 # d1 <- dbData(pitch, vars=c( "G", "SO"))
       
 LossTable <- NULL
-bins <- rbind(c(2,2), c(5,25))
+bins <- rbind(c(2,10), c(5,25))
 computeLoss <- function(binning, data){
   lRandom <- lossCalc(data, binning=binning, type="random", newData=TRUE)
   lMean <- lossCalc(data, binning=binning, type="standard", newData=TRUE)
   datplot <- rbind(cbind(lRandom$NewData, Algorithm="Random"), cbind(lMean$NewData, Algorithm="Standard"))
+  datplot <- ddply(datplot, .(G, SO, Algorithm), summarise, Freq=sum(Freq))
   qplot(G, SO, fill = Freq, geom="tile", data = datplot, 
       main=paste("Baseball: Binning by (", binning[1], ", ", binning[2],")", sep="")) + 
     facet_grid(.~Algorithm) +
@@ -851,7 +852,7 @@ highlight an important advantage of random binning. The two tile plots at the to
 \begin{figure}[hbtp]
 \centering
 \subfloat[(2, 2) tiling of G, SO data]{
-\includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd22.pdf}
+\includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd210.pdf}
 }\\
 \subfloat[(5, 25) tiling of G, SO data]{
 \includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd525.pdf}
