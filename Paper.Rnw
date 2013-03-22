@@ -3,8 +3,7 @@
 \usepackage{amsmath,amsthm,amssymb}
 \usepackage{fullpage}
 \usepackage{graphicx,float,wrapfig,subfig,tabularx,ulem}
-\graphicspath{{images/}}
-\usepackage{epstopdf}
+\graphicspath{{figure/}}
 %\usepackage{csquotes}
 \usepackage{color}
 \usepackage{natbib}
@@ -16,15 +15,21 @@
 
 %opening
 \title{Binning Strategies and Related Loss for Large Data}
-\author{Susan VanderPlas$^1$, Heike Hofmann$^{1,2}$\\$^1$Department of Statistics, $^2$Human Computer Interaction\\Iowa State University}
+\author{Susan VanderPlas$^1$, Karsten Maurer$^1$, Heike Hofmann$^{1,2}$\\$^1$Department of Statistics, $^2$Human Computer Interaction\\Iowa State University}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE, warning=FALSE,message=FALSE}
 \maketitle
 
 \begin{abstract}
 Dealing with the data deluge of the Big Data Age is both exciting and challenging. The demands of large data require us to re-think strategies of visualizing data. Plots employing binning methods have been suggested in the past as viable alternative to standard plots based on raw data, as the resulting area plots tend to not be affected by increases in data as much. This comes with the price of loss of information inherent to any binning scheme. In this paper we discuss properties of two commonly used binning algorithms. We define loss of information in the specific setting of two dimensional displays, provide readily applicable tools for loss evaluation and discuss the two binning schemes with respect to their loss in the framework of a simulation and two case studies.
 \end{abstract}
+%\SweaveOpts{concordance=TRUE, warning=FALSE,message=FALSE}
+
+% <<options-knitr,echo=F,include=F>>=
+% require(knitr)
+% options(replace.assign=TRUE,width=70)
+% opts_chunk$set(fig.path='figure/graphics-', cache.path='cache/cache-', fig.align='center', fig.width=5, fig.height=5, fig.show='hold', cache=TRUE, par=TRUE)
+% @
 
 \section{Introduction}
 <<setup,echo=F,include=F,eval=T>>=
@@ -35,10 +40,6 @@ library(dbData)
 library(devtools)
 library(xtable)
 library(RColorBrewer)
-# setwd("/home/susan/Dropbox/GraphicsGroup/")
-setwd("/Users/heike/Dropbox/papers/")
-
-setwd("./dbaccess/NewWriteUp/")
 
 connect <- dbConnect(dbDriver("MySQL"), user="2009Expo", 
                    password="R R0cks", port=3306, dbname="baseball", 
@@ -60,16 +61,16 @@ xtd.data <- function(x) {
 }
 d1.ext <- xtd.data(d1)
 @
-<<scatterplots, echo=F,include=F,eval=F>>=
+<<scatterplots, echo=F,include=F>>=
 qplot(data=d1.ext, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", alpha=I(.05), size=I(3)) + theme_bw()
-  ggsave("./images/OverplottingAlpha.pdf", width=5, height=5)
+  ggsave("./figure/OverplottingAlpha.pdf", width=5, height=5)
 qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", size=I(3)) + theme_bw()
-  ggsave("./images/Overplotting.pdf", width=5, height=5)
+  ggsave("./figure/Overplotting.pdf", width=5, height=5)
 qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", shape="o", size=I(6)) + scale_shape_identity() + theme_bw()
-  ggsave("./images/OverplottingCircles.pdf", width=5, height=5)
+  ggsave("./figure/OverplottingCircles.pdf", width=5, height=5)
 qplot(data=d1.ext, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + theme(legend.position="bottom")
-  ggsave("./images/HexBinning.pdf", width=5, height=5)
+  ggsave("./figure/HexBinning.pdf", width=5, height=5)
 d1.hex.obj <- hexbin(d1.ext$G, d1.ext$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
@@ -77,7 +78,7 @@ d1.hex$Freq <- d1.hex.obj@count
 qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq) + 
   scale_area("Frequency", range=c(1, 4), trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() +
   theme(legend.position="bottom")
-  ggsave("./images/BinScatter.pdf", width=5, height=5)
+  ggsave("./figure/BinScatter.pdf", width=5, height=5)
 
 # Sunflower plot
 # d1.hex$id <- seq(1:nrow(d1.hex))
@@ -114,15 +115,14 @@ Figure~\ref{fig:scatter-alpha} shows a traditional scatterplot on the left. Each
 A modern alternative to open circles is alpha-blending (see Figure~\ref{fig:scatter-alpha}c). Alpha blending provides  more frequency information, allowing a distinction of higher-resolution density.
 
 \begin{figure}[hbtp]
-  \subfloat[Overplotted data ]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{images/Overplotting.eps}}
-  \subfloat[Tukey-style open circles]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{images/OverplottingCircles.eps}} 
-	\subfloat[Alpha blending]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{images/OverplottingAlpha.eps}}
+  \subfloat[Overplotted data ]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{Overplotting.pdf}}
+  \subfloat[Tukey-style open circles]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{OverplottingCircles.pdf}} 
+	\subfloat[Alpha blending]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{OverplottingAlpha.pdf}}
   
-  \subfloat[Hexagonal binning]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{images/HexBinning.eps}}
-  \subfloat[Scatterplot of Binned Data]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{images/BinScatter.eps}} 
+  \subfloat[Hexagonal binning]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{HexBinning.pdf}}
+  \subfloat[Scatterplot of Binned Data]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{BinScatter.pdf}} 
 
-	\caption{Scatterplots of Games versus Strikeouts in Major League Baseball, using different strategies of dealing with the issue of over-plotting:  (a) uses standard, opaque, filled circles, (b)  uses Tukey's recommended open circles, and (c) uses filled circles with alpha-blending ($\alpha$=0.05). Plots (d) and (e) show hexagonal binning strategies with frequency mapped to color and area respectively}
-  \label{fig:scatter-alpha}
+	\caption{\label{fig:scatter-alpha} Scatterplots of Games versus Strikeouts in Major League Baseball, using different strategies of dealing with the issue of over-plotting:  (a) uses standard, opaque, filled circles, (b)  uses Tukey's recommended open circles, and (c) uses filled circles with alpha-blending ($\alpha$=0.05). Plots (d) and (e) show hexagonal binning strategies with frequency mapped to color and area respectively}
 \end{figure}
 
 All of these methods fall short in the example.
@@ -203,7 +203,7 @@ Alternate binning parameterizations include dividing up the range of data by a s
 % $b_X   \cdot \lfloor (x_{(n)}-O_X)/b_X + 0.5\rfloor + O_X$. 
 
 Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process.
-<<binningDemo,echo=F,eval=F,include=F,cache=T>>=
+<<binningDemo,echo=F,include=F,cache=T>>=
       library(mvtnorm)
       set.seed(33)
       d <- rmvnorm(200, c(5, 25), matrix(c(100, 50, 50, 100), nrow=2))
@@ -252,7 +252,7 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
                             labels=c("(5,25)", "(15, 25)"),guide=FALSE)+
         annotate("segment", x=temp$x, y=temp$y, 
                  xend=temp$xend, yend=temp$yend, group=temp$group)  + ylim(c(0, 50))
-      ggsave("./images/Binning-DataAndBin.pdf", width=5, height=5, units="in")
+      ggsave("./figure/Binning-DataAndBin.pdf", width=5, height=5, units="in")
       
       d.orig$bin <- dnew$x==15 & dnew$y==25
       d.orig$a <- .33+.66*d.orig$bin
@@ -289,24 +289,24 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
 #                  label=expression(paste('(', over(phantom(0),x)[i], ',', over(phantom(0),y)[i],')'))) +
         scale_x_continuous(breaks=c(10, 15, 20), limits=c(8, 22), labels=c(expression(x^{"*"}-b[x]/2), expression(x^{"*"}), expression(x^{"*"}+b[x]/2)), name='') + 
         scale_y_continuous(breaks=c(20, 25, 30), limits=c(18, 32), labels=c(expression(y^{"*"}-b[y]/2), expression(y^{"*"}), expression(y^{"*"}+b[y]/2)), name='')
-      ggsave("./images/Binning-DataVisualNumericalCenter.pdf", width=5.5, height=3.25, units="in")
+      ggsave("./figure/Binning-DataVisualNumericalCenter.pdf", width=5.5, height=3.25, units="in")
 @
 
 The method described above is the standard binning algorithm. As a different approach, we define the random binning algorithm below.
 
 \begin{figure}[hbtp]
   \centering
-  \subfloat[Standard Algorithm]{\includegraphics[keepaspectratio=true, width=3in]{./images/Binning-DataAndBin.eps}}
+  \subfloat[Standard Algorithm]{\includegraphics[keepaspectratio=true, width=3in]{./figure/Binning-DataAndBin.pdf}}
 %   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
-%   {./images/RandomBinningDataPoints1}}
+%   {./figure/RandomBinningDataPoints1}}
   \subfloat[Random Algorithm]{\includegraphics[keepaspectratio=TRUE, width=3in]
-  {./images/RandomBinningDataPoints2.eps}}
+  {./figure/RandomBinningDataPoints2.pdf}}
   \caption{Points are assigned to bins centered at (5, 25) an (15,25). Points in the standard algorithm are all contained within the bin region, where points in the random algorithm may be outside the direct region.}
   \label{fig:BinningTutorial}
 \end{figure}
 
 \subsection{Random Binning Algorithm}
-<<RandomBinDemo,echo=F,include=FALSE,eval=F>>=
+<<RandomBinDemo,echo=F,include=FALSE>>=
 nl <- ncol(d.rand)
 dnew <- d.rand
 binning <- c(10, 10)
@@ -346,7 +346,7 @@ qplot(data=d.rand[,], x=x, y=y, alpha=a,  geom="point", xlim=c(-20, 40), ylim=c(
   scale_shape_manual(name="Bin", values=c("5"=16, "15"=15), labels=c("(5,25)", "(15, 25)"),guide=FALSE) +
   scale_colour_manual(values=c("5"="green", "15"="blue"), name="Bin", labels=c("(5,25)", "(15, 25)"),guide=FALSE)+
   annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + ylim(c(0, 50))
-ggsave("./images/RandomBinningDataPoints2.pdf",width=5, height=5)
+ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 @
 An interesting variation which results in statistically nice properties is a random, non-deterministic bin function $b^r(\cdot)$ which maps value $x$ to one of several bin centers $x^\ast$ with probability $p$. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x$ to bin center $x^\ast$ with a probability depending on the distance to that bin center;  the closer a value is to a bin center, the higher the probability that the value is assigned to this bin center. 
 More formally,
@@ -482,7 +482,7 @@ data.means <- ddply(data, .(xbin,ybin), summarise, xmean=mean(x), ymean=mean(y))
 data <- merge(data, data.means)
 
 ggplot()+geom_histogram(aes(x=data$x, y=..count..), binwidth=1/4, fill=I("grey80"), colour=I("grey80"), alpha=I(.5)) + geom_histogram(aes(x=data$x, y=..count../4), binwidth=1, fill=NA, colour=I("grey50"), alpha=I(.5)) + theme_bw() + xlab("x") + ylab("Frequency") + ggtitle("Frequency Loss")
-ggsave("./images/FreqLoss.pdf", width=5.4*.8, height=4.05*.8)
+ggsave("./figure/FreqLoss.pdf", width=5.4*.8, height=4.05*.8)
 @
 
 \noindent
@@ -496,8 +496,8 @@ The loss as a function of bin width was computed for both algorithms for the bas
 
 \begin{figure}[hbtp]
     \centering
-		\subfloat[Spatial Loss]{\includegraphics[keepaspectratio=true, width=.54\textwidth]{./Binning-DataVisualNumericalCenter.eps}}
-    \subfloat[Frequency Loss]{\includegraphics[keepaspectratio=true, width=.45\textwidth]{./images/FreqLoss.eps}}
+		\subfloat[Spatial Loss]{\includegraphics[keepaspectratio=true, width=.54\textwidth]{./figure/Binning-DataVisualNumericalCenter.pdf}}
+    \subfloat[Frequency Loss]{\includegraphics[keepaspectratio=true, width=.45\textwidth]{./figure/FreqLoss.pdf}}
 \caption{\label{fig:stdBinTutorial2} Types of loss due to binning: (a) The visual center of the bin is different from the numerical center of the bin, leading to two different sources of loss.  (b) Frequency loss associated with a change of bin width to 1 from 0.25 in the example of Figure~\ref{binning}.}   
 	\end{figure}
 
@@ -688,10 +688,10 @@ p3 <- qplot(data=logbins, x=x, y=y, geom="tile", fill=fill, asp=1.0)+facet_wrap(
   scale_fill_manual(values=colors, name="Frequency", guide="none") + theme_bw() +
   ggtitle("(d) Joint Density: Log Binning") + theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,0), "cm"))
 
-#multiplot(p1, p2, p4, p3, cols=1, heights=c(2.2,1,1,2.2))
+multiplot(p1, p2, p4, p3, cols=1, heights=c(2.2,1,1,2.2))
 #ggsave("./figure/MultipleDensityFigure.png", width=8.5, height=11, dpi=1200)
 @
-\includegraphics[width=\textwidth]{figure/MultipleDensityFigure}
+%\includegraphics[width=\textwidth]{figure/MultipleDensityFigure.pdf}
 \caption{\label{fig:logcolor} Linear and Log Frequency Binning  to Simulated Data from Uniform, Normal, and Exponential distributions}
 \end{figure}
 
@@ -716,14 +716,13 @@ By additionally increasing the bin width, we  provide increasingly higher-level 
 As shown before, the overall loss partitions naturally into visual and numerical loss (see equation \ref{eqn:partition}). We can make use of this and
  recover some of the numerical information lost due to binning by storing the numerical center $(\bar{x},\bar{y})$ instead of the visual center $(x^\ast,y^\ast)$ for use in subsequent calculations. Storing the binned data as the arithmetic mean rather than the visual center reduces the total loss, and the visual center can be recovered from the bin width and  bin center $(O_X, O_Y)$, see table \ref{RecoveryComparison} for a numeric example for this. 
 
-<<recover,echo=FALSE,results='asis', eval=FALSE>>=
-setwd("./figure")
+<<recover,echo=FALSE,results='asis'>>=
 set.seed(90)
 x <- rnorm(100, 5, 2)
 y <- rnorm(100, 5, 2)
 d <- data.frame(x=x, y=y, c=1)
 d <- d[order(d$x, d$y),]
-print(xtable(head(d,10)[c(2,1,3,6,10,5,4,8,9,7),], digits=c(0, 4, 4, 0), caption=paste('Original Data\\newline', nrow(d), 'rows'), include.rownames=FALSE, table.placement="hbtp", floating=FALSE)
+print(xtable(head(d,10)[c(2,1,3,6,10,5,4,8,9,7),], digits=c(0, 4, 4, 0), caption=paste('Original Data\\newline', nrow(d), 'rows'), include.rownames=FALSE, table.placement="hbtp", floating=FALSE))
 dbin <- ddply(binStd(d, c(1,1)), .(x,y), summarize, c=sum(c))
 dbin <- dbin[order(dbin$x, dbin$y),]
 print(xtable(head(dbin), digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', nrow(dbin), 'rows'), align=c('X','X','X','c')), include.rownames=FALSE, table.placement="hbtp", floating=FALSE, tabular.environment="tabularx", width='.7\\textwidth')
@@ -732,7 +731,6 @@ drecover <- unique(lossCalc(d, c(1,1), "standard", newData=TRUE)$NewData)
 names(drecover) <- c("x", "y", "c")
 drecover <- drecover[order(drecover$x, drecover$y),]
 print(xtable(head(drecover), digits=c(0, 4, 4, 0), caption=paste('Recovered Data\\newline', nrow(drecover), 'rows'), include.rownames=FALSE, table.placement="hbtp", floating=FALSE))
-setwd("../")
 @
 \begin{table}[hbtp]
 \begin{minipage}[t]{.33\textwidth}\centering\subfloat[Original Data, 100 rows]{
@@ -787,10 +785,8 @@ In spite of the costs, information recovery is still useful for very large data,
 
 \section{Discussion and Examples}
 \subsection{Comparison of Loss in Binning Algorithms}
-<<LossTableGraphs,echo=F,results="hide",cache=TRUE,eval=FALSE>>=
-LossTable <- NULL
+<<LossTableGraphs,echo=F,results="hide",cache=TRUE>>=
 # bins <- rbind(c(1,1), c(2,2), c(2,5), c(5, 2), c(4,4), c(3, 5), c(5, 3), c(5, 5), c(5, 25), c(25, 5), c(2, 50), c(50, 2), c(5, 50))
-bins <- rbind(c(2,2), c(5,25))
 computeLoss <- function(binning, data){
   lRandom <- lossCalc(data, binning=binning, type="random", newData = TRUE)
   lMean <- lossCalc(data, binning=binning, type="standard", newData=TRUE)
@@ -798,20 +794,18 @@ computeLoss <- function(binning, data){
     qplot(G, SO, fill = Freq, geom="tile", data = datplot, 
         main=paste("Baseball: Binning by (", binning[1], ", ", binning[2],")", sep="")) + facet_grid(.~Algorithm) +
         scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 5, 50, 500, 5000)) + theme_bw() + theme(legend.position="bottom")
-    ggsave(paste("./images/RandomStd", binning[1], binning[2], ".pdf", sep=""), width=8, height=5, units="in", dpi=1200)
-#     qplot(G, SO, fill = log10(Freq), geom="tile", data = lMean$NewData, 
-#       main=paste("Standard Binning (", binning[1], ", ", binning[2],")", sep="")) + 
-#       scale_fill_gradient(low="#56B1F7", high="#132B43", guide="none", trans="log") + theme_bw()
-#     ggsave(paste("./images/Standard", binning[1], binning[2], ".pdf", sep=""), width=4.5, height=4.5, units="in")
+    ggsave(paste("./figure/RandomStd", binning[1], binning[2], ".pdf", sep=""), width=8, height=5, units="in", dpi=1200)
   return(rbind(
-    cbind(binX = binning[1], binY = binning[2], Function = "Random", lRandom$LossAll), 
-    cbind(binX = binning[1], binY = binning[2], Function = "Standard", lRandom$LossAll)))
+    cbind(binX = binning[1], binY = binning[2], Function = "Random", lRandom$Loss), 
+    cbind(binX = binning[1], binY = binning[2], Function = "Standard", lMean$Loss)))
 }
 
-LossTable <- do.call("rbind", mclapply(1:nrow(bins), function(i) computeLoss(bins[i,], d1)))
+bins <- rbind(c(2,2), c(5,25))
+LossTable <- NULL      
+LossTable <- do.call("rbind", lapply(1:nrow(bins), function(i) computeLoss(bins[i,], d1)))
 LossTable <- as.data.frame(LossTable)
-names(LossTable) <- c("binX", "binY", "Function", "G", "SO", "Freq")
-tab <- xtable(LossTable[order(LossTable[,3], LossTable[,1]),], digits=c(0, 0, 0, 0, 8, 8, 8))
+names(LossTable) <- c("binX", "binY", "Function", "Numerical Loss G", "Numerical Loss SO", "Visual Loss G", "Visual Loss SO", "Total Loss G", "Total Loss SO", "Frequency Loss")
+tab <- xtable(LossTable, digits=c(0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8))
 @
 
 In order to quantify the advantages of each algorithm, we first compare the three sources of loss at different bin widths. The numerical and visual losses inherent in creating a binned scatterplot are a result of our desire to reduce and summarize the data until it is more manageable in size, and hence is a factor in our decision to bin the data in the first place.
@@ -824,31 +818,16 @@ In order to quantify the advantages of each algorithm, we first compare the thre
  
  These characteristics of the numerical and visual losses are shown using the baseball data in the total combined visual and numerical loss at different bin widths in $x$ (Games) in Figure ~\ref{fig:LossComparison1}.
 
-<<LossComparison1, echo=FALSE, eval=T, fig.cap='Spatial Loss increases with bin width for each variable. The random algorithm has higher spatial loss than the standard algorithm.', fig.width=6, fig.height=4, out.width='.75\\linewidth', out.height='.495\\linewidth', fig.align='center', fig.pos='H'>>=
-      
-# connect <- dbConnect(dbDriver("MySQL"), user="2009Expo", 
-#                      password="R R0cks", port=3306, dbname="baseball", 
-#                      host="headnode.stat.iastate.edu")
-# pitch <- new("dataDB", co=connect, table="Pitching")
-# d1 <- dbData(pitch, vars=c( "G", "SO"))
-# bins <- expand.grid(x=c(1:10, 15, 20), y=c(1:5, seq(10, 100, 10)))
-# 
-# library(multicore)
-# lossesRdm <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="random")))
-# lossesStd <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="standard")))
-# 
-# lossesRdm <- cbind(bins, lossesRdm)
-# lossesStd <- cbind(bins, lossesStd)
-# 
-# losses <- rbind(cbind(Algorithm="Random", lossesRdm), cbind(Algorithm="Standard", lossesStd))
-# write.csv(losses, "../dbData/data/losses.csv", row.names=FALSE)
+\begin{figure}[hbtp]
+\centering
+<<LossComparison1, echo=FALSE, eval=T, fig.width=6, fig.height=4, out.width='.75\\linewidth', out.height='.495\\linewidth'>>=
 
 losses <- read.csv("../dbData/data/losses.csv", stringsAsFactors=FALSE)
 
 qplot(x=x, y=TotalLoss.G*100, group=interaction(y, Algorithm), data=subset(losses, y<=10), geom="line", colour=Algorithm, ylab="Percent Spatial Loss", xlab="Bin  Width  (Games)")+ theme_bw() + theme(legend.position="bottom") + ggtitle("Total Combined Numerical and Visual Loss:  Baseball Games") + guides(colour = guide_legend(override.aes = list(size = 2))) + facet_wrap(~Algorithm)
-#% qplot(x=y, y=VisLoss.SO*100, group=interaction(x, Algorithm), data=subset(losses, x==1), geom="line", colour=Algorithm, ylab="Percent Visual Loss", xlab="Bin Width (Strike Outs)") + theme_bw() + theme(legend.position="bottom") + ggtitle("Visual  Loss  with  increasing  Bin  Width: Baseball Strike Outs\n Games not binned") + guides(colour = guide_legend(override.aes = list(size = 2)))
 @
-
+\caption{\label{fig:LossComparison1} Spatial Loss increases with bin width for each variable. The random algorithm has higher spatial loss than the standard algorithm.}
+\end{figure}
 The far more important factor is the frequency loss, as we perceive that loss in the variability of the shading of bins which has a larger effect on the utility of the graphical data summary. The standard algorithm is preferable because it has lower total combined numerical and visual loss, but the two algorithms are very similar when we compare frequency loss. The random algorithm does have more variability, but the frequency loss values are much more similar, and when bins are of size two in either or both dimensions, the random algorithm has lower frequency loss than the standard algorithm. This holds for bins which are powers of two, as long as the random binning algorithm is applied iteratively to take advantage of the constant loss property noted above. %~\ref{fig:LossComparison}  
 
 <<LossComparison, echo=FALSE, fig.cap="Frequency Loss increases as bin width increases in Games and Strike Outs. The random binning algorithm has slightly higher frequency loss as bin width grows large, but the loss is comparable when bin widths are small.", fig.width=8, fig.height=4, out.width='\\linewidth', out.height='.5\\linewidth', fig.pos='H'>>=
@@ -914,10 +893,10 @@ We may also use this example to highlight the advantages of random binning. The 
 \begin{figure}[hbtp]
 \centering
 \subfloat[(2, 2) tiling of G, SO data]{
-\includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd22.eps}
+\includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd22.pdf}
 }\\
 \subfloat[(5, 25) tiling of G, SO data]{
-\includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd525.eps}
+\includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd525.pdf}
 }
 \caption{\label{fig:binning-comparison} Comparison of random and standard binning: standard binning introduces artificial striping when the chose bin width is not a multiple of the data resolution.}
 \end{figure}
@@ -939,16 +918,16 @@ The triangle of observations on the bottom right visible in both plots is nothin
 
 
 \begin{figure}[hbtp]\centering
-\subfloat[Million-point sample of Airline Data]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{./data/MillionSample.eps}}\hfil
-\subfloat[Minimal binning of Airline Data]{\includegraphics[width=.56\linewidth, keepaspectratio=TRUE]{./data/AirlineStdBinning1min.eps}}
+\subfloat[Million-point sample of Airline Data]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/MillionSample.pdf}}\hfil
+\subfloat[Minimal binning of Airline Data]{\includegraphics[width=.56\linewidth, keepaspectratio=TRUE]{images/AirlineStdBinning1min.pdf}}
 \caption{\label{airline-scatter}Scheduled and actual departure times of  flights across the United States in 2011. The plot on the left is based on a sample of the data, the plot on the right shows all flights. The big patterns are visible in both plots, but the plot on the left misses some of the finer level details in scheduling that is visible in the plot on the right.}
 \end{figure}
 
 
 
 \begin{figure}[hbtp]\centering
-\includegraphics[keepaspectratio=true, height=.43\textheight]{./data/AirlineStdBinning5mins.eps}
-\includegraphics[keepaspectratio=true, height=.43\textheight]{./data/AirlineStdBinning15mins.eps}
+\includegraphics[keepaspectratio=true, height=.43\textheight]{images/AirlineStdBinning5mins.pdf}
+\includegraphics[keepaspectratio=true, height=.43\textheight]{images/AirlineStdBinning15mins.pdf}
 \caption{5-minute bins produce a higher-level summary of the data than shown in Figure~\ref{airline-scatter}b. 15-minute bins produce an even more coarse summary of the data.}\label{airline5mins-binning}
 \end{figure}
 Binning data by five-minute intervals produces a more high-level summary of the relationship between actual and scheduled departure time, though it necessarily obscures some of the finer details. In addition, binning data by five minute intervals reduces the size of the data set to a much more manageable 19,787 observations  which can be easily manipulated on probably any modern computer. Binning by 15-minute intervals reduces the data set to a nearly-trivial 3,575 observations, but the graphical summary becomes granular and less appealing at that resolution.
@@ -1034,7 +1013,7 @@ Large Data sets of continuous variables are very difficult to visualize in raw f
 We have presented two algorithms for binning; the standard algorithm, which has rounding artifacts but generally lower loss, and the random algorithm, which is a fast version of linear binning and is somewhat more computationally efficient. The choice of algorithm is a trade-off between speed and accuracy, and may be highly data set dependent. It is possible that there are computational modifications which could improve the accuracy of the random algorithm, but these modifications are likely to require additional computational operations.
 
 % \begin{subsection}{Numerical Comparison of Binning Algorithms}
-<<PrintTable,echo=F,include=FALSE>>=
+<<PrintTable,echo=F,include=FALSE, dependson='LossTableGraphs'>>=
   print(tab, include.rownames=FALSE)
 @
 % \end{subsection}
