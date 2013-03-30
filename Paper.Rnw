@@ -36,6 +36,7 @@ Dealing with the data deluge of the Big Data Age is both exciting and challengin
 library(ggplot2)
 library(gridExtra)
 library(dbData)
+library(reshape2)
 #library(multicore)
 library(devtools)
 library(xtable)
@@ -716,7 +717,7 @@ By additionally increasing the bin width, we  provide increasingly higher-level 
 As shown before, the overall loss partitions naturally into visual and numerical loss (see equation \ref{eqn:partition}). We can make use of this and
  recover some of the numerical information lost due to binning by storing the numerical center $(\bar{x},\bar{y})$ instead of the visual center $(x^\ast,y^\ast)$ for use in subsequent calculations. Storing the binned data as the arithmetic mean rather than the visual center reduces the total loss, and the visual center can be recovered from the bin width and  bin center $(O_X, O_Y)$, see table \ref{RecoveryComparison} for a numeric example for this. 
 
-<<recover,echo=FALSE,results='asis'>>=
+<<recover,echo=FALSE,eval=FALSE,results='asis'>>=
 set.seed(90)
 x <- rnorm(100, 5, 2)
 y <- rnorm(100, 5, 2)
@@ -732,6 +733,8 @@ names(drecover) <- c("x", "y", "c")
 drecover <- drecover[order(drecover$x, drecover$y),]
 print(xtable(head(drecover), digits=c(0, 4, 4, 0), caption=paste('Recovered Data\\newline', nrow(drecover), 'rows'), include.rownames=FALSE, table.placement="hbtp", floating=FALSE))
 @
+
+
 \begin{table}[hbtp]
 \begin{minipage}[t]{.33\textwidth}\centering\subfloat[Original Data, 100 rows]{
 \begin{tabular}{rrr}\hline
@@ -746,7 +749,8 @@ print(xtable(head(drecover), digits=c(0, 4, 4, 0), caption=paste('Recovered Data
  2.4180 & 6.4438 & 1 \\ 
  2.4345 & 6.4462 & 1 \\ 
  2.3620 & 10.3119 & 1 \\  \hline
-\end{tabular}}\end{minipage}\hfil
+\end{tabular}}
+\end{minipage}\hfil
 \begin{minipage}[t]{.33\textwidth}\centering\subfloat[Binned Data Visual Centers, 49 rows]{
 \begin{tabularx}{.7\textwidth}{XXc} \hline
   $x^\ast$ & $y^\ast$ & c \\ \hline
@@ -758,8 +762,8 @@ print(xtable(head(drecover), digits=c(0, 4, 4, 0), caption=paste('Recovered Data
   2 & 6 & 3 \\ 
   2 & 10 & 1 \\ 
    \hline
-\end{tabularx}
-}\end{minipage}\hfil
+\end{tabularx}}
+\end{minipage}\hfil
 \begin{minipage}[t]{.33\textwidth}\centering\subfloat[Binned Data Numerical Centers, 49 rows]{
 \begin{tabular}{rrc}\hline
   $\bar{x}$   &    $\bar{y}$ & c \\ \hline
@@ -770,8 +774,8 @@ print(xtable(head(drecover), digits=c(0, 4, 4, 0), caption=paste('Recovered Data
   2.0890 & 4.8260 & 2 \\ 
   2.1526 & 6.4341 & 3 \\ 
   2.2680 & 1.5877 & 1 \\ \hline
-\end{tabular}
-}\end{minipage}
+\end{tabular}}
+\end{minipage}
 \caption{\label{RecoveryComparison}ten rows from Original and Binned Data Tables, with data storage sizes}
 \end{table}
 
@@ -815,44 +819,8 @@ In order to quantify the advantages of each algorithm, we first compare the thre
  The numerical loss is a function of the distribution and bin width, and once the bin width is chosen, it is entirely fixed. The random binning algorithm will inherently have a larger numerical loss than the standard algorithm because it allows for random assignment of points to numeric bin centers further from the original data than does the standard algorithm.  
  
  As the visual loss is the difference between the numerical center and visual center of the bin, it is a function of the distribution and bin width (and the specific random assignment, in the case of the random algorithm). We would not expect to notice the difference in the  visual loss in either algorithm, so long as the bin width is constant, because the expected value of the random process that results in shifting numerical bin centers is zero.  
- 
- These characteristics of the numerical and visual losses are shown using the baseball data in the total combined visual and numerical loss at different bin widths in $x$ (Games) in Figure ~\ref{fig:LossComparison1}.
 
-\begin{figure}[hbtp]
-\centering
-<<LossComparison1, echo=FALSE, eval=T, fig.width=6, fig.height=4, out.width='.75\\linewidth', out.height='.495\\linewidth'>>=
-
-losses <- read.csv("../dbData/data/losses.csv", stringsAsFactors=FALSE)
-
-qplot(x=x, y=TotalLoss.G*100, group=interaction(y, Algorithm), data=subset(losses, y<=10), geom="line", colour=Algorithm, ylab="Percent Spatial Loss", xlab="Bin  Width  (Games)")+ theme_bw() + theme(legend.position="bottom") + ggtitle("Total Combined Numerical and Visual Loss:  Baseball Games") + guides(colour = guide_legend(override.aes = list(size = 2))) + facet_wrap(~Algorithm)
-@
-\caption{\label{fig:LossComparison1} Spatial Loss increases with bin width for each variable. The random algorithm has higher spatial loss than the standard algorithm.}
-\end{figure}
 The far more important factor is the frequency loss, as we perceive that loss in the variability of the shading of bins which has a larger effect on the utility of the graphical data summary. The standard algorithm is preferable because it has lower total combined numerical and visual loss, but the two algorithms are very similar when we compare frequency loss. The random algorithm does have more variability, but the frequency loss values are much more similar, and when bins are of size two in either or both dimensions, the random algorithm has lower frequency loss than the standard algorithm. This holds for bins which are powers of two, as long as the random binning algorithm is applied iteratively to take advantage of the constant loss property noted above. %~\ref{fig:LossComparison}  
-
-<<LossComparison, echo=FALSE, fig.cap="Frequency Loss increases as bin width increases in Games and Strike Outs. The random binning algorithm has slightly higher frequency loss as bin width grows large, but the loss is comparable when bin widths are small.", fig.width=8, fig.height=4, out.width='\\linewidth', out.height='.5\\linewidth', fig.pos='H'>>=
-# 
-# connect <- dbConnect(dbDriver("MySQL"), user="2009Expo", 
-#                      password="R R0cks", port=3306, dbname="baseball", 
-#                      host="headnode.stat.iastate.edu")
-# pitch <- new("dataDB", co=connect, table="Pitching")
-# d1 <- dbData(pitch, vars=c( "G", "SO"))
-# bins <- expand.grid(x=c(1:10, 15, 20), y=c(1:5, seq(10, 100, 15)))
-# 
-# library(multicore)
-# lossesRdm <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="random")))
-# lossesStd <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="standard")))
-# 
-# lossesRdm <- cbind(bins, lossesRdm)
-# lossesStd <- cbind(bins, lossesStd)
-# 
-# losses <- rbind(cbind(Algorithm="Random", lossesRdm), cbind(Algorithm="Standard", lossesStd))
-# write.csv(losses, "../dbData/data/losses.csv", row.names=FALSE)
-losses <- read.csv("../dbData/data/losses.csv", stringsAsFactors=FALSE)
-
-qplot(x=y, y=TotalLoss.LogFreq, group=interaction(x, Algorithm), data=losses, geom="line", colour=Algorithm, ylab="Frequency Loss", xlab="Bin Width (Strike Outs)")+ facet_grid(.~Algorithm) + scale_colour_discrete(guide="none") + theme_bw() + ggtitle("Frequency Loss: Baseball Games and Strike-Outs")
-@
-
 
 Investigation of the loss sources we might be tempted to conclude that the standard binning algorithm is superior due to lower loss, however the random binning algorithm displays strong advantages when encountering problematic data structure issues. Random binning is especially advantagous when discrete data values are recorded at a consistant increments but we bin our data using a binwidth that is a non-integer multiple of the incremental widths. In this senario, we see that the non-synchronous data increments and bin widths will cause bins to contain unconsistant numbers of possible data value. Assuming that data values are spread uniformly over the discrete values we want a visualization that displays uniform frequency. Using the standard binning algorithm the misalignment of data increment and bin widths will lead to and artifical frequency discrepancy that manifests in a striped pattern in the visualization. The random binning algorithm is expected to display the intended uniform frequency pattern because the randomization of data values to bin centers mitigates the problematic bin width selection. 
 
@@ -860,7 +828,32 @@ Investigation of the loss sources we might be tempted to conclude that the stand
 
 \subsection{Binning Loss in Baseball Data: Strikeout and Game Counts}
 
-For this data example we will revisit the baseball data used earlier in this paper.
+For this data example we will revisit the baseball data used earlier in this paper.  The characteristics of loss described in the discussion above are exemplified by viewing the loss for the baseball data in Figure ~\ref{fig:LossComparison1}.
+
+\begin{figure}[hbtp]
+\centering
+<<LossComparison1, echo=FALSE, eval=T, fig.width=6.5, fig.height=8>>=
+
+losses <- read.csv("./data/losses.csv", stringsAsFactors=FALSE)
+lossmelt <- melt(losses[,c(1:4,6,10)],id=c("Algorithm","x","y"))
+lossmelt <- lossmelt[which(lossmelt$y <= 10),]
+lossmelt$y <- as.factor(lossmelt$y)
+levels(lossmelt$variable) <- c("Numerical Loss","Visual Loss", "Log Frequency Loss")
+qplot(x=x, y=value,
+      group=interaction(y, Algorithm),
+      data=lossmelt, geom="line",
+      colour=y,
+      xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
+        theme_bw() + theme(legend.position="bottom") + 
+        guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
+        facet_grid(variable ~ Algorithm, scales = "free")+
+        ggtitle("Loss for Baseball Data under Standard and Random Binning")
+
+
+@
+\caption{\label{fig:LossComparison1} Loss funcion }
+\end{figure}
+
 
 \textbf{Loss table for baseball example moved from beginning, this should not be its final resting place}
 \noindent
