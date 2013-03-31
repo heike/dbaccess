@@ -63,22 +63,21 @@ xtd.data <- function(x) {
 d1.ext <- xtd.data(d1)
 @
 <<scatterplots, echo=F,include=F>>=
-qplot(data=d1.ext, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", alpha=I(.05), size=I(3)) + theme_bw()
+qplot(data=d1.ext, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", alpha=I(.05), size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/OverplottingAlpha.pdf", width=5, height=5)
-qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", size=I(3)) + theme_bw()
+qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/Overplotting.pdf", width=5, height=5)
-qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", shape="o", size=I(6)) + scale_shape_identity() + theme_bw()
+qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", shape="o", size=I(6)) + scale_shape_identity() + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/OverplottingCircles.pdf", width=5, height=5)
 qplot(data=d1.ext, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
-  scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + theme(legend.position="bottom")
+  scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
   ggsave("./figure/HexBinning.pdf", width=5, height=5)
 d1.hex.obj <- hexbin(d1.ext$G, d1.ext$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
 d1.hex$Freq <- d1.hex.obj@count
 qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq) + 
-  scale_area("Frequency", range=c(1, 4), trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() +
-  theme(legend.position="bottom")
+  scale_area("Frequency", range=c(1, 4), trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
   ggsave("./figure/BinScatter.pdf", width=5, height=5)
 
 # Sunflower plot
@@ -261,9 +260,9 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
       d.orig$l[d.orig$bin] <- "Binned Data"
       d.orig$size <- 2
       d.orig$size[d.orig$bin] <- 3
-      d.orig <- rbind(d.orig, data.frame(x=15, y=25, a=1, l="Visual Center", size=2,bin=TRUE), 
-                    data.frame(x=mean(d.orig$x[d.orig$bin]), y=mean(d.orig$y[d.orig$bin]), 
-                               l="Numerical Center", a=1, size=2, bin=TRUE))
+      d.orig <- rbind(d.orig, data.frame(x=15, y=25, a=1, l="Visual Center", size=2,bin=TRUE),
+        data.frame(x=mean(d.orig$x[d.orig$bin]), y=mean(d.orig$y[d.orig$bin]),                                                                                    
+        l="Numerical Center", a=1, size=2, bin=TRUE))
       ggplot(data=d.orig, aes(x=x, y=y, shape=l, size=l, colour=l)) + 
         annotate("polygon", x=c(10, 10, 20, 20), y=c(20, 30, 30, 20), 
                  fill="blue", alpha=.10) + 
@@ -284,13 +283,13 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
         annotate("point", x=d.orig$x[which(d.orig$l=="Numerical Center")], 
                  y=d.orig$y[which(d.orig$l=="Numerical Center")], shape=17, size=5, 
                  colour="blue4") +
-        annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + 
+#        annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + 
 #         annotate("text", x=d$x[which(d$l=="Numerical Center")], 
 #                  y=d$y[which(d$l=="Numerical Center")], 
 #                  label=expression(paste('(', over(phantom(0),x)[i], ',', over(phantom(0),y)[i],')'))) +
         scale_x_continuous(breaks=c(10, 15, 20), limits=c(8, 22), labels=c(expression(x^{"*"}-b[x]/2), expression(x^{"*"}), expression(x^{"*"}+b[x]/2)), name='') + 
         scale_y_continuous(breaks=c(20, 25, 30), limits=c(18, 32), labels=c(expression(y^{"*"}-b[y]/2), expression(y^{"*"}), expression(y^{"*"}+b[y]/2)), name='')
-      ggsave("./figure/Binning-DataVisualNumericalCenter.pdf", width=5.5, height=3.25, units="in")
+      ggsave("./figure/Binning-DataVisualNumericalCenter.pdf", width=5, height=4, units="in")
 @
 
 The method described above is the standard binning algorithm. As a different approach, we define the random binning algorithm below.
@@ -300,8 +299,8 @@ The method described above is the standard binning algorithm. As a different app
   \subfloat[Standard Algorithm]{\includegraphics[keepaspectratio=true, width=3in]{./figure/Binning-DataAndBin.pdf}}
 %   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
 %   {./figure/RandomBinningDataPoints1}}
-  \subfloat[Random Algorithm]{\includegraphics[keepaspectratio=TRUE, width=3in]
-  {./figure/RandomBinningDataPoints2.pdf}}
+  \subfloat[Bin Attribute Diagram]{\includegraphics[keepaspectratio=TRUE, width=4in]
+  {./figure/Binning-DataVisualNumericalCenter.pdf}}
   \caption{Points are assigned to bins centered at (5, 25) an (15,25). Points in the standard algorithm are all contained within the bin region, where points in the random algorithm may be outside the direct region.}
   \label{fig:BinningTutorial}
 \end{figure}
@@ -789,7 +788,7 @@ In spite of the costs, information recovery is still useful for very large data,
 
 \section{Discussion and Examples}
 \subsection{Comparison of Loss in Binning Algorithms}
-<<LossTableGraphs,echo=F,results="hide",cache=TRUE>>=
+<<LossTableGraphs,echo=F,results="hide",cache=TRUE, eval=FALSE>>=
 # bins <- rbind(c(1,1), c(2,2), c(2,5), c(5, 2), c(4,4), c(3, 5), c(5, 3), c(5, 5), c(5, 25), c(25, 5), c(2, 50), c(50, 2), c(5, 50))
 computeLoss <- function(binning, data){
   lRandom <- lossCalc(data, binning=binning, type="random", newData = TRUE)
@@ -857,9 +856,9 @@ qplot(x=x, y=value,
 
 \textbf{Loss table for baseball example moved from beginning, this should not be its final resting place}
 \noindent
-Table \ref{tablelossexample} gives an overview of the size of all different sources of loss for the examples in figure~\ref{binning}.
+%Table \ref{tablelossexample} gives an overview of the size of all different sources of loss for the examples in figure~\ref{binning}.
 
-<<tablelossexample, echo=FALSE, results='asis',cache=FALSE>>=
+<<tablelossexample, echo=FALSE, eval=FALSE, results='asis',cache=FALSE>>=
 loss0.1 <- lossCalc(data=X[,c(1:2)], binning=c(.1, .1), type="standard", newData=TRUE)
 loss0.25 <- lossCalc(data=X[,c(1:2)], binning=c(.25, .25), type="standard", newData=TRUE)
 loss0.5 <- lossCalc(data=X[,c(1:2)], binning=c(.5, .5), type="standard", newData=TRUE)
@@ -877,7 +876,6 @@ table.loss <- data.frame(rbind(c(binwidth=0, TotalLoss.x=0, TotalLoss.y=0, Total
                                c(binwidth=1, loss1[5:7]*100, loss1[8])))
 names(table.loss) <- c("Bin Width", "% Loss in X", "% Loss in Y", "% Loss in log(Freq)", "Size of Data")
 print(xtable(table.loss, digits=c(0, 2, 4, 4, 4, 0), caption="Loss due to binning for all examples in figure 4.", label="tablelossexample"), include.rownames=FALSE, table.placement="hbtp")
-
 @
 
 
