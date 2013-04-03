@@ -23,15 +23,11 @@
 \begin{abstract}
 Dealing with the data deluge of the Big Data Age is both exciting and challenging. The demands of large data require us to re-think strategies of visualizing data. Plots employing binning methods have been suggested in the past as viable alternative to standard plots based on raw data, as the resulting area plots tend to not be affected by increases in data as much. This comes with the price of loss of information inherent to any binning scheme. In this paper we discuss properties of two commonly used binning algorithms. We define loss of information in the specific setting of two dimensional displays, provide readily applicable tools for loss evaluation and discuss the two binning schemes with respect to their loss in the framework of a simulation and two case studies.
 \end{abstract}
-%\SweaveOpts{concordance=TRUE, warning=FALSE,message=FALSE}
 
-% <<options-knitr,echo=F,include=F>>=
-% require(knitr)
-% options(replace.assign=TRUE,width=70)
-% opts_chunk$set(fig.path='figure/graphics-', cache.path='cache/cache-', fig.align='center', fig.width=5, fig.height=5, fig.show='hold', cache=TRUE, par=TRUE)
-% @
 
 \section{Introduction}
+
+
 <<setup,echo=F,include=F,eval=T>>=
 library(ggplot2)
 library(gridExtra)
@@ -528,7 +524,7 @@ To examine this further, we simulated points from three different distributions:
 For uniformly distributed data (right column) the choice of color scheme does not have a huge impact, but under both the normal and exponential distribution, log frequency scaling results in categories which account for more uniform proportions of the data (as can be seen by the color strips in the second and third row of Figure~\ref{fig:logcolor}). This is desirable because it provides more discernible frequency information. 
 \begin{figure}[hbtp]
 \centering
-<<FrequencyCategories,echo=FALSE, results='hide'>>=
+<<FrequencyCategories,echo=FALSE, results='hide', cache=TRUE>>=
 options(stringsAsFactors=FALSE)
 library(plyr)
 library(ggplot2)
@@ -784,7 +780,7 @@ In spite of the costs, information recovery is still useful for very large data,
 
 \section{Discussion and Examples}
 \subsection{Comparison of Loss in Binning Algorithms}
-<<LossTableGraphs,echo=F,results="hide",cache=TRUE, eval=FALSE>>=
+<<LossTableGraphs,echo=F,results="hide",cache=TRUE, eval=TRUE>>=
 # bins <- rbind(c(1,1), c(2,2), c(2,5), c(5, 2), c(4,4), c(3, 5), c(5, 3), c(5, 5), c(5, 25), c(25, 5), c(2, 50), c(50, 2), c(5, 50))
 computeLoss <- function(binning, data){
   lRandom <- lossCalc(data, binning=binning, type="random", newData = TRUE)
@@ -839,16 +835,23 @@ levels(lossmelt$variable) <- c("Numerical Loss","Visual Loss", "Log Frequency Lo
 qplot(x=x, y=value,
       group=interaction(y, Algorithm),
       data=lossmelt, geom="line",
-      colour=y,
+      colour=y, size=I(1),
       xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
         theme_bw() + theme(legend.position="bottom") + 
         guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
-        facet_grid(variable ~ Algorithm, scales = "free")+
-        ggtitle("Loss for Baseball Data under Standard and Random Binning")
+        facet_grid(variable ~ Algorithm, scales = "free") 
 
+# qplot(x=x, y=value,
+#       group=interaction(y, Algorithm),
+#       data=lossmelt, geom="line",
+#       colour=y, size=I(1), linetype=Algorithm,
+#       xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
+#         theme_bw() + theme(legend.position="bottom") + 
+#         guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
+#         facet_grid(. ~ variable, scales = "free") 
 
 @
-\caption{\label{fig:LossComparison1} Loss funcion }
+\caption{\label{fig:LossComparison1} Loss for Baseball Data under Standard and Random Binning for different bin widths in the number of strike-outs and games.}
 \end{figure}
 
 
