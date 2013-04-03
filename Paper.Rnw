@@ -75,7 +75,7 @@ qplot(data=d1.ext, x=G, y=SO, geom="hex", fill=..count.., group=1) +
 d1.hex.obj <- hexbin(d1.ext$G, d1.ext$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
-d1.hex$Freq <- d1.hex.obj@count
+d1.hex$Freq <-  d1.hex.obj@count
 qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq) + 
   scale_area("Frequency", range=c(1, 4), trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
   ggsave("./figure/BinScatter.pdf", width=5, height=5)
@@ -188,21 +188,19 @@ b_X = (x_{(n)} - x_{(1)})/n_X
 
 Mathematically, binning corresponds to a function $b(.)$ that assigns to a value $x$ the closest bin center $x^\ast \in \{ x_j^\ast \}, j \in \{1, ..., n_X\}$, i.e. the binning function   $b(.) : x \rightarrow x^\ast$ is defined as
 \begin{eqnarray*}\label{stdbin}
-x^\ast = b(x) =  b_X \cdot \left\lfloor (x-O_X)/ b_X + b_X/2\right\rfloor + O_X
+x^\ast = b(x) =  b_X \cdot \left\lfloor (x-x_1^\ast)/ b_X + 1/2\right\rfloor + x_1^\ast
 \end{eqnarray*}
-where $O_X$ is the center of the first bin and $\lfloor . \rfloor$ denotes the floor function, $\lfloor x \rfloor$ is the largest integer value smaller than $x$. 
+where $x_{(1)}$ is the center of the first bin and $\lfloor . \rfloor$ denotes the floor function, $\lfloor x \rfloor$ is the largest integer value smaller than $x$. An intuitive understanding of the formula is developed by noting that $(x-x_1^\ast)/ b_X$ is the number of bin widths that $x$ is above $x_1^\ast$ and that $\frac{b_X/2}{b_X}=\frac{1}{2}$ is the number of bin widths that $x_1^\ast$ is above $x_{(1)}$. The value $\lfloor (x-x_1^\ast)/ b_X + 1/2\rfloor$ then represents the number of bins centers that lie between $x_{(1)}$ and $x$.  Thus, the binning function is simply finding the location of the bin center for $x$ by adding the distance between the bin centers for $x_{(1)}$ and $x$ to the known bin center for $x_{(1)}$.
 %to allow for bins of width $b_X$ centered at any sequence $O_X, O_X + b_X, ..., O_X + n b_X$. 
 
-For illustration, let us assume that we have observed values 1.23, 1.55, and 2.35, and bin centers $\{1, 2, 3\}$, corresponding to a bin width of $b_X = 1$ and a first bin center $O_X = 1$.
-Intuitively it is clear, that value 1.23 is assigned to bin center 1, while values 1.55 and 2.35 are assigned to bin center 2.
-Applying equation (\ref{stdbin}) to value 1.23 we get: $1 \cdot \lfloor (1.23-1)/ 1 + 0.5\rfloor + 1$ = $\lfloor 0.73 \rfloor + 1$ =  0 + 1 = 1. Similarly, 1.55 is assigned to $\lfloor 0.55 + 0.5\rfloor + 1$ = 1+1 = 2.
+Alternate binning parameterizations include dividing up the range of data by a specified number of bins of equal width, but even these strategies fit into the framework of assigning values to the closest bin center. 
 
-Alternate binning parameterizations include dividing up the range of data by a specified number of bins of equal width, but even these strategies fit into the framework of assigning values to the closest bin center.
+
 % , with smallest bin
 % $b_X   \cdot \lfloor (x_{(1)}-O_X)/b_X + 0.5\rfloor + O_X$ and largest bin 
 % $b_X   \cdot \lfloor (x_{(n)}-O_X)/b_X + 0.5\rfloor + O_X$. 
 
-Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process.
+Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process extended to a two dimensional situation.
 <<binningDemo,echo=F,include=F,cache=T>>=
       library(mvtnorm)
       set.seed(33)
@@ -292,8 +290,6 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
       ggsave("./figure/Binning-DataVisualNumericalCenter.pdf", width=5, height=4, units="in")
 @
 
-The method described above is the standard binning algorithm. As a different approach, we define the random binning algorithm below.
-
 \begin{figure}[hbtp]
   \centering
   \subfloat[Standard Algorithm]{\includegraphics[keepaspectratio=true, width=3in]{./figure/Binning-DataAndBin.pdf}}
@@ -301,7 +297,7 @@ The method described above is the standard binning algorithm. As a different app
 %   {./figure/RandomBinningDataPoints1}}
   \subfloat[Bin Attribute Diagram]{\includegraphics[keepaspectratio=TRUE, width=4in]
   {./figure/Binning-DataVisualNumericalCenter.pdf}}
-  \caption{Points are assigned to bins centered at (5, 25) an (15,25). Points in the standard algorithm are all contained within the bin region, where points in the random algorithm may be outside the direct region.}
+  \caption{In illustration (a) points are assigned to bins centered at (5, 25) an (15,25). Points in the standard algorithm are all contained within the bin region. Illustration (b) displays the points assigned to a single bin along with key bin attributes: the visual bin center, ($x_1^\ast$, $y_1^\ast$), and the numerical bin center, ($\bar{x}$,$\bar{y}$). }
   \label{fig:BinningTutorial}
 \end{figure}
 
@@ -348,7 +344,7 @@ qplot(data=d.rand[,], x=x, y=y, alpha=a,  geom="point", xlim=c(-20, 40), ylim=c(
   annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + ylim(c(0, 50))
 ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 @
-An interesting variation which results in statistically nice properties is a random, non-deterministic bin function $b^r(\cdot)$ which maps value $x$ to one of several bin centers $x^\ast$ with probability $p$. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x$ to bin center $x^\ast$ with a probability depending on the distance to that bin center;  the closer a value is to a bin center, the higher the probability that the value is assigned to this bin center. 
+An alternative to the standard binning processes discussed above, is the random binning algorithm which results in statistically nice properties. A random binning algorithm utilizes a non-deterministic bin function $b^r(\cdot)$ which maps value $x$ to one of several bin centers $x^\ast$ with probability $p$. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x$ to bin center $x^\ast$ with a probability depending on the distance to that bin center;  the closer a value is to a bin center, the higher the probability that the value is assigned to this bin center. 
 More formally,
 \begin{eqnarray}\label{randbin}
 b^r(x) = \left\{\begin{array}{ll} 
@@ -364,7 +360,7 @@ This method is easily extensible to also map $x$ into one of more than two bins 
 %Value 1.35 has a 35\% probability to be assigned to bin center 2, and accordingly is assigned to bin center 1 with probability 65\%. 
 %1.55 is closer to the boundary between bin centers and has therefore a 45\% or 55\% chance to be assigned to bin centers 1 or 2, respectively.
 
-Figure~\ref{fig:BinningTutorial} illustrates one possible outcome of the random binning process.
+%Figure~\ref{fig:BinningTutorial} illustrates one possible outcome of the random binning process.
 
 The deterministic standard binning algorithm is an example of a ``direct" binning algorithm, in which all points are assigned with weight one to the nearest bin. ``Linear" binning  \citep{martin-gold} is a \textit{computationally intensive} alternative to direct binning  in which adjacent bins are assigned a weight  depending on the distance from the point to that bin, where all weights sum to one.  With large data sets, the calculations required for linear binning become unwieldy, but the random binning algorithm can be considered an approximation to linear binning. Specifically, the expectation of the random binning algorithm is the same as for linear binning.
 %However, linear binning requires evaluation of this expectation, whereas the random binning algorithm presented here uses a random sample from the underlying distribution, which is much more computationally tractable.
@@ -819,13 +815,15 @@ In order to quantify the advantages of each algorithm, we first compare the thre
  
  As the visual loss is the difference between the numerical center and visual center of the bin, it is a function of the distribution and bin width (and the specific random assignment, in the case of the random algorithm). We would not expect to notice the difference in the  visual loss in either algorithm, so long as the bin width is constant, because the expected value of the random process that results in shifting numerical bin centers is zero.  
 
-The far more important factor is the frequency loss, as we perceive that loss in the variability of the shading of bins which has a larger effect on the utility of the graphical data summary. The standard algorithm is preferable because it has lower total combined numerical and visual loss, but the two algorithms are very similar when we compare frequency loss. The random algorithm does have more variability, but the frequency loss values are much more similar, and when bins are of size two in either or both dimensions, the random algorithm has lower frequency loss than the standard algorithm. This holds for bins which are powers of two, as long as the random binning algorithm is applied iteratively to take advantage of the constant loss property noted above. %~\ref{fig:LossComparison}  
+Frequency loss is argueably the most important source of loss, as it is perceivable in the variability of the shading of bins which has a large effect on the utility of the graphical data summary. The standard and random algorithms are very similar when we compare frequency loss. The random algorithm has more variability in allocating observed values to bin centers, but the impact of this variability on the loss frequency information is much less noticable than the increase seen in numerical loss. %~\ref{fig:LossComparison}  
 
 Investigation of the loss sources we might be tempted to conclude that the standard binning algorithm is superior due to lower loss, however the random binning algorithm displays strong advantages when encountering problematic data structure issues. Random binning is especially advantagous when discrete data values are recorded at a consistant increments but we bin our data using a binwidth that is a non-integer multiple of the incremental widths. In this senario, we see that the non-synchronous data increments and bin widths will cause bins to contain unconsistant numbers of possible data value. Assuming that data values are spread uniformly over the discrete values we want a visualization that displays uniform frequency. Using the standard binning algorithm the misalignment of data increment and bin widths will lead to and artifical frequency discrepancy that manifests in a striped pattern in the visualization. The random binning algorithm is expected to display the intended uniform frequency pattern because the randomization of data values to bin centers mitigates the problematic bin width selection. 
 
 %A similar situation can arise when discrete data values are recorded at consistant increments and binwidths are chosen that are a odd integer multiple of the data incremental widths. This causes the situation where every other bin will have a data value located on the upper bound.  Since the standard binning algorithm always bins data values on the boundary between bins to the lower bin center we will have an additional possible data value contributing to the frequency of every other bin, causing a striped pattern in our visualization. Again, the random binning algorithm mitigates this problem because it will allocate points on bin boundaries to adjacent bin centers with probability 0.5, leading to a more accurate display of frequency information.
 
 \subsection{Binning Loss in Baseball Data: Strikeout and Game Counts}
+
+THIS SECTION UNDER CONSTRUCTION
 
 For this data example we will revisit the baseball data used earlier in this paper.  The characteristics of loss described in the discussion above are exemplified by viewing the loss for the baseball data in Figure ~\ref{fig:LossComparison1}.
 
