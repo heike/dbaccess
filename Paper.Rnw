@@ -812,7 +812,7 @@ In order to quantify the advantages of each algorithm, we first compare the thre
  
  The numerical loss is a function of the distribution and bin width, and once the bin width is chosen, it is entirely fixed. The random binning algorithm will inherently have a larger numerical loss than the standard algorithm because it allows for random assignment of points to numeric bin centers further from the original data than does the standard algorithm.  
  
- As the visual loss is the difference between the numerical center and visual center of the bin, it is a function of the distribution and bin width (and the specific random assignment, in the case of the random algorithm). We would not expect to notice the difference in the  visual loss in either algorithm, so long as the bin width is constant, because the expected value of the random process that results in shifting numerical bin centers is zero.  
+ As the visual loss is the difference between the numerical center and visual center of the bin, it is a function of the distribution and bin width (and the specific random assignment, in the case of the random algorithm). We expect a larger visual loss under the random binning algorithms than in the standard binning because the numerical bin centers are allowed to be drawn further away from the visual center under the random binning algorithm.  
 
 Frequency loss is argueably the most important source of loss, as it is perceivable in the variability of the shading of bins which has a large effect on the utility of the graphical data summary. The standard and random algorithms are very similar when we compare frequency loss. The random algorithm has more variability in allocating observed values to bin centers, but the impact of this variability on the loss frequency information is much less noticable than the increase seen in numerical loss. %~\ref{fig:LossComparison}  
 
@@ -822,9 +822,10 @@ Investigation of the loss sources we might be tempted to conclude that the stand
 
 \subsection{Binning Loss in Baseball Data: Strikeout and Game Counts}
 
-THIS SECTION UNDER CONSTRUCTION
+For this data example we will revisit the baseball data used earlier in this paper.  The characteristics of loss described in the discussion above are exemplified by viewing the loss for the baseball data in Figure ~\ref{fig:LossComparison1}. We find that the visual and numerical loss are in fact higher while using the random binning algorithm, but that the two binning algorithms are almost indestiguishable in terms of frequency loss.  
 
-For this data example we will revisit the baseball data used earlier in this paper.  The characteristics of loss described in the discussion above are exemplified by viewing the loss for the baseball data in Figure ~\ref{fig:LossComparison1}.
+Another thing to note about Figure ~\ref{fig:LossComparison1} is that under the standard binning algorithm the numerical loss is a monotone increasing function of the bin width, but visual loss is not a strictly increasing function of bin width.  This is appearant in the order of colored lines based on the Strike Out binning size.  This is because the numerical loss function sums loss over all observations, which means the distance from the points to the numerical center of bins can only increase as binwidth increases. Whereas the visual loss function sums loss over bin, thus as the binwidth increases the number of bins decreases which leads to the potential that the overall visual loss may decrease even though the distance from numerical centers to visual centers may increase for individual bins. 
+
 
 \begin{figure}[hbtp]
 \centering
@@ -875,8 +876,8 @@ qplot(x=x, y=value,
 \end{figure}
 
 
-\textbf{Loss table for baseball example moved from beginning, this should not be its final resting place}
-\noindent
+%\textbf{Loss table for baseball example moved from beginning, this should not be its final resting place}
+%\noindent
 %Table \ref{tablelossexample} gives an overview of the size of all different sources of loss for the examples in figure~\ref{binning}.
 
 <<tablelossexample, echo=FALSE, eval=FALSE, results='asis',cache=FALSE>>=
@@ -900,7 +901,10 @@ print(xtable(table.loss, digits=c(0, 2, 4, 4, 4, 0), caption="Loss due to binnin
 @
 
 
-We may also use this example to highlight the advantages of random binning. The two binned scatterplots at the top of Figure~\ref{fig:binning-comparison} show bins of the same width, but clear differences between the binning results are evident: while the standard binning algorithm has rounding artifacts that are clearly visible for even bin widths, the random algorithm produces a graph that better represents the true shape of the data. This is because the In contrast, when the bin widths are odd, the two binning algorithms yield nearly indistinguishable binned scatterplots, as shown in the bottom row of Figure~\ref{fig:binning-comparison}.
+We may also use this example to highlight the advantages of random binning. The two binned scatterplots at the top of Figure~\ref{fig:binning-comparison} show bins of the same width, but clear differences between the binning results are evident. The standard binning algorithm has rounding artifacts that are clearly visible in the vertical strips. These vertical stripes are from the computational rounding issues encountered if we use the standard binning when we have the data values were recorded on an evenly spaces discrete scale (in our case, integers) and the binwidths are integer multiples of the data increments.  This reinforces the arguement that in practice the random algorithm can produce a graph that better represents the true shape of the data than the standard algorithm even if the numerical and visual loss is higher.
+
+
+\textbf{Are we sure that this is because of an odd binwidths and not just that the bins were not centered on an integer?} In contrast, when the bin widths are odd, the two binning algorithms yield nearly indistinguishable binned scatterplots, as shown in the bottom row of Figure~\ref{fig:binning-comparison}.\textbf{I think that strips disappearing in (5,25) bins is because of where we START the binning not that the bin widths are even}
 
 \begin{figure}[hbtp]
 \centering
@@ -910,7 +914,7 @@ We may also use this example to highlight the advantages of random binning. The 
 \subfloat[(5, 25) tiling of G, SO data]{
 \includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd525.pdf}
 }
-\caption{\label{fig:binning-comparison} Comparison of random and standard binning: standard binning introduces artificial striping when the chose bin width is not a multiple of the data resolution.}
+\caption{\label{fig:binning-comparison} Comparison of random and standard binning: standard binning introduces artificial striping when the chosen bin width is not a multiple of the data resolution.}
 \end{figure}
 
 
