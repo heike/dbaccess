@@ -9,13 +9,14 @@
 \usepackage{natbib}
 \usepackage{hyperref}
 
+\newcommand{\ktm}[1]{{\color{red} #1}} %red comments: Karsten
 \newcommand{\hh}[1]{{\color{blue} #1}} %blue comments: Heike
-\newcommand{\svp}[1]{{\color{red}#1}} %green: Susan (It's more fun that way - comment roulette)
+\newcommand{\svp}[1]{{\color{yellow}#1}} %yellow: Susan (It's more fun that way - comment roulette)
 
 
 %opening
 \title{Binning Strategies and Related Loss for Large Data}
-\author{Susan VanderPlas$^1$, Karsten Maurer$^1$, Heike Hofmann$^{1,2}$\\$^1$Department of Statistics, $^2$Human Computer Interaction\\Iowa State University}
+\author{Karsten Maurer$^1$, Susan VanderPlas$^1$, Heike Hofmann$^{1,2}$\\$^1$Department of Statistics, $^2$Human Computer Interaction\\Iowa State University}
 
 \begin{document}
 \maketitle
@@ -58,6 +59,7 @@ xtd.data <- function(x) {
 }
 d1.ext <- xtd.data(d1)
 @
+
 <<scatterplots, echo=F,include=F>>=
 qplot(data=d1.ext, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", alpha=I(.05), size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/OverplottingAlpha.pdf", width=5, height=5)
@@ -72,8 +74,7 @@ d1.hex.obj <- hexbin(d1.ext$G, d1.ext$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
 d1.hex$Freq <-  d1.hex.obj@count
-qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq) + 
-  scale_area("Frequency", range=c(1, 4), trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
+qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq) + scale_size_area("Frequency", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
   ggsave("./figure/BinScatter.pdf", width=5, height=5)
 
 # Sunflower plot
@@ -108,7 +109,7 @@ In this paper we describe first the problem scatterplots are exposed to in large
 In the case of medium sized data scatterplots are great tools for showing relationships in two dimensions. For large data, scatterplots suffer from over-plotting -- i.e. more and more points are drawn in close-by places, thereby masking relevant structure.
 Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 139 seasons (from the years of 1871 -- 2009) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database (\url{http://www.seanlahman.com/baseball-archive/}).  The number of games played in a season is plotted versus number of strikeouts a pitchr threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(d1.ext)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data.
 Figure~\ref{fig:scatter-alpha} shows a traditional scatterplot on the left. Each observation is drawn with a filled circle. A triangular structure is apparent with some outliers at a medium number of games and high number of strikeouts. Tukey \citep{tukey} suggested the use of open circles (see Figure~\ref{fig:scatter-alpha}b) to mitigate the problem of over-plotting. Open circles make points visible that are close together. This technique is  not suitable to determine the magnitude, but gives more information than is available with filled points. 
-\hh{We need to decide on one way for referring to $\alpha$-blending in one way - we've got about four different ways of writing it right now. I'm ok with any of them, but we need to stick to it.}
+%\hh{We need to decide on one way for referring to $\alpha$-blending in one way - we've got about four different ways of writing it right now. I'm ok with any of them, but we need to stick to it.}
 A modern alternative to open circles is alpha-blending (see Figure~\ref{fig:scatter-alpha}c). Alpha blending provides  more frequency information, allowing a distinction of higher-resolution density.
 
 \begin{figure}[hbtp]
@@ -125,7 +126,7 @@ A modern alternative to open circles is alpha-blending (see Figure~\ref{fig:scat
 All of these methods fall short in the example.
 As can be seen in Figure~\ref{fig:scatter-alpha}, strategy (a) is the least effective, as it provides information about the outliers and range of the data but cannot provide any point density information. Tukey's open circles (b) help some, but are as prone to over-plotting as solid circles when the data set is large. Alpha blending (c) highlights the structure, but minimizes the visual impact of outliers. The data set is large enough that neither alpha-blending nor open circles are completely effective, and so we must pursue a different strategy which can provide better information about the relative density of points at a given location.
 
-\hh{discussion of sufficient statistics for graphics could go here. Idea: the problems with large data in scatterplots all arise from overplotting, which is a form of implicit data aggregation. In order to keep track of overplotting, we switch to a weighted form of displays and explicitly keep track of overplotting. The aggregated data forms the sufficient statistics for a scatterplot, i.e. provide all of the information necessary to render it. The scatterplot therefore does not display more than that information. Making the data aggregation explicit allows us to calculate the loss we experience.}
+%\hh{discussion of sufficient statistics for graphics could go here. Idea: the problems with large data in scatterplots all arise from overplotting, which is a form of implicit data aggregation. In order to keep track of overplotting, we switch to a weighted form of displays and explicitly keep track of overplotting. The aggregated data forms the sufficient statistics for a scatterplot, i.e. provide all of the information necessary to render it. The scatterplot therefore does not display more than that information. Making the data aggregation explicit allows us to calculate the loss we experience.}
 
 One approach to reduce the graphical complexity is to bin the displayed data. This has the additional advantage of reducing the size of the stored data, as only the bin centers and the frequency of points which correspond to that bin must be stored.
 
@@ -135,7 +136,8 @@ Methods commonly used to display binned variables include sunflower plots \citep
 
 When the point area is scaled in proportion to frequency, scatterplots can be used to display the binned data as well.  When points are filled circles, these plots are also known as ``bubble plots", which were first used by William Playfair \citep{playfair, playfair2}. Kernel density smoothing can be used to vary $\alpha$ or color according to a smoothed density, providing features similar to binned scatterplots or $\alpha$-blended scatterplots in a more smooth, continuous fashion. These estimates require parameter tuning and may hide gaps in the data by over-smoothing while simultaneously de-emphasizing outlying points.
 
-As alternatives, Figure~\ref{fig:scatter-alpha} (d-e) contains examples of a hexagonally binned scatterplot with frequency encoded as color (d) and a ``bubble plot" (referred to as a modified scatterplot) with frequency encoded as point size (e). The hexagonal tiles and the modified scatterplot are more effective at displaying the shape of the joint density and preserving outliers than any of the scatterplots shown in Figure~\ref{fig:scatter-alpha} (a-c). The binned scatterplot is less prone to the Hermann-grid illusion \hh{need a reference} than the bubble plot, particularly for binned data, where bin centers usually fall on a grid.
+As alternatives, Figure~\ref{fig:scatter-alpha} (d-e) contains examples of a hexagonally binned scatterplot with frequency encoded as color (d) and a ``bubble plot" (referred to as a modified scatterplot) with frequency encoded as point size (e). The hexagonal tiles and the modified scatterplot are more effective at displaying the shape of the joint density and preserving outliers than any of the scatterplots shown in Figure~\ref{fig:scatter-alpha} (a-c). The binned scatterplot is less prone to the Hermann-grid illusion %\hh{need a reference} 
+than the bubble plot, particularly for binned data, where bin centers usually fall on a grid.
 
 % \begin{figure}[hbtp]
 % <<conclusions, out.width='\\textwidth', fig.width=5, fig.height=3>>=
@@ -432,11 +434,11 @@ In the first set of binned data, the bins and the points on the scatterplot are 
 Loss of information occurs on multiple levels during the binning and rendering process. We distinguish three sources:
 \begin{itemize}
 
-\item {\it Visual Loss} is an implicit loss due to the rendering;  visually we perceive the center of a bin to be the center of the tile. This visual center will generally different from the numerical center, or the mean of the data corresponding to that bin, which can be thought of as the center of mass. Thus visual loss is the difference between the visual center $(x^\ast, y^\ast)$ and the numerical center $(\bar{x}, \bar{y})$. This causes some bias in the perception.
+\item {\it Numerical Loss}, $L^\text{N}$, occurs when points in the data set are reduced to a single points at the bin means.  Allocating points to the numerical center, or the mean of the data corresponding to that bin, causes a loss of information about the exact location of the points.
 
-\item {\it Numerical Loss} occurs when points in the data set are reduced to a single point at the mean, i.e. this is the collective difference between all data points $(x_i,y_i)$ and their corresponding numerical centers $(\bar{x}, \bar{y})$.
+\item {\it Visual Loss}, $L^\text{V}$, is an implicit loss due to the rendering;  visually we perceive the center of a bin to be the center of the tile. This visual center will generally different from the numerical mean, causing some bias in the perception. Thus visual loss for a bin, $L_i^\text{N}$, is the euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The visual loss is the sum of these bin distances.
 
-\item {\it Frequency Loss}  results from our inability to render the frequency information accurately. Different rendering methods for the frequency information will lead to different losses. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent this information. The number of colors that can be differentiated and mapped back to frequency information accurately is fairly limited. Note that even though this loss will turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where frequency information is masked in large data situations due to over-plotting of points.
+\item {\it Frequency Loss} results from our inability to render the frequency information accurately. Different rendering methods for the frequency information will lead to different losses. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent this information. The number of colors that can be differentiated and mapped back to frequency information accurately is fairly limited. Note that even though this loss will turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where frequency information is masked in large data situations due to over-plotting of points.
 
 % 
 % , so we must balance perceptual limits of frequency information with the limits of overplotting single points. 
@@ -452,22 +454,39 @@ Loss of information occurs on multiple levels during the binning and rendering p
 We explore the different types of loss in the remainder of this section in more detail. For clarity we will again be specifying loss using notation for a one dimensional binning process. This notation can then be extended to higher dimensions in applications.
 
 \subsection{Numerical and Visual Loss}
-Reducing data points $\mathbf{x}$ to the visual bin centers $x^\ast$ results in a loss of information, as there is a reduction in the variability of the data when data points are transformed from individual values to bin centers on a grid. Let us denote the difference between point $x_i$ from its bin center as $S_i = \left|x_i-b(x_i)\right|$ for each point in the data set $i=1, ..., n$. The total loss from binning an entire data set is defined as 
-
-\[L_s(\mathbf{x}) = 1/S^2_{\emptyset} \cdot \sum_{i=1}^{n} S^2_i\] 
-where $S_\emptyset^2$ is the loss which results when the entire data set is reduced to a single bin,
-$S^2_{\emptyset} = \sum_i (x_i-\tilde{x})^2$ for the single bin center $\tilde{x}$.
-%The loss depends on the choice of bin center: candidates for bin centers are the mean of the points within the bin or the visual center of the bin. 
+Reducing data points $\mathbf{x}$ to the visual bin centers $\mathbf{x}^\ast$ results in a loss of information, as there is a reduction in the variability of the data when data points are transformed from individual values to bin centers on a grid.
 If the visual bin centers are the same as the numerical centers for each bin, then any loss could be strictly attributed to difference between points and the bin centers. 
 The problem is that the visual center and the numerical center for bins will rarely match, which introduces  visual bias  to the graphical representation of the data, as we perceive the bin center to be the physical middle of the symbol representing the data.
-Therefore we distinguish two contributions to the total loss.
-Numerical loss results from the binning process as points are reduced to the numerical center point and is thus the sum of numerical losses for individual points ($\sum_{i=1}^n L_i^\text{N}$).
-Visual loss is due to the difference between the numerical centers and the visual centers and is thus the sum of visual losses for each bin ( $\sum_{j=1}^{N_x} L_j^\text{V}$). This discrepancy is particularly clear as demonstrated in Figure~\ref{fig:stdBinTutorial2}, in which the visual center of the bin varies significantly from the numerical center of the data contained within the bin under the standard algorithm.
 
-Fortunately we can show that the total loss perceived is partitioned by these two components of loss, and it holds (see appendix \ref{proof:partition} for a proof):
-\begin{eqnarray}\label{eqn:partition}
-L_s(\mathbf{x}) =  1/S^2_{\emptyset} \cdot \left(\sum_i^n L^N_i + \sum_j^{N_x} L^V_j\right)
-\end{eqnarray}
+Therefore we distinguish two contributions to the total loss. 
+Numerical loss results from the binning process as points are reduced to the numerical center point. The loss for an individual point, $L_i^\text{N}$, is the euclidean distance between the $i^{th}$ data point $(x_i,y_i)$ and the corresponding bin numerical center $(\bar{x}, \bar{y})$. The overall numerical loss is thus the sum of numerical losses for individual points ($L^\text{N} = \sum_{i=1}^n L_i^\text{N}$).
+Visual loss is due to the distance between the numerical centers and the visual centers. The visual loss for each bin, $L_j^\text{V}$, is the euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The overall visual loss is the sum of these bin distances ($L^\text{V} = \sum_{j=1}^{N_x} L_j^\text{V}$). 
+This discrepancy is particularly clear as demonstrated in Figure~\ref{fig:stdBinTutorial2}, in which the visual center of the bin varies significantly from the numerical center of the data contained within the bin under the standard algorithm.  
+This discrepancy between the visual center of the bin and the numerical center of the data within the bin occurs in both binning algorithms, and we can note that the loss functions napply to either approach to binning.
+
+The magnitude of the numerical and visual losses are clearly dictated by the scale on which the data was recorded, thus and the loss values have no direct interpretation. However, we can examine both the numerical and the visual loss from the perspective of proportion of the greatest possible loss.  
+To do this for numerical loss we consider the binning scenario that would always lead to greatest possible loss; allocating all data points into a single bin.  Thus we can define the greatest possible numerical loss as
+
+\begin{center}
+$ L_0^\text{N} = \sum_{i=1}^{n} \sqrt{(x_i-\bar{x})^2 + (y_i-\bar{y})^2}  $, 
+\end{center}
+
+where $\bar{x}$ and $\bar{y}$ are the sample averages for x and y respectively.  After we select a binning strategy and binwidth we can then assess the proportion of possible numerical loss incurred due to binning by computing $L^\text{N} / L_0^\text{N}$.
+
+%-------
+% Cut "total loss" stuff, because this was all a relic of "spatial loss" part of paper
+%Let us denote the difference between point $x_i$ from its bin center as $S_i = \left|x_i-b(x_i)\right|$ for each point in the data set $i=1, ..., n$.
+%We may then combine these losses from the entire data set to be defined as 
+%\[L_s(\mathbf{x}) = 1/S^2_{\emptyset} \cdot \sum_{i=1}^{n} S^2_i\] 
+%where $S_\emptyset^2$ is the loss which results when the entire data set is reduced to a single bin,
+%$S^2_{\emptyset} = \sum_i (x_i-\tilde{x})^2$ for the single bin center $\tilde{x}$.
+%The loss depends on the choice of bin center: candidates for bin centers are the mean of the points within the bin or the visual center of the bin. 
+%Fortunately we can show that the total loss perceived is partitioned by these two components of loss, %and it holds (see appendix \ref{proof:partition} for a proof):
+%\begin{eqnarray}\label{eqn:partition}
+%L_s(\mathbf{x}) =  1/S^2_{\emptyset} \cdot \left(\sum_i^n L^N_i + \sum_j^{N_x} L^V_j\right)
+%\end{eqnarray}
+%-------
+
 <<smoothing, echo=FALSE, include=FALSE, out.width="0.5\\textwidth", fig.width=5.4, fig.height=4.05>>=
 set.seed(53022)
 data <- data.frame(x=rnorm(200, 0, 2), y=rnorm(200, 0, 2), Freq=1)
@@ -481,19 +500,21 @@ ggsave("./figure/FreqLoss.pdf", width=5.4*.8, height=4.05*.8)
 @
 
 \noindent
-Note that the discrepancy between the visual center of the bin and the numerical center of the data within the bin occurs in both binning algorithms. The decomposition also holds for the random binning algorithm as well as the standard binning algorithm. 
+
+%The decomposition also holds for the random binning algorithm as well as the standard binning algorithm. 
 %The expected total loss for either algorithm depends on the distribution the underlying data. 
 %The total loss due to binning is $\sum_{i=1}^n (x_i - b(x_i))^2$, where in the standard algorithm, $b(x)$ maps $x$ to the closest bin center, and in the random algorithm, $b(x)$ is assigned probabilistically.
 
-It is worth noting that the loss function is a monotonically increasing function of binwidth. An interesting feature of the random binning algorithm is that the increase in loss that we experience by doubling the bin width is deterministic, even though the assignment of bins is not. This holds for repeated doubling of the bin width. A proof of this can be found in appendix \ref{proof:constantloss}. Doubling bin widths is, particularly in the framework of visualizations, a very natural step, making this an important property of the random binning.
-
-The loss as a function of bin width was computed for both algorithms for the baseball data and is shown in Figure~\ref{fig:LossComparison1}.
+%---
+% I believe we showed that this is only true when "rebinning" previously binned data and not deterministic when randomly binning at doubled bins from original data, thus not practically useful information so commented out
+%It is worth noting that the loss function is a monotonically increasing function of binwidth. An interesting feature of the random binning algorithm is that the increase in loss that we experience by doubling the bin width is deterministic, even though the assignment of bins is not. This holds for repeated doubling of the bin width. A proof of this can be found in appendix \ref{proof:constantloss}. Doubling bin widths is, particularly in the framework of visualizations, a very natural step, making this an important property of the random binning.
+%---
 
 \begin{figure}[hbtp]
     \centering
-		\subfloat[Spatial Loss]{\includegraphics[keepaspectratio=true, width=.54\textwidth]{./figure/Binning-DataVisualNumericalCenter.pdf}}
-    \subfloat[Frequency Loss]{\includegraphics[keepaspectratio=true, width=.45\textwidth]{./figure/FreqLoss.pdf}}
-\caption{\label{fig:stdBinTutorial2} Types of loss due to binning: (a) Numerical loss associated with the cumulative difference from the binned data to the numerical center and visual loss associated with the difference between the numerical and visual bin centers. \hh{could we make (a) square again? the squished panel looks funky.}  (b) Frequency loss associated with a change of bin width to 1 from 0.25 in the example of Figure~\ref{binning}.}   
+		\subfloat[Numerical and Visual Loss]{\includegraphics[keepaspectratio=true, width=.46\textwidth]{./figure/Binning-DataVisualNumericalCenter.pdf}}
+    \subfloat[Frequency Loss]{\includegraphics[keepaspectratio=true, width=.54\textwidth]{./figure/FreqLoss.pdf}}
+\caption{\label{fig:stdBinTutorial2} Types of loss due to binning: (a) Numerical loss associated with the cumulative difference from the binned data to the numerical center and visual loss associated with the difference between the numerical and visual bin centers.  (b) Frequency loss associated with a change of bin width to 1 from 0.25 in the example of Figure~\ref{binning}.}   
 	\end{figure}
 
 \subsection{Loss of Frequency Information} 
@@ -788,11 +809,14 @@ In spite of the costs, information recovery is still useful for very large data,
 computeLoss <- function(binning, data){
   lRandom <- lossCalc(data, binning=binning, type="random", newData = TRUE)
   lMean <- lossCalc(data, binning=binning, type="standard", newData=TRUE)
-  datplot <- rbind(cbind(lRandom$NewData, Algorithm="Random"), cbind(lMean$NewData, Algorithm="Standard"))
-    qplot(G, SO, fill = Freq, geom="tile", data = datplot, 
-        main=paste("Baseball: Binning by (", binning[1], ", ", binning[2],")", sep="")) + facet_grid(.~Algorithm) +
+  datplot <- rbind(cbind(unique(lRandom$NewData), Algorithm="Random"), cbind(unique(lMean$NewData), Algorithm="Standard"))
+  datplot$xbin <- round(datplot[,1]/binning[1],0)*binning[1]
+  datplot$ybin <- round(datplot[,2]/binning[2],0)*binning[2]
+  #datplot2 <- ddply(datplot, .(G, SO,Algorithm), summarize, count=length(G))
+    qplot(xbin, ybin, geom="tile", data = datplot, fill = fsum , 
+          ,main=paste("Baseball: Binning by (", binning[1], ", ", binning[2],")", sep="")) + facet_grid(.~Algorithm) +
         scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 5, 50, 500, 5000)) + theme_bw() + theme(legend.position="bottom")
-    ggsave(paste("./figure/RandomStd", binning[1], binning[2], ".pdf", sep=""), width=8, height=5, units="in", dpi=1200)
+    ggsave(paste("./RandomStd", binning[1], binning[2], ".pdf", sep=""), width=8, height=5, units="in", dpi=1200)
   return(rbind(
     cbind(binX = binning[1], binY = binning[2], Function = "Random", lRandom$Loss), 
     cbind(binX = binning[1], binY = binning[2], Function = "Standard", lMean$Loss)))
@@ -936,7 +960,7 @@ The triangle of observations on the bottom right visible in both plots is nothin
 \begin{figure}[hbtp]\centering
 %\subfloat[Million-point sample of Airline Data]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/MillionSample.pdf}}\hfil
 %   Swap Back at later date (shrinks size of pdf to managable)
-\subfloat[Million-point sample of Airline Data \hh{this is the bad practice - our counter-example of what not to do. we need to emphasize this a bit more}]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/RplotFiller.pdf}}\hfil
+\subfloat[Million-point sample of Airline Data. \ktm{This plot is not compiling and needs to be reconstructed (my apologies)}]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/RplotFiller.pdf}}\hfil
 \subfloat[Minimal binning of Airline Data]{\includegraphics[width=.56\linewidth, keepaspectratio=TRUE]{images/AirlineStdBinning1min.pdf}}
 \caption{\label{airline-scatter}Scheduled and actual departure times of  flights across the United States in 2011. The plot on the left is based on a sample of the data, the plot on the right shows all flights. The big patterns are visible in both plots, but the plot on the left misses some of the finer level details in scheduling that is visible in the plot on the right.}
 \end{figure}
