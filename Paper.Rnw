@@ -74,7 +74,8 @@ d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
 d1.hex$Freq <-  d1.hex.obj@count
 
-qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq) + scale_size_area("Frequency", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
+qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq+1) + 
+  scale_size_area("Frequency", max_size=4, trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
 
 qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq+1) + 
   scale_size_area("Frequency", max_size=4, trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
@@ -244,8 +245,8 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
         annotate("polygon", x=c(0, 0, 10, 10), y=c(20, 30, 30, 20), 
                  fill="green", alpha=.25) +
         scale_alpha(range=c(.5, 1), guide=FALSE) +
-        scale_colour_identity(guide=FALSE) + 
-        scale_shape(solid=T,guide=FALSE) +
+      #  scale_colour_identity(guide=FALSE) + 
+      #  scale_shape(solid=T,guide=FALSE) +
         theme_bw() +
         annotate("point", x=rep(seq(-15, 35, 10),each=7), 
                y=rep(seq(-5, 55, 10), times=6), 
@@ -258,7 +259,7 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
         scale_colour_manual(values=c("5"="green", "15"="blue"), name="Bin", 
                             labels=c("(5,25)", "(15, 25)"),guide=FALSE)+
         annotate("segment", x=temp$x, y=temp$y, 
-                 xend=temp$xend, yend=temp$yend, group=temp$group)  + ylim(c(0, 50))
+                 xend=temp$xend, yend=temp$yend, group=temp$group) # + ylim(c(0, 50))
       ggsave("./figure/Binning-DataAndBin.pdf", width=5, height=5, units="in")
       
       d.orig$bin <- dnew$x==15 & dnew$y==25
@@ -305,7 +306,7 @@ Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process
 %   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
 %   {./figure/RandomBinningDataPoints1}}
   \subfloat[Random Algorithm]{\includegraphics[keepaspectratio=TRUE, width=3in]
-  {./figure/RandomBinningDataPoints1.pdf}}
+  {./figure/RandomBinningDataPoints2.pdf}}
   \caption{Points are assigned to bins centered at (5, 25) an (15,25). Points in the standard algorithm are contained within the defined bin region, where points from the random algorith may be assigned to bins from outside the defined bin regions.}
   \label{fig:BinningTutorial}
 \end{figure}
@@ -821,7 +822,7 @@ computeLoss <- function(binning, data){
   datplot$xbin <- round(datplot[,1]/binning[1],0)*binning[1]
   datplot$ybin <- round(datplot[,2]/binning[2],0)*binning[2]
   #datplot2 <- ddply(datplot, .(G, SO,Algorithm), summarize, count=length(G))
-    qplot(xbin, ybin, geom="tile", data = datplot, fill = fsum , 
+    qplot(xbin, ybin, geom="tile", data = datplot, fill = Freq , 
           ,main=paste("Baseball: Binning by (", binning[1], ", ", binning[2],")", sep="")) + facet_grid(.~Algorithm) +
         scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 5, 50, 500, 5000)) + theme_bw() + theme(legend.position="bottom")
     ggsave(paste("./RandomStd", binning[1], binning[2], ".pdf", sep=""), width=8, height=5, units="in", dpi=1200)
@@ -912,31 +913,36 @@ qplot(x=x, y=value,
 %\noindent
 %Table \ref{tablelossexample} gives an overview of the size of all different sources of loss for the examples in figure~\ref{binning}.
 
-<<tablelossexample, echo=FALSE, eval=FALSE, results='asis',cache=FALSE>>=
-loss0.1 <- lossCalc(data=X[,c(1:2)], binning=c(.1, .1), type="standard", newData=TRUE)
-loss0.25 <- lossCalc(data=X[,c(1:2)], binning=c(.25, .25), type="standard", newData=TRUE)
-loss0.5 <- lossCalc(data=X[,c(1:2)], binning=c(.5, .5), type="standard", newData=TRUE)
-loss1 <- lossCalc(data=X[,c(1:2)], binning=c(1, 1), type="standard",newData=TRUE)
+\hh{the  code following this comment in the Rnw file is, I think, broken beyond repair - but we should include a table like the one it produced in the paper.  - we will have different losses to report, though}
 
-loss0.1 <- data.frame(with(loss0.1, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(fsum))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(fsum))))))
-loss0.25 <- data.frame(with(loss0.25, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(fsum))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(fsum))))))
-loss0.5 <- data.frame(with(loss0.5, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(fsum))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(fsum))))))
-loss1 <- data.frame(with(loss1, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(fsum))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(fsum))))))
-
-table.loss <- data.frame(rbind(c(binwidth=0, TotalLoss.x=0, TotalLoss.y=0, TotalLoss.LogFreq=0, rows=200), 
-                               c(binwidth=.1, loss0.1[5:7]*100, loss0.1[8]), 
-                               c(binwidth=.25, loss0.25[5:7]*100, loss0.25[8]), 
-                               c(binwidth=.5, loss0.5[5:7]*100, loss0.5[8]), 
-                               c(binwidth=1, loss1[5:7]*100, loss1[8])))
-names(table.loss) <- c("Bin Width", "% Loss in X", "% Loss in Y", "% Loss in log(Freq)", "Size of Data")
-print(xtable(table.loss, digits=c(0, 2, 4, 4, 4, 0), caption="Loss due to binning for all examples in figure 4.", label="tablelossexample"), include.rownames=FALSE, table.placement="hbtp")
-@
+% 
+% <<tablelossexample, echo=FALSE, eval=FALSE, results='asis',cache=FALSE>>=
+% loss0.1 <- lossCalc(data=X[,c(1:2)], binning=c(.1, .1), type="standard", newData=TRUE)
+% loss0.25 <- lossCalc(data=X[,c(1:2)], binning=c(.25, .25), type="standard", newData=TRUE)
+% loss0.5 <- lossCalc(data=X[,c(1:2)], binning=c(.5, .5), type="standard", newData=TRUE)
+% loss1 <- lossCalc(data=X[,c(1:2)], binning=c(1, 1), type="standard",newData=TRUE)
+% 
+% loss0.1 <- data.frame(with(loss0.1, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
+% loss0.25 <- data.frame(with(loss0.25, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
+% loss0.5 <- data.frame(with(loss0.5, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
+% loss1 <- data.frame(with(loss1, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
+% 
+% table.loss <- data.frame(rbind(c(binwidth=0, TotalLoss.x=0, TotalLoss.y=0, TotalLoss.LogFreq=0, rows=200), 
+%                                c(binwidth=.1, loss0.1[5:7]*100, loss0.1[8]), 
+%                                c(binwidth=.25, loss0.25[5:7]*100, loss0.25[8]), 
+%                                c(binwidth=.5, loss0.5[5:7]*100, loss0.5[8]), 
+%                                c(binwidth=1, loss1[5:7]*100, loss1[8])))
+% names(table.loss) <- c("Bin Width", "% Loss in X", "% Loss in Y", "% Loss in log(Freq)", "Size of Data")
+% print(xtable(table.loss, digits=c(0, 2, 4, 4, 4, 0), caption="Loss due to binning for all examples in figure 4.", label="tablelossexample"), include.rownames=FALSE, table.placement="hbtp")
+% @
 
 
 We may also use this example to highlight the advantages of random binning. The two binned scatterplots at the top of Figure~\ref{fig:binning-comparison} show bins of the same width, but clear differences between the binning results are evident. The standard binning algorithm has rounding artifacts that are clearly visible in the vertical strips. These vertical stripes are from the computational rounding issues encountered if we use the standard binning when we have the data values were recorded on an evenly spaces discrete scale (in our case, integers) and the binwidths are integer multiples of the data increments.  This reinforces the arguement that in practice the random algorithm can produce a graph that better represents the true shape of the data than the standard algorithm even if the numerical and visual loss is higher.
 
 
 \textbf{Are we sure that this is because of an odd binwidths and not just that the bins were not centered on an integer?} In contrast, when the bin widths are odd, the two binning algorithms yield nearly indistinguishable binned scatterplots, as shown in the bottom row of Figure~\ref{fig:binning-comparison}.\textbf{I think that strips disappearing in (5,25) bins is because of where we START the binning not that the bin widths are even}
+
+\hh{This is a valid concern, but we have to fix the notation at the beginning first, before we can address it.}
 
 \begin{figure}[hbtp]
 \centering
@@ -966,9 +972,9 @@ The triangle of observations on the bottom right visible in both plots is nothin
 
 
 \begin{figure}[hbtp]\centering
-%\subfloat[Million-point sample of Airline Data]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/MillionSample.pdf}}\hfil
+\subfloat[Million-point sample of Airline Data]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/MillionSample.pdf}}\hfill
 %   Swap Back at later date (shrinks size of pdf to managable)
-\subfloat[Million-point sample of Airline Data. \ktm{This plot is not compiling and needs to be reconstructed (my apologies)}]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/RplotFiller.pdf}}\hfil
+%\subfloat[Million-point sample of Airline Data. \ktm{This plot is not compiling and needs to be reconstructed (my apologies)}]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/RplotFiller.pdf}}\hfil
 \subfloat[Minimal binning of Airline Data]{\includegraphics[width=.56\linewidth, keepaspectratio=TRUE]{images/AirlineStdBinning1min.pdf}}
 \caption{\label{airline-scatter}Scheduled and actual departure times of  flights across the United States in 2011. The plot on the left is based on a sample of the data, the plot on the right shows all flights. The big patterns are visible in both plots, but the plot on the left misses some of the finer level details in scheduling that is visible in the plot on the right.}
 \end{figure}
@@ -984,9 +990,13 @@ Binning data by five-minute intervals produces a more high-level summary of the 
 
 <<airlinesetup,echo=FALSE, eval=FALSE>>=
 setwd("./data/")
-# airline <- do.call("rbind", lapply(list.files(), function(i) read.csv(i)))
-# write.csv(airline, "airline.csv", row.names=FALSE)
-airline <- read.csv("airline.csv")
+if (!file.exists("airline.csv.gz")) {
+  # HH: I'm not sure, which files these should be ... 
+  # airline <- do.call("rbind", lapply(list.files(), function(i) read.csv(i)))
+  
+  # write.csv(airline, "airline.csv", row.names=FALSE)
+}
+airline <- read.csv("airline.csv.gz")
 na.departure <- (is.na(airline[,8]) + is.na(airline[,9]))> 0
 airline <- airline[!na.departure,8:9]
 
@@ -1000,8 +1010,10 @@ convert.time <- function(x){
 
 library(multicore)
 
-airline.freq <- ddply(airline, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(unique(i), Freq=nrow(i)))
-write.csv(airline.freq, "ReducedAirlineData.csv", row.names=FALSE)
+if (!file.exists("ReducedAirlineData.csv")) {
+  airline.freq <- ddply(airline, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(unique(i), Freq=nrow(i)))
+  write.csv(airline.freq, "ReducedAirlineData.csv", row.names=FALSE)
+}
 airline.freq <- read.csv("ReducedAirlineData.csv")
 airline.freq.plot <- airline.freq
 airline.freq.plot[,1] <- convert.time(airline.freq.plot[,1])
@@ -1020,10 +1032,11 @@ air.sample <- airline.freq.plot[sample(1:nrow(airline.freq.plot), 1000000, repla
 qplot(data=air.sample, x=CRS_DEP_TIME, y=DEP_TIME, geom="point", alpha=I(.05), xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Sampled Airline Departure Times") + theme_bw()+ theme(legend.position="right") + scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
 ggsave("MillionSample.pdf", width=6, height=6, dpi=576)
 
-air.binned5 <- binStd(airline.freq, c(5, 5))
-air.binned5 <- ddply(air.binned5, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(convert.time(unique(i[,1:2])), Freq=sum(i$Freq)))
-write.csv(air.binned5, "airlineBin5Std.csv", row.names=FALSE)
-
+if (!file.exists("airlineBin5Std.csv")) {
+  air.binned5 <- binStd(airline.freq, c(5, 5))
+  air.binned5 <- ddply(air.binned5, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(convert.time(unique(i[,1:2])), Freq=sum(i$Freq)))
+  write.csv(air.binned5, "airlineBin5Std.csv", row.names=FALSE)
+}
 # air.binned5.rdm <- binRdm(cbind(airline, Freq=1), c(5, 5))
 # air.binned5.rdm2 <- ddply(air.binned5.rdm, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(convert.time(unique(i[,1:2]), Freq=sum(i$Freq)))
 # write.csv(air.binned5.rdm2, "airlineBin5Rdm.csv", row.names=FALSE)
