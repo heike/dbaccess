@@ -73,12 +73,12 @@ d1.hex.obj <- hexbin(d1.ext$G, d1.ext$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
 d1.hex$Freq <-  d1.hex.obj@count
-#<<<<<<< HEAD
+
 qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq) + scale_size_area("Frequency", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
-#=======
+
 qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq+1) + 
   scale_size_area("Frequency", max_size=4, trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
-#>>>>>>> origin/master
+
   ggsave("./figure/BinScatter.pdf", width=5, height=5)
 
 # Sunflower plot
