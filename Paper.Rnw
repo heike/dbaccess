@@ -174,8 +174,8 @@ As with histograms, the width of bins (or the number of bins) is an important fa
 
 
 \section{Binning Data}
-We will only consider binning in two dimensions, $X$ and $Y$. The algorithms we discuss are immediately applicable to higher dimension, but we do not feel that the paper would benefit from a more general discussion.
-Binning in dimensions $X$ and $Y$ provides us with a more condensed form of the data that ideally preserves both the joint distribution as well as the margins, while reducing the amount of information to  a fraction of the original. 
+We will only consider binning in up to two dimensions, $X$ and $Y$. The algorithms we discuss are immediately applicable to higher dimension, but we do not feel that the paper would benefit from a more general discussion.
+Binning in dimensions $X$ and $Y$ provides us with a more condensed form of the data that ideally preserves both the joint distribution as well as the margins, while reducing the amount of information to a fraction of the original. 
 
 Binning is a two-step procedure: we first assign each data tuple $(x, y)$ to a bin center $(x^\ast,y^\ast)$, and in a second step we find the frequency of each bin center, resulting in  triples  of the form $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$.
 
@@ -183,26 +183,31 @@ Binning is a two-step procedure: we first assign each data tuple $(x, y)$ to a b
 
 
 \subsection{Standard Rectangular Binning Algorithm}
-Let $x_{(i)}$ correspond to the ordered values of $X$, where $i=1, ..., n$ and $n$ is the number of total observations. Then $x_{(1)}$ and $x_{(n)}$ then denote the observed minimum and the maximum of $X$, respectively. 
+We will first define a binning algorithm that results in observed values being allocated to equal sized bins in a deterministic manner. Let $x_{(i)}$ correspond to the ordered values of $X$, where $i=1, ..., n$ and $n$ is the number of total observations. Then $x_{(1)}$ and $x_{(n)}$ then denote the observed minimum and the maximum of $X$, respectively. 
 
-We then define a set of bin centers $\{ x_j^\ast \}$, with $1 \le j \le n_X$, where $n_X$ is the overall number of bins in dimension $X$. Binning can either be determined by the number of bins, $n_X$, or, equivalently, by the bin width, $b_X$. For standard binning the relationship between these two parameters is  given as 
+We then define a set of bin centers $\{ x_j^\ast \}$, with $1 \le j \le N_X$, where $N_X$ is the overall number of bins in dimension $X$. Binning can be determined by the number of bins, $N_X$, which then dictates the bin width, $\omega_X$. For standard binning the relationship between these two parameters is  given as 
 \[
-b_X = (x_{(n)} - x_{(1)})/n_X
+\omega_X = (x_{(n)} - x_{(1)})/N_X
 \]
 
-Mathematically, binning corresponds to a function $b(.)$ that assigns to a value $x$ the closest bin center $x^\ast \in \{ x_j^\ast \}, j \in \{1, ..., n_X\}$, i.e. the binning function   $b(.) : x \rightarrow x^\ast$ is defined as
-\begin{eqnarray*}\label{stdbin}
-x^\ast = b(x) =  b_X \cdot \left\lfloor (x-x_1^\ast)/ b_X + 1/2\right\rfloor + x_1^\ast
-\end{eqnarray*}
-where $x_{(1)}$ is the center of the first bin and $\lfloor . \rfloor$ denotes the floor function, $\lfloor x \rfloor$ is the largest integer value smaller than $x$. An intuitive understanding of the formula is developed by noting that $(x-x_1^\ast)/ b_X$ is the number of bin widths that $x$ is above $x_1^\ast$ and that $\frac{b_X/2}{b_X}=\frac{1}{2}$ is the number of bin widths that $x_1^\ast$ is above $x_{(1)}$. The value $\lfloor (x-x_1^\ast)/ b_X + 1/2\rfloor$ then represents the number of bins centers that lie between $x_{(1)}$ and $x$.  Thus, the binning function is simply finding the location of the bin center for $x$ by adding the distance between the bin centers for $x_{(1)}$ and $x$ to the known bin center for $x_{(1)}$.
-%to allow for bins of width $b_X$ centered at any sequence $O_X, O_X + b_X, ..., O_X + n b_X$. 
+Mathematically, binning corresponds to a function $b_X(.)$ that assigns to a value $x_i$ the closest bin center $x^\ast_i \in \{ x_j^\ast \}, j \in \{1, ..., N_X\}$, i.e. the binning function   $b_X(.) : x_i \rightarrow x^\ast_i$ is defined as 
+% \begin{center}
+% $x^\ast_i = b_X(x_i) = x_{(1)}^\ast + \omega_X \cdot \left\lfloor (x_i-x_{(1)})/\omega_x \right\rfloor$ \hspace{.5cm} $\forall x_i < x_{(n)}$, and \\ 
+% \vspace{.03}
+% $x^\ast_i = b_X(x_i) = x_{(n)} - \omega_x/2$ \hspace{.5cm} $\forall x_i = x_{(n)}$
+% \end{center}
+\[ 
+ x^\ast_i = b_X(x_i) =
+  \begin{cases}
+    x_{(1)}^\ast + \omega_X \cdot \left\lfloor (x_i-x_{(1)})/\omega_x \right\rfloor & \quad \forall x_i < x_{(n)} \\
+    x_{(n)} - \omega_x/2 & \quad \forall x_i = x_{(n)}
+  \end{cases}
+\]
 
-Alternate binning parameterizations include dividing up the range of data by a specified number of bins of equal width, but even these strategies fit into the framework of assigning values to the closest bin center. 
+where $x_{(1)}^\ast = x_{(1)} + \omega_x/2$ is the center of the first bin and $\lfloor . \rfloor$ denotes the floor function, $\lfloor x \rfloor$ is the largest integer value smaller than $x$. An intuitive understanding of the formula is developed by noting $\left\lfloor (x_i-x_{(1)})/\omega_x \right\rfloor$ represents the number of bins centers that lie between $x_{(1)}$ and $x_i$.  Thus, the binning function is finding the location of the bin center for $x_i$ by adding the distance between the bin centers for $x_{(1)}$ and $x_i$ to the known bin center for $x_{(1)}$.\\
 
+Note that the binning function above amounts to dividing up the range of data by a specified number of bins of equal width. A more flexible binning algorithm may be achieved if we allow the specification of the first bin center and bin width instead of the number of bins. This strategy would still fit into the framework of assigning values to the closest bin center. 
 
-% , with smallest bin
-% $b_X   \cdot \lfloor (x_{(1)}-O_X)/b_X + 0.5\rfloor + O_X$ and largest bin 
-% $b_X   \cdot \lfloor (x_{(n)}-O_X)/b_X + 0.5\rfloor + O_X$. 
 
 Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process extended to a two dimensional situation.
 <<binningDemo,echo=F,include=F,cache=T>>=
