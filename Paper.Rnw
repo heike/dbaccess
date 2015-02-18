@@ -183,7 +183,6 @@ Binning is a two-step procedure: we first assign each data tuple $(x, y)$ to a b
 
  We will proceed with rectangular bins for simplicity, but other binning schemes, such as those which utilize hexagonal bins are also common \citep{scatterplots}. Rectangular bins are advantageous because bins in $x$ and $y$ are orthogonal to each other, thus, we can present the one-dimensional case which will easily generalize to two dimensions.
 
-
 \subsection{Standard Rectangular Binning Algorithm}
 We will first define a binning algorithm that results in observed values being allocated to equal sized bins in a deterministic manner. We then define a set of bin centers $\{ x_j^\ast \}$, with $1 \le j \le N_X$, where $N_X$ is the overall number of bins in dimension $X$.  To define the set of bin centers we need only specify the center of the first bin, $x^\ast_1$ and the binwidths, $\omega_X$.  Mathematically, binning corresponds to a function $b_X(.)$ that assigns to a value $x_i$ the closest bin center $x^\ast_j$ for some bin $j \in \{1, ..., N_X\}$, i.e. the binning function   $b_X(.) : x_i \rightarrow x^\ast_j$ is defined as 
 % \begin{center}
@@ -227,6 +226,20 @@ In the next section, we examine the loss of visual and numerical information due
 % linear binning in Gold book - random algorithm as a less computational method of linear binning
 
 \subsection{Extensions to Rectangular Binning}
+
+The standard and random binning algorithms are easily extendible to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data tuples $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_j^\ast)$, with $1 \le j \le N_X \cdot N_Y =J$, where $J$ total number of indexed bins in $\mathbb{R}^2$. The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ is defined as 
+%
+\begin{eqnarray}\label{standrecbin}
+b(x_i,y_i) = (b_X(x_i),b_Y(y_i))
+\end{eqnarray}
+%
+where $b_X(x_i)$ and $b_Y(y_i)$ are the univariate standard binning algorithms for the X and Y dimensions respectively. The random rectangular binning function, $b^r(\cdot): (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ can similarly be defined as
+%
+\begin{eqnarray}\label{randrecbin}
+b^r(x_i,y_i) = (b^r_X(x_i),b^r_Y(y_i))
+\end{eqnarray}
+%
+where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for each dimension.
 
 Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process extended to a two dimensional situation.
 <<binningDemo,echo=F,include=F,cache=T>>=
@@ -375,9 +388,9 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 
 \subsection{Quantile Binning Algorithm}
 
-We could also consider a quantile based binning algorithm where bin widths are adjusted such that each bin contains an equal proportion of the observed values. This is a fundamentally different approach than the standard and random binning algorithms defined previously where the goal was to display approximate density. This binning will not be considered for binning the data directly, but instead for further binning the initial bin counts for the purposes of rendering colors on a discrete color palette. 
+We could also consider a empirical quantile based binning algorithm where bin widths are adjusted such that each bin contains an equal proportion of the observed values. This is a fundamentally different approach than the standard and random binning algorithms defined previously where the goal was to display approximate density. This binning will not be considered for binning the data directly, but instead for further binning the initial bin counts for the purposes of rendering colors on a discrete color palette. 
 
-Suppose that we have values $c_j$ for $j \in \{1,2,...J\}$ that we wish to divide into quantile based bins. The number of quantile based bins, $N_q ,= J$ , must be defined in order to assign values to bin centers. The quantile binning function $b^q_C(\cdot)$ assigns ordered values $c_{(j)}$ to bin centers $c^\ast_{(j)}$ as 
+Suppose that we have values $c_j$ for $j \in \{1,2,...J\}$ that we wish to divide into quantile based bins. The number of quantile based bins, $N_q$ , must be defined in order to assign values to bin centers. The quantile binning function $b^q_C(\cdot)$ assigns ordered values $c_{(j)}$ to bin centers $c^\ast_{(j)}$ as 
 %
 \begin{eqnarray}\label{quantbin}
 c^\ast_{(j)} = b^q_C(c_{(j)}) = c_{(\eta)} \text{, where } \eta = \left\lfloor j/ \left\lceil J/N_c \right\rceil \right\rfloor \left\lceil J/N_c \right\rceil ,
