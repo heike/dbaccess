@@ -377,6 +377,17 @@ The deterministic standard binning algorithm is an example of a ``direct" binnin
 In the next section, we examine the loss of visual and numerical information due to binning.
 % linear binning in Gold book - random algorithm as a less computational method of linear binning
 
+\subsection{Quantile Binning Algorithm}
+
+We could also consider a quantile based binning algorithm where bin widths are adjusted such that each bin contains an equal proportion of the observed values. This is a fundimentally different approach than the standard and random binning algorithms defined previously where the goal was to display approximate density. This binning will not be considered for binning the data directly, but instead for further binning the initial bin counts for the purposes of rendering colors on a discrete color palette. 
+
+Suppose that we have values $c_j$ for $j \in \{1,2,...J\}$ that we wish to divide into quantile based bins. The number of quantile based bins, $N_q ,= J$ , must be defined in order to assign values to bin centers. The quantile binning function $b^q_C(\cdot)$ assigns ordered values $c_{(j)}$ to bin centers $c^\ast_{(j)}$ as 
+%
+\begin{eqnarray}\label{quantbin}
+c^\ast_{(j)} = b^q_C(c_{(j)}) = c_{(\eta)} \text{, where } \eta = \left\lfloor j/ \left\lceil J/N_c \right\rceil \right\rfloor \left\lceil J/N_c \right\rceil ,
+\end{eqnarray}
+%
+\noindent and $\left\lceil \cdot \right\rceil$ is the ceiling function that rounds any real number up to the next highest integer.  To better understand this function we notice that $\left\lceil J/N_c \right\rceil$ represents the number of values to be assigned to each quantile bin, $n_q$, rounded up; thus the function assigns the $j^{th}$ value to the next lower ordered value that is a multiple of $n_q$.
 
 \section{Loss due to Binning}
 While binning data has some notable advantages, it does result in loss of some information. Using a small number of bins removes much of the relevant information in the data, while an extremely large number of bins may not reduce the data size or complexity to a sufficient degree. 
