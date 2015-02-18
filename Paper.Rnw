@@ -38,6 +38,7 @@ library(reshape2)
 library(devtools)
 library(xtable)
 library(RColorBrewer)
+library(hexbin)
 
 connect <- dbConnect(dbDriver("MySQL"), host="mysql2.stat.iastate.edu", 
                      port=3306, user="dbaccess", dbname="baseball")
@@ -197,13 +198,12 @@ Mathematically, binning corresponds to a function $b_X(.)$ that assigns to a val
 % \vspace{.03}
 % $x^\ast_i = b_X(x_i) = x_{(n)} - \omega_x/2$ \hspace{.5cm} $\forall x_i = x_{(n)}$
 % \end{center}
-\[ 
- x^\ast_i = b_X(x_i) =
-  \begin{cases}
+\begin{eqnarray}\label{standbin}
+ x^\ast_i = b_X(x_i) = \left\{\begin{array}{ll} 
     x_{(1)}^\ast + \omega_X \cdot \left\lfloor (x_i-x_{(1)})/\omega_x \right\rfloor & \quad \forall x_i < x_{(n)} \\
     x_{(n)} - \omega_x/2 & \quad \forall x_i = x_{(n)}
-  \end{cases}
-\]
+  \end{array}\right.
+\end{eqnarray}
 
 where $x_{(1)}^\ast = x_{(1)} + \omega_x/2$ is the center of the first bin and $\lfloor . \rfloor$ denotes the floor function, $\lfloor x \rfloor$ is the largest integer value smaller than $x$. An intuitive understanding of the formula is developed by noting $\left\lfloor (x_i-x_{(1)})/\omega_x \right\rfloor$ represents the number of bins centers that lie between $x_{(1)}$ and $x_i$.  Thus, the binning function is finding the location of the bin center for $x_i$ by adding the distance between the bin centers for $x_{(1)}$ and $x_i$ to the known bin center for $x_{(1)}$.\\
 
@@ -354,17 +354,17 @@ qplot(data=d.rand[,], x=x, y=y, alpha=a,  geom="point", xlim=c(-20, 40), ylim=c(
   annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + ylim(c(0, 50))
 ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 @
-An alternative to the standard binning processes discussed above, is the random binning algorithm which results in statistically nice properties. A random binning algorithm utilizes a non-deterministic bin function $b^r(\cdot)$ which maps value $x$ to one of several bin centers $x^\ast$ with probability $p$. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x$ to bin center $x^\ast$ with a probability depending on the distance to that bin center;  the closer a value is to a bin center, the higher the probability that the value is assigned to this bin center. 
-More formally,
+An alternative to the standard binning processes discussed above, is the random binning algorithm which results in statistically nice properties. A random binning algorithm utilizes a non-deterministic bin function $b^r_X(\cdot)$ which randomly assigns a value $x_i$ to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability depending on the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
+%
 \begin{eqnarray}\label{randbin}
-b^r(x) = \left\{\begin{array}{ll} 
-  x^\ast_j & \text{ with probability } p = {(x^\ast_{j+1} - x)}/b_X \\
-  x^\ast_{j+1} &\text{ with probability } 1-p = {(x - x^\ast_{j})}/b_X
+b^r_X(x_i) = \left\{\begin{array}{ll} 
+  x^\ast_j & \text{ with probability } p = {(x^\ast_{j+1} - x_i)}/\omega_X \\
+  x^\ast_{j+1} &\text{ with probability } 1-p = {(x_i - x^\ast_{j})}/\omega_X
   \end{array}\right.
 \end{eqnarray}
 
 % In this manner, the probability of assigning point $x$ to bin $x^\ast_j$ is inversely proportional to the distance between the bin center of bin $x^\ast_j$ and $x$, that is, the closer $x$ is to a bin center, the higher the probability that $x$ will be assigned to that bin. 
-This method is easily extensible to also map $x$ into one of more than two bins and can accommodate non-uniform bin sizes, unlike the standard algorithm. 
+This method is easily extensible to also map $x_i$ into more than two bins and can accommodate non-uniform bin sizes, unlike the standard algorithm. 
 
 %To take up the previous number example again, under random binning the values 1.35, 1.55, and 2.35 are assigned to bin centers $\{1, 2, 3\}$ non-deterministic. 
 %Value 1.35 has a 35\% probability to be assigned to bin center 2, and accordingly is assigned to bin center 1 with probability 65\%. 
