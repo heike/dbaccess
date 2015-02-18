@@ -179,7 +179,7 @@ As with histograms, the width of bins (or the number of bins) is an important fa
 We will only consider binning in up to two dimensions, $X$ and $Y$. The algorithms we discuss are immediately applicable to higher dimension, but we do not feel that the paper would benefit from a more general discussion.
 Binning in dimensions $X$ and $Y$ provides us with a more condensed form of the data that ideally preserves both the joint distribution as well as the margins, while reducing the amount of information to a fraction of the original. 
 
-Binning is a two-step procedure: we first assign each data tuple $(x, y)$ to a bin center $(x^\ast,y^\ast)$, and in a second step we find the frequency of each bin center, resulting in  triples  of the form $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$.
+Binning is a two-step procedure: we first assign each data pairs $(x, y)$ to a bin center $(x^\ast,y^\ast)$, and in a second step we find the frequency of each bin center, resulting in  triples  of the form $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$.
 
  We will proceed with rectangular bins for simplicity, but other binning schemes, such as those which utilize hexagonal bins are also common \citep{scatterplots}. Rectangular bins are advantageous because bins in $x$ and $y$ are orthogonal to each other, thus, we can present the one-dimensional case which will easily generalize to two dimensions.
 
@@ -227,7 +227,7 @@ In the next section, we examine the loss of visual and numerical information due
 
 \subsection{Extensions to Rectangular Binning}
 
-The standard and random binning algorithms are easily extendible to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data tuples $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_j^\ast)$, with $1 \le j \le N_X \cdot N_Y =J$, where $J$ total number of indexed bins in $\mathbb{R}^2$. The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ is defined as 
+The standard and random binning algorithms are easily extendible to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_j^\ast)$, with $1 \le j \le N_X \cdot N_Y =J$, where $J$ total number of indexed bins in $\mathbb{R}^2$. The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ is defined as 
 %
 \begin{eqnarray}\label{standrecbin}
 b(x_i,y_i) = (b_X(x_i),b_Y(y_i))
@@ -239,9 +239,8 @@ where $b_X(x_i)$ and $b_Y(y_i)$ are the univariate standard binning algorithms f
 b^r(x_i,y_i) = (b^r_X(x_i),b^r_Y(y_i))
 \end{eqnarray}
 %
-where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for each dimension.
+where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for each dimension. Figure~\ref{fig:BinningTutorial} provides an illustration of each binning process extended to a two dimensional situation.
 
-Figure~\ref{fig:BinningTutorial} provides an illustration of the binning process extended to a two dimensional situation.
 <<binningDemo,echo=F,include=F,cache=T>>=
       library(mvtnorm)
       set.seed(33)
@@ -376,12 +375,12 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 
 \begin{figure}[hbtp]
   \centering
-  \subfloat[Standard Algorithm]{\includegraphics[keepaspectratio=true, width=3in]{./figure/Binning-DataAndBin.pdf}}
+  \subfloat[Standard Binning]{\includegraphics[keepaspectratio=true, width=3in]{./figure/Binning-DataAndBin.pdf}}
 %   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
 %   {./figure/RandomBinningDataPoints1}}
-  \subfloat[Random Algorithm]{\includegraphics[keepaspectratio=TRUE, width=3in]
+  \subfloat[Random Binning]{\includegraphics[keepaspectratio=TRUE, width=3in]
   {./figure/RandomBinningDataPoints2.pdf}}
-  \caption{Points are assigned to bins centered at (5, 25) an (15,25). Points in the standard algorithm are contained within the defined bin region, where points from the random algorithm may be assigned to bins from outside the defined bin regions.}
+  \caption{Visualization of how data pairs are assigned to bins centered at (5, 25) and (15,25) under the two rectangular binning algorithms. Points in the standard algorithm are contained within the defined bin region, where points from the random algorithm may be assigned to bins from outside the defined bin regions.}
   \label{fig:BinningTutorial}
 \end{figure}
 
