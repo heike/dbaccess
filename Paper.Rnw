@@ -373,7 +373,7 @@ qplot(data=d.rand[,], x=x, y=y, alpha=a,  geom="point", xlim=c(-20, 40), ylim=c(
 ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 @
 
-\begin{figure}[hbtp]
+\begin{figure}[h]
   \centering
   \subfloat[Standard Binning]{\includegraphics[keepaspectratio=true, width=3in]{./figure/Binning-DataAndBin.pdf}}
 %   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
@@ -389,13 +389,13 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 
 We could also consider a empirical quantile based binning algorithm where bin widths are adjusted such that each bin contains an equal proportion of the observed values. This is a fundamentally different approach than the standard and random binning algorithms defined previously where the goal was to display approximate density. This binning will not be considered for binning the data directly, but instead for further binning the initial bin counts for the purposes of rendering colors on a discrete color palette. 
 
-Suppose that we have values $c_j$ for $j \in \{1,2,...J\}$ that we wish to divide into quantile based bins. The number of quantile based bins, $N_q$ , must be defined in order to assign values to bin centers. The quantile binning function $b^q_C(\cdot)$ assigns ordered values $c_{(j)}$ to bin centers $c^\ast_{(j)}$ as 
+Suppose that we have values $c_j$ for $j \in \{1,2,...J\}$ that we wish to divide into quantile based bins. Defining the number of quantile based bins, $K$, results in a set of possible quantile bin centers. It follows that the bin boundaries are $Q_{k/K}$ for $k \in \{1,\dots,K\}$, where $Q_p$ is the the $p^{th}$ empirical quantile of value using the inverse empirical distribution function. \ktm{Note this is the quantile function as defined in R; find related literature source.} The bin centers are defined as the midpoint of each consecutive pair of bin boundaries $\{c^\ast_k = (Q_{k-1/K} + Q_{k/K})/2  \text{ for } k=0,\dots,K \}$. The quantile binning function $b^q_C(\cdot) : (c_j) \rightarrow c^\ast_k$ is defined as 
 %
 \begin{eqnarray}\label{quantbin}
-c^\ast_{(j)} = b^q_C(c_{(j)}) = c_{(\eta)} \text{, where } \eta = \left\lfloor j/ \left\lceil J/N_c \right\rceil \right\rfloor \left\lceil J/N_c \right\rceil ,
+b^q_C(c_j) = (Q_{k-1/K} + Q_{k/K})/2 \text{ where } Q_{k-1/K} < c_j \le Q_{k/K}.
 \end{eqnarray}
 %
-\noindent and $\left\lceil \cdot \right\rceil$ is the ceiling function that rounds any real number up to the next highest integer.  To better understand this function we notice that $\left\lceil J/N_c \right\rceil$ represents the number of values to be assigned to each quantile bin, $n_q$, rounded up; thus $\eta$ is the index for the ordered value where the next lower quantile based bin will be centered.
+The two dimensional analog for quantile binning is not explored, as this binning strategy will be used in stictly the univariate setting for this manuscript.
 
 \section{Loss due to Binning}
 While binning data has some notable advantages, it does result in loss of some information. Using a small number of bins removes much of the relevant information in the data, while an extremely large number of bins may not reduce the data size or complexity to a sufficient degree. 
