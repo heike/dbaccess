@@ -265,7 +265,7 @@ In the next section, we examine the loss of visual and numerical information due
 
 \subsection{Extensions to Rectangular Binning}
 
-The standard and random binning algorithms are easily extendible to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_j^\ast)$, with $1 \le j \le N_X \cdot N_Y =J$, where $J$ total number of indexed bins in $\mathbb{R}^2$. The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ is defined as 
+The standard and random binning algorithms are easily extendible to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_j^\ast)$, with $1 \le j \le N_X \cdot N_Y =J$, where $J$ total number of indexed bins \sout{in $\mathbb{R}^2$} \hh{XXX J is an integer number, definitely not a real-valued vector}. The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ is defined as 
 %
 \begin{eqnarray}\label{standrecbin}
 b(x_i,y_i) = (b_X(x_i),b_Y(y_i))
@@ -278,6 +278,8 @@ b^r(x_i,y_i) = (b^r_X(x_i),b^r_Y(y_i))
 \end{eqnarray}
 %
 where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for each dimension. Figure~\ref{fig:BinningTutorial} provides an illustration of each binning process extended to a two dimensional situation.
+
+\hh{The relationship between value pair $(x_i, y_i)$ and bin center $(x^\ast_j,y^\ast_j)$ needs to be discussed further - because it is not the same as for the univariate situation. $J$ is defined, as above as a multiple of $N_X$ and $N_Y$, this needs to be properly adjusted in the binning algorithm. It will be some linear relationship of the form $j_X\cdot N_X + j_Y$. }
 
 <<binningDemo,echo=F,include=F,cache=T>>=
       library(mvtnorm)
@@ -427,7 +429,7 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 
 We could also consider a empirical quantile based binning algorithm where bin widths are adjusted such that each bin contains an equal proportion of the observed values. This is a fundamentally different approach than the standard and random binning algorithms defined previously where the goal was to display approximate density. This binning will not be considered for binning the data directly, but instead for further binning the initial bin counts for the purposes of rendering colors on a discrete color palette. 
 
-Suppose that we have values $c_j$ for $j \in \{1,2,...J\}$ that we wish to divide into quantile based bins. Defining the number of quantile based bins, $K$, results in a set of possible quantile bin centers. It follows that the bin boundaries are $Q_{k/K}$ for $k \in \{1,\dots,K\}$, where $Q_p$ is the the $p^{th}$ empirical quantile of value using the inverse empirical distribution function. \ktm{Note this is the quantile function as defined in R; find related literature source.} The bin centers are defined as the midpoint of each consecutive pair of bin boundaries $\{c^\ast_k = (Q_{k-1/K} + Q_{k/K})/2  \text{ for } k=0,\dots,K \}$. The quantile binning function $b^q_C(\cdot) : (c_j) \rightarrow c^\ast_k$ is defined as 
+Suppose that we have values $c_j$ for $j \in \{1,2,...J\}$ \hh{shouldn't you go back to the same notation as before? $N_X$, not $J$?  what are the $c_j$ bin centers? before they were $c_j^ast$.} that we wish to divide into quantile based bins. Defining the number of quantile based bins, $K$, results in a set of possible quantile bin centers. It follows that the bin boundaries are $Q_{k/K}$ for $k \in \{1,\dots,K\}$, where $Q_p$ is the the $p^{th}$ empirical quantile of value using the inverse empirical distribution function. \ktm{Note this is the quantile function as defined in R; find related literature source.} \hh{which function exactly? There are multiple.} The bin centers are defined as the midpoint of each consecutive pair of bin boundaries $\{c^\ast_k = (Q_{k-1/K} + Q_{k/K})/2  \text{ for } k=0,\dots,K \}$. The quantile binning function $b^q_C(\cdot) : (c_j) \rightarrow c^\ast_k$ is defined as 
 %
 \begin{eqnarray}\label{quantbin}
 b^q_C(c_j) = (Q_{k-1/K} + Q_{k/K})/2 \text{ where } Q_{k-1/K} < c_j \le Q_{k/K}.
