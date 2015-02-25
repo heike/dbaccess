@@ -191,14 +191,14 @@ As with histograms, the width of bins (or the number of bins) is an important fa
 %\hh{I also would like to pick up the idea of sufficient statistics for scatterplots again - as a mathematical basis for measuring the amount of information that goes into a plot (since we can't expect to ever get more out of a plot). .... I'm not sure, yet, where in the paper we should place this discussion.}
 
 
-\section{Binning \hh{Algorithms}}
+\section{Binning Algorithms}
 \hh{XXX Motivation first - starting with the limitiations too  negative.}
 
 We will only consider binning in up to two dimensions, $X$ and $Y$. The algorithms we discuss are immediately applicable to higher dimension, but we do not feel that the paper would benefit from a more general discussion.
 Binning in dimensions $X$ and $Y$ provides us with a more condensed form of the data that ideally preserves both the joint distribution as well as the margins, while reducing the amount of information to a fraction of the original. 
 
 
-Binning is a two-step procedure: we first assign each \hh{observation} $(x, y)$ to a bin center $(x^\ast,y^\ast)$, and in a second step we find the frequency of each bin center \hh{``frequency of each bin center" ... that needs a few more words, because there is only one bin center. But what you mean is that each observation assigned to the bin center now counts as one value for the bin center. XXX The next sentence explains that, so combine the two sentences a bit more}, resulting in  triples  of the form $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$.
+\ktm{Binning is a two-step procedure: we first assign each observation $(x, y)$ to a bin center $(x^\ast,y^\ast)$, and in a second step we count the number of observations assigned to each unique bin center; resulting in  triples  of the form $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$.}
 
 
  We will proceed with rectangular bins for simplicity, but other binning schemes, such as \sout{those which utilize} hexagonal bins are also common \citep{scatterplots} \hh{XXX don't put citations at the end of the sentence, put them right after the most relevant phrase. in this case 'hexagonal binning'.}. Rectangular bins are advantageous because bins in $x$ and $y$ are orthogonal to each other, thus, we can present the one-dimensional case which will easily generalize to two \hh{or more} dimensions.
