@@ -222,7 +222,7 @@ Binning in dimensions $X$ and $Y$ provides us with a more condensed form of the 
 
 \hh{why does it say binwidths? Do you want to imply that the bins have potentially different widths? Clarify that!}
 
-\ktm{  We define the process that allocates observed values, $x_i$ for $i \in \{1, ..., n\}$, to equal sized bins in a deterministic manner as a standard binning algorithm. The bins are controlled by two parameters: the center of the first bin, $x^\ast_1$ and the binwidth, $\omega_X$. This leads to the set of bin centers $\{ x_j^\ast =  x_1^\ast + (j-1)\omega_X \text{ for } j \in \{1, ..., N_X\} \}$,  where $N_X$ is the overall number of bins.  }
+\ktm{  We define the process that allocates observed values, $x_i$ for $i \in \{1, ..., n\}$, to equal sized bins in a deterministic manner as a standard binning algorithm. The bins are controlled by two parameters: the center of the first bin, $x^\ast_1$ and the binwidth, $\omega_X$. This leads to bin centers $ x_j^\ast =  x_1^\ast + (j-1)\omega_X \text{ for } j \in \{1, ..., N_X\} $,  where $N_X$ is the overall number of bins.  }
 
 
 Mathematically, the standard binning algorithm corresponds to a function $b_X(.)$ that assigns to a value $x_i$ the closest bin center $x^\ast_j$ for some bin $j \in \{1, ..., N_X\}$, i.e. the binning function   $b_X(.) : x_i \rightarrow x^\ast_j$ is defined as 
@@ -236,11 +236,13 @@ b_X(x_i) =  x_{1}^\ast + \omega_X \cdot \left\lfloor (x_i-x_{1}^\ast)/\omega_x +
 \end{eqnarray}
 
 where $x_1^\ast$ is the center of the first bin and $\lfloor . \rfloor$ denotes the floor function, $\lfloor x \rfloor$ is the largest integer value smaller than $x$.  
-\ktm{ This is equivalent to treating the $j^{th}$ bin as a half-open interval that contains all observations $x_i \in [x_j^\ast - \omega_X /2 , x_j^\ast + \omega_X /2  ) $. }
+\ktm{ This is equivalent to treating the $j^{th}$ bin as a half-open interval that contains all observations $x_i \in [x_j^\ast - \omega_X /2 , x_j^\ast + \omega_X /2  ) $. After all observations have been allocated to bins, the bin count, $c_j$, is joined with the bin center to form the tuple $(x^\ast_1, c_j)$ }
 %\hh{something went wrong with the next sentence}
 %An intuitive understanding of the formula is developed by noting $\left\lfloor (x_i-x_{1}^\ast)/\omega_x + 1/2 \right\rfloor$ represents the number of bin boundaries lie between $x_{1}^\ast$ and $x_i$.  Thus, the binning function is finding the location of the bin center for $x_i$ by adding the distance between $x_{1}^\ast$ and the center for $x_i$ to the known first bin center $x_{1}^\ast$.
 
 \ktm{ A special case of standard binning divides the data range into $N_X$ equal sized bins.  This leads to the bin width, $\omega_X = (x_{(n)} - x_{(1)})/N_X$, where $x_{(1)}$ and $x_{(n)}$ denote the observed minimum and the maximum of $X$, respectively. The first bin would then be centered at $x_{(1)} + \omega_X/2$. }
+
+
 
 %Note that the binning function above amounts to dividing up the range of data by a specified number of bins of equal width. A more flexible binning algorithm may be achieved if we allow the specification of the first bin center and bin width instead of the number of bins. This strategy would still fit into the framework of assigning values to the closest bin center. 
 
@@ -285,7 +287,7 @@ b^r(x_i,y_i) = (b^r_X(x_i),b^r_Y(y_i))
 %
 where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for each dimension. Figure~\ref{fig:BinningTutorial} provides an illustration of each binning process extended to a two dimensional situation.
 
-\hh{The relationship between value pair $(x_i, y_i)$ and bin center $(x^\ast_j,y^\ast_j)$ needs to be discussed further - because it is not the same as for the univariate situation. $J$ is defined, as above as a multiple of $N_X$ and $N_Y$, this needs to be properly adjusted in the binning algorithm. It will be some linear relationship of the form $j_X\cdot N_X + j_Y$. }
+\hh{The relationship between value pair $(x_i, y_i)$ and bin center $(x^\ast_j,y^\ast_j)$ needs to be discussed further - because it is not the same as for the univariate situation. $J$ is defined, as above as a multiple of $N_X$ and $N_Y$, this needs to be properly adjusted in the binning algorithm. It will be some linear relationship of the form $j_X\cdot N_X + j_Y$. }  \ktm{ I am having trouble tring to reconcile the indexing of bins in 2 dimensions.  If we use an pair of indeces it makes the extension of binning to 2 dimensions easy; but it makes the notation messier and loss functions more difficult to define. }
 
 <<binningDemo,echo=F,include=F,cache=T>>=
       library(mvtnorm)
