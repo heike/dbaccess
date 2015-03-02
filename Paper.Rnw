@@ -239,13 +239,12 @@ Random &  ---  & $\{x_j^\ast \text{ }|\text{ } x_j^\ast > x_{j-1}^\ast \}$  \\
 
 \ktm{ An alternative to the rectangular binning processes discussed above, is the random binning algorithm which utilizes a non-deterministic bin function $b^r_X(\cdot)$ which randomly assigns a value $x_i$ to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability depending on the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally, }
 %
-\ktm{ \begin{eqnarray}\label{randbin1}
+\begin{eqnarray}\label{randbin1}
 b^r_X(x_i) = \left\{\begin{array}{ll} 
   x^\ast_j & \text{ with probability } (x^\ast_{j+1} - x_i)/(x^\ast_{j+1} -x^\ast_{j}) \\
   x^\ast_{j+1} &\text{ with probability }  (x_i - x^\ast_{j})/(x^\ast_{j+1} -x^\ast_{j})
   \end{array}\right.
 \end{eqnarray}  
-}
 %
 \ktm{  for $x_i \in [x^\ast_{j+1}, x^\ast_{j}]$.  This probability structure is inversely proportional to the distance from each bin center.  In Table~\ref{tab:rectbinning} we note that this random binning algorithm does not specify bin boundaries; only a sequence of bin centers.  This method is easily extensible to also map $x_i$ into more than two bins and can accommodate non-uniform distribution of bin centers.  }
 
@@ -253,17 +252,17 @@ b^r_X(x_i) = \left\{\begin{array}{ll}
 
 \subsection{Extensions to Rectangular Binning}
 
-The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_k^\ast)$, with $j \in \{1,\dots,J\}$ and $k \in \{1,\dots,K\}$, where $J$ and $K$ are the number of bins in the X and Y dimensions, respectively. \ktm{The two ($j$,$k$) pairs that index the bin centers can be linearized to a single index such that $l = j + J(k-1)$; thus making $j$ the fast running index and $k$ the slow running index.  With this linearized index for all bins we now have a set of bin centers of the form $(x_l^\ast,y_l^\ast)$, with $l \in \{1,\dots,L\}$, where $L=J\dotK$.}
+The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_k^\ast)$, with $j \in \{1,\dots,J\}$ and $k \in \{1,\dots,K\}$, where $J$ and $K$ are the number of bins in the X and Y dimensions, respectively. \ktm{The two ($j$,$k$) pairs that index the bin centers can be linearized to a single index such that $l = j + J(k-1)$; thus making $j$ the fast running index and $k$ the slow running index.  With this linearized index for all bins we now have a set of bin centers of the form $(x_l^\ast,y_l^\ast)$, with $l \in \{1,\dots,L\}$, where $L=J\dot K$.}
 
 The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_l,y^\ast_l)$ is defined as 
 %
-\begin{eqnarray}\label{standrecbin}
+\begin{eqnarray}\label{standrecbin1}
 b(x_i,y_i) = (b_X(x_i),b_Y(y_i))
 \end{eqnarray}
 %
 where $b_X(x_i)$ and $b_Y(y_i)$ are the univariate standard binning algorithms for the X and Y dimensions respectively. The random rectangular binning function, $b^r(\cdot): (x_i,y_i) \rightarrow (x^\ast_l,y^\ast_l)$ can similarly be defined as
 %
-\begin{eqnarray}\label{randrecbin}
+\begin{eqnarray}\label{randrecbin1}
 b^r(x_i,y_i) = (b^r_X(x_i),b^r_Y(y_i))
 \end{eqnarray}
 %
