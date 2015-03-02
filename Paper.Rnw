@@ -409,7 +409,7 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 %   {./figure/RandomBinningDataPoints1}}
   \subfloat[Random Binning]{\includegraphics[keepaspectratio=TRUE, width=3in]
   {./figure/RandomBinningDataPoints2.pdf}}
-  \caption{Visualization of how data pairs are assigned to bins centered at (5, 25) and (15,25) under the two rectangular binning algorithms. Points in the standard algorithm are contained within the defined bin region, where points from the random algorithm may be assigned to bins from outside the defined bin regions.}
+  \caption{Visualization of how data pairs are assigned to bins centered at (5, 25) and (15,25) under the two rectangular binning algorithms. Points in the standard algorithm are contained within the defined bin region, where points from the random algorithm may be assigned to any of the surrounding bin centers.}
   \label{fig:BinningTutorial}
 \end{figure}
 
@@ -496,7 +496,7 @@ where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for
 
 
 
-\subsection{Quantile Binning Algorithm}
+\subsection{Quantile Binning Algorithm (old - to be removed)}
 
 We could also consider a empirical quantile based binning algorithm where bin widths are adjusted such that each bin contains an equal proportion of the observed values. This is a fundamentally different approach than the standard and random binning algorithms defined previously where the goal was to display approximate density. This binning will not be considered for binning the data pairs directly, but instead for further binning the initial bin counts for the purposes of rendering colors on a discrete color palette.
 
