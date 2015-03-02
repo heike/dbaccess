@@ -250,7 +250,7 @@ b^r_X(x_i) = \left\{\begin{array}{ll}
 
 \ktm{  The deterministic standard binning algorithm is an example of a ``direct" binning algorithm, in which all points are assigned with weight one to the bin center. ``Linear" binning  \citep{martin-gold} is a \textit{computationally intensive} alternative to direct binning in which adjacent bins are assigned a weight depending on the distance from the point to that bin, where all weights sum to one.  With large data sets, the calculations required for linear binning become unwieldy, but the random binning algorithm can be considered an approximation to linear binning. Specifically, the expectation of the random binning algorithm is the same as for linear binning. }
 
-\subsection{Extensions to Rectangular Binning}
+\subsection{Extension to Two Dimensional Binning}
 
 The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_k^\ast)$, with $j \in \{1,\dots,J\}$ and $k \in \{1,\dots,K\}$, where $J$ and $K$ are the number of bins in the X and Y dimensions, respectively. \ktm{The two ($j$,$k$) pairs that index the bin centers can be linearized to a single index such that $l = j + J(k-1)$; thus making $j$ the fast running index and $k$ the slow running index.  With this linearized index for all bins we now have a set of bin centers of the form $(x_l^\ast,y_l^\ast)$, with $l \in \{1,\dots,L\}$, where $L=J\cdot K$.}
 
