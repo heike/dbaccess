@@ -579,6 +579,22 @@ In the first set of binned data, the bins and the points on the scatterplot are 
 Note that even though these losses may turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where information is masked in large data situations due to over-plotting of points. 
 }
 
+\subsection{Spatial Loss}
+
+\ktm{When the individual points of a scatterplot are collapsed to bin centers to be displayed as tiles in a binned scatterplot there is a loss of the location information.  This can be expressed as the Euclidean distance between points and the visual center of the tiles (i.e. the bin centers). Note that other distance metrics could be used, but the euclidean distance has a desirable interpretability in $\mathbb{R}^2$. The spatial loss for the $i^{th}$ observation, $L_i^S$ and the total spatial loss, $L^S$ are defined as}
+%
+\begin{eqnarray}\label{indspatloss}
+L_i^S = \sqrt{ (x_i-b_X(x_i))^2 + (y_i-b_Y(y_i))^2 }
+\end{eqnarray}
+%
+\begin{eqnarray}\label{totspatloss}
+L^S = \sum_{i=1}^{n} L_i^S
+\end{eqnarray}  
+%
+
+
+
+\subsection{Old Loss Definitions (to be removed)}
 \ktm{The following \textit{numerical, visual and freq} loss descriptions are from the old list and will be removed: }
 \begin{itemize}
 \item {\it Numerical Loss}, $L^\text{N}$, occurs when points in the data set are reduced to a single points at the bin means.  Allocating points to the numerical center, or the mean of the data corresponding to that bin, causes a loss of information about the exact location of the points.
