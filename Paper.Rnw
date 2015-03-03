@@ -591,7 +591,12 @@ L_i^S = \sqrt{ (x_i-b_X(x_i))^2 + (y_i-b_Y(y_i))^2 }
 L^S = \sum_{i=1}^{n} L_i^S
 \end{eqnarray}  
 %
+\ktm{Visual display of spatial loss still needed.}
 
+\subsection{Frequency Loss}
+
+\ktm{If the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. While counts can certainly be modeled as continuous on the HSV color space (reference needed) discrete color breaks may be prefered for a few reasons. %The average person is able to  On the continuous scale, a viewer will likely not be able to exactly match a tile shading to the corresponding count on the color key in the legend of the plot without an aid such as interactive mouseover effects. 
+}
 
 
 \subsection{Old Loss Definitions (to be removed)}
