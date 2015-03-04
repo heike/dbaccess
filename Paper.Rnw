@@ -198,11 +198,13 @@ As with histograms, the width of bins (or the number of bins) is an important fa
 
 Binning in dimensions $X$ and $Y$ provides us with a more condensed form of the data that ideally preserves both the joint distribution as well as the margins, while reducing the amount of information to a fraction of the original.  Binning is a two-step procedure: we first assign each observation $(x, y)$ to a bin center $(x^\ast,y^\ast)$, and in a second step we count the number of observations assigned to each unique bin center; resulting in  triples  of the form $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$.
 
-We will proceed with rectangular bins for simplicity, but other binning schemes, such as hexagonal bins \citep{scatterplots} are also common. \ktm{ While hexagonal binning has been shown to have slightly better graphical properties \citep{scott2009multivariate};} rectangular bins are advantageous because bins in $x$ and $y$ are orthogonal to each other, thus we can present the one-dimensional case which will easily generalize to two or more dimensions.  We will however only consider binning in up to two dimensions, $X$ and $Y$. The algorithms we discuss are immediately applicable to higher dimension, but we do not feel that the paper would benefit from a more general discussion.
+We will proceed with rectangular bins for simplicity, but other binning schemes, such as hexagonal bins \citep{scatterplots} are also common.  While hexagonal binning has been shown to have slightly better graphical properties \citep{scott2009multivariate}; rectangular bins are advantageous because bins in $x$ and $y$ are orthogonal to each other, thus we can present the one-dimensional case which will easily generalize to two or more dimensions.  We will however only consider binning in up to two dimensions, $X$ and $Y$. The algorithms we discuss are immediately applicable to higher dimension, but we do not feel that the paper would benefit from a more general discussion.
 
-\ktm{  For the univariate case with observations, $x_i$ for $i \in \{1,\dots,n\}$, the binning requires a sequence of $J$ adjacent intervals, $(\beta_{j-1},\beta_{j}]$ for $j \in \{1,\dots,J\}$, which span over the range of the data. Note that half open intervals are used such that any observation falling on a bin boundary is assigned to a unique interval. Values that fall at exactly $\beta_0$ are grouped into the first bin to close the leftmost bound. Each observation is then mapped to a bin center, $x_j^\ast$; the midpoint for the interval to which the observation belongs. }
+\ktm{  In general, in the univariate case with observations, $x_i$ for $i \in \{1,\dots,n\}$, binning algorithms require a set of bin centers $x_j^\ast$ for $j \in \{1,\dots,J\}$ and a function that maps observations to a bin centers. }
 
-\ktm{  This is expressed mathematically using the binning function $b_X(.) : x_i \rightarrow x^\ast_j$ is defined as }
+\ktm{ Rectangular binning accomplishes this by defining a sequence of $J$ adjacent intervals, $(\beta_{j-1},\beta_{j}]$ for $j \in \{1,\dots,J\}$, which span over the range of the data. Note that half open intervals are used such that any observation falling on a bin boundary is assigned to a unique interval. Values that fall at exactly $\beta_0$ are grouped into the first bin to close the leftmost bound. Each observation is then mapped to a bin center, $x_j^\ast$; the midpoint for the interval to which the observation belongs. }
+
+This is expressed mathematically using the binning function $b_X(.) : x_i \rightarrow x^\ast_j$ is defined as 
 %
 \begin{eqnarray}\label{rectbin}
 b_X(x_i) = \left\{\begin{array}{ll} 
@@ -211,13 +213,13 @@ b_X(x_i) = \left\{\begin{array}{ll}
   \end{array}\right.
 \end{eqnarray}  
 %
-\ktm{Note that this binning procedure utilizes intervals that are open to the left and closes the outer bound of the leftmost bin. These specifications are consistent with the binning procedure used in the \texttt{hist()} function for creating histograms in base \texttt{R}. These specifications were selected for this paper, but these choices are by no means consider universal for binning.  For example, the \texttt{ggplot2} packages creates histograms with intervals open to the right and does not close the outer bound of the rightmost bin. }
- 
-\ktm{ \textit{Standard rectangular binning} is a special cases of this general rectangular binning that uses intervals of equal size for all bins; thus only the origin of the first bin, $\beta_0$, and a binwidth, $\omega_X$, need to be specified. Standard rectangular binning is necessarily used in the construction of all histograms and is ideal for visualizing density because the consistency of binwidth makes the display of frequency proportional to density. Fixed width binning procedures are also highly computationally efficient \citep{Wickham2013Bin}. }
+\textit{Standard rectangular binning} is a special cases of this general rectangular binning that uses intervals of equal size for all bins; thus only the origin of the first bin, $\beta_0$, and a binwidth, $\omega_X$, need to be specified. Standard rectangular binning is necessarily used in the construction of all histograms and is ideal for visualizing density because the consistency of binwidth makes the display of frequency proportional to density. Fixed width binning procedures are also highly computationally efficient \citep{Wickham2013Bin}. 
 
-\ktm{  \textit{Quantile binning} is another option that divides the range of the observations into bins each containing equal number of points. The $j^{th}$ bin intervals is $(Q_X((j-1)/J),Q_X((j)/J)]$, where $Q_X(p)$ is the the $p^{th}$ empirical quantile using the inverse empirical distribution function. Note that this binning approach is \textit{not} desirable for visualizing density patterns, as it effectively balances the frequency counts in all bins; it does however have desirable properties for creating discernible groups in visualization using discrete color palettes. }
+Note that this binning procedure utilizes intervals that are open to the left and closes the outer bound of the leftmost bin. These specifications are consistent with the binning procedure used in the \texttt{hist()} function for creating histograms in base \texttt{R}. These specifications were selected for this paper, but these choices are by no means consider universal for binning.  For example, the \texttt{ggplot2} packages creates histograms with intervals open to the right and does not close the outer bound of the rightmost bin. 
+
+\textit{Quantile binning} is another option that divides the range of the observations into bins each containing equal number of points. The $j^{th}$ bin intervals is $(Q_X((j-1)/J),Q_X((j)/J)]$, where $Q_X(p)$ is the the $p^{th}$ empirical quantile using the inverse empirical distribution function. Note that this binning approach is \textit{not} desirable for visualizing density patterns, as it effectively balances the frequency counts in all bins; it does however have desirable properties for creating discernible groups in visualization using discrete color palettes.
   
-\ktm{  The bin boundaries and centers for each type of rectangular binning algorithm discussed above can be found in Table~\ref{tab:rectbinning}.  } 
+The bin boundaries and centers for each type of rectangular binning algorithm discussed above can be found in Table~\ref{tab:rectbinning}.
  
 \begin{table}[hbtp]
 \centering
@@ -236,8 +238,8 @@ Random &  ---  & $\{x_j^\ast \text{ }|\text{ } x_j^\ast > x_{j-1}^\ast \}$  \\
 \caption{Rectangular and Random Binning Specifications}
 \label{tab:rectbinning}
 \end{table}
-
-\ktm{ An alternative to the rectangular binning processes discussed above, is the random binning algorithm which utilizes a non-deterministic bin function $b^r_X(\cdot)$ which randomly assigns a value $x_i$ to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability depending on the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally, }
+%
+An alternative to the rectangular binning processes discussed above, is the random binning algorithm which utilizes a non-deterministic bin function $b^r_X(\cdot)$ which randomly assigns a value $x_i$ to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability depending on the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
 %
 \begin{eqnarray}\label{randbin1}
 b^r_X(x_i) = \left\{\begin{array}{ll} 
@@ -246,21 +248,21 @@ b^r_X(x_i) = \left\{\begin{array}{ll}
   \end{array}\right.
 \end{eqnarray}  
 %
-\ktm{  for $x_i \in [x^\ast_{j+1}, x^\ast_{j}]$.  This probability structure is inversely proportional to the distance from each bin center.  In Table~\ref{tab:rectbinning} we note that this random binning algorithm does not specify bin boundaries; only a sequence of bin centers.  This method is easily extensible to also map $x_i$ into more than two bins and can accommodate non-uniform distribution of bin centers.  }
+for $x_i \in [x^\ast_{j+1}, x^\ast_{j}]$.  This probability structure is inversely proportional to the distance from each bin center.  In Table~\ref{tab:rectbinning} we note that this random binning algorithm does not specify bin boundaries; only a sequence of bin centers.  This method is easily extensible to also map $x_i$ into more than two bins and can accommodate non-uniform distribution of bin centers.  
 
-\ktm{  The deterministic standard binning algorithm is an example of a ``direct" binning algorithm, in which all points are assigned with weight one to the bin center. ``Linear" binning  \citep{martin-gold} is a \textit{computationally intensive} alternative to direct binning in which adjacent bins are assigned a weight depending on the distance from the point to that bin, where all weights sum to one.  With large data sets, the calculations required for linear binning become unwieldy, but the random binning algorithm can be considered an approximation to linear binning. Specifically, the expectation of the random binning algorithm is the same as for linear binning. }
+The deterministic standard binning algorithm is an example of a ``direct" binning algorithm, in which all points are assigned with weight one to the bin center. ``Linear" binning  \citep{martin-gold} is a \textit{computationally intensive} alternative to direct binning in which adjacent bins are assigned a weight depending on the distance from the point to that bin, where all weights sum to one.  With large data sets, the calculations required for linear binning become unwieldy, but the random binning algorithm can be considered an approximation to linear binning. Specifically, the expectation of the random binning algorithm is the same as for linear binning.
 
 \subsection{Extension to Two Dimensional Binning}
 
-The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_k^\ast)$, with $j \in \{1,\dots,J\}$ and $k \in \{1,\dots,K\}$, where $J$ and $K$ are the number of bins in the X and Y dimensions, respectively. \ktm{The two ($j$,$k$) pairs that index the bin centers can be linearized to a single index such that $l = j + J(k-1)$; thus making $j$ the fast running index and $k$ the slow running index.  With this linearized index for all bins we now have a set of bin centers of the form $(x_l^\ast,y_l^\ast)$, with $l \in \{1,\dots,L\}$, where $L=J\cdot K$.}
+The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_k^\ast)$, with $j \in \{1,\dots,J\}$ and $k \in \{1,\dots,K\}$, where $J$ and $K$ are the number of bins in the X and Y dimensions, respectively. The two ($j$,$k$) pairs that index the bin centers can be linearized to a single index such that $\ell = j + J(k-1)$; thus making $j$ the fast running index and $k$ the slow running index.  With this linearized index for all bins we now have a set of bin centers of the form $(x_\ell^\ast,y_\ell^\ast)$, with $\ell \in \{1,\dots,L\}$, where $L=J\cdot K$.
 
-The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_l,y^\ast_l)$ is defined as 
+The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_\ell,y^\ast_\ell)$ is defined as 
 %
 \begin{eqnarray}\label{standrecbin1}
 b(x_i,y_i) = (b_X(x_i),b_Y(y_i))
 \end{eqnarray}
 %
-where $b_X(x_i)$ and $b_Y(y_i)$ are the univariate standard binning algorithms for the X and Y dimensions respectively. The random rectangular binning function, $b^r(\cdot): (x_i,y_i) \rightarrow (x^\ast_l,y^\ast_l)$ can similarly be defined as
+where $b_X(x_i)$ and $b_Y(y_i)$ are the univariate standard binning algorithms for the X and Y dimensions respectively. The random rectangular binning function, $b^r(\cdot): (x_i,y_i) \rightarrow (x^\ast_\ell,y^\ast_\ell)$ can similarly be defined as
 %
 \begin{eqnarray}\label{randrecbin1}
 b^r(x_i,y_i) = (b^r_X(x_i),b^r_Y(y_i))
@@ -402,7 +404,7 @@ qplot(data=d.rand[,], x=x, y=y, alpha=a,  geom="point", xlim=c(-20, 40), ylim=c(
 ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 @
 
-\begin{figure}[H]
+\begin{figure}[h]
   \centering
   \subfloat[Standard Binning]{\includegraphics[keepaspectratio=true, width=3in]{./figure/Binning-DataAndBin.pdf}}
 %   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
@@ -416,97 +418,97 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 
 
 
-\subsection{Standard Rectangular Binning Algorithm (old - to be removed)}
-\hh{XXX Speed this discussion up a bit - you don't need to lay out what you will do in this section, just do it.}
-
-\hh{Define what $X$ is, what is $x_i$}
-
-\hh{Use only $1 \le j \le N_X$  or $j \in \{1, ..., N_X\}$. }
-
-\hh{I am still not sure how bin centers are defined in the end. XXX}
-
-\hh{why does it say binwidths? Do you want to imply that the bins have potentially different widths? Clarify that!}
-
-\ktm{  We define the process that allocates observed values, $x_i$ for $i \in \{1, ..., n\}$, to equal sized bins in a deterministic manner as a standard binning algorithm. The bins are controlled by two parameters: the center of the first bin, $x^\ast_1$ and the binwidth, $\omega_X$. This leads to bin centers $ x_j^\ast =  x_1^\ast + (j-1)\omega_X \text{ for } j \in \{1, ..., N_X\} $,  where $N_X$ is the overall number of bins.  }
-
-
-Mathematically, the standard binning algorithm corresponds to a function $b_X(.)$ that assigns to a value $x_i$ the closest bin center $x^\ast_j$ for some bin $j \in \{1, ..., N_X\}$, i.e. the binning function   $b_X(.) : x_i \rightarrow x^\ast_j$ is defined as 
-% \begin{center}
-% $x^\ast_i = b_X(x_i) = x_{(1)}^\ast + \omega_X \cdot \left\lfloor (x_i-x_{(1)})/\omega_x \right\rfloor$ \hspace{.5cm} $\forall x_i < x_{(n)}$, and \\ 
-% \vspace{.03}
-% $x^\ast_i = b_X(x_i) = x_{(n)} - \omega_x/2$ \hspace{.5cm} $\forall x_i = x_{(n)}$
-% \end{center}
-\begin{eqnarray}\label{standbin}
-b_X(x_i) =  x_{1}^\ast + \omega_X \cdot \left\lfloor (x_i-x_{1}^\ast)/\omega_x + 1/2 \right\rfloor
-\end{eqnarray}
-
-where $x_1^\ast$ is the center of the first bin and $\lfloor . \rfloor$ denotes the floor function, $\lfloor x \rfloor$ is the largest integer value smaller than $x$.  
-\ktm{ This is equivalent to treating the $j^{th}$ bin as a half-open interval that contains all observations $x_i \in [x_j^\ast - \omega_X /2 , x_j^\ast + \omega_X /2  ) $. After all observations have been allocated to bins, the bin count, $c_j$, is joined with the bin center to form the tuple $(x^\ast_1, c_j)$ }
-%\hh{something went wrong with the next sentence}
-%An intuitive understanding of the formula is developed by noting $\left\lfloor (x_i-x_{1}^\ast)/\omega_x + 1/2 \right\rfloor$ represents the number of bin boundaries lie between $x_{1}^\ast$ and $x_i$.  Thus, the binning function is finding the location of the bin center for $x_i$ by adding the distance between $x_{1}^\ast$ and the center for $x_i$ to the known first bin center $x_{1}^\ast$.
-
-\ktm{ A special case of standard binning divides the data range into $N_X$ equal sized bins.  This leads to the bin width, $\omega_X = (x_{(n)} - x_{(1)})/N_X$, where $x_{(1)}$ and $x_{(n)}$ denote the observed minimum and the maximum of $X$, respectively. The first bin would then be centered at $x_{(1)} + \omega_X/2$. }
-
-
-
-%Note that the binning function above amounts to dividing up the range of data by a specified number of bins of equal width. A more flexible binning algorithm may be achieved if we allow the specification of the first bin center and bin width instead of the number of bins. This strategy would still fit into the framework of assigning values to the closest bin center. 
-
-\subsection{Random Binning Algorithm (old-to be removed)}
-
-An alternative to the standard binning processes discussed above, is the random binning algorithm which results in statistically nice properties. A random binning algorithm utilizes a non-deterministic bin function $b^r_X(\cdot)$ which randomly assigns a value $x_i$ to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability depending on the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
-%
-\begin{eqnarray}\label{randbin}
-b^r_X(x_i) = \left\{\begin{array}{ll} 
-  x^\ast_j & \text{ with probability } p = {(x^\ast_{j+1} - x_i)}/\omega_X \\
-  x^\ast_{j+1} &\text{ with probability } 1-p = {(x_i - x^\ast_{j})}/\omega_X
-  \end{array}\right.
-\end{eqnarray}
-
-% In this manner, the probability of assigning point $x$ to bin $x^\ast_j$ is inversely proportional to the distance between the bin center of bin $x^\ast_j$ and $x$, that is, the closer $x$ is to a bin center, the higher the probability that $x$ will be assigned to that bin. 
-This method is easily extensible to also map $x_i$ into more than two bins and can accommodate non-uniform bin sizes, unlike the standard algorithm. 
-
-%To take up the previous number example again, under random binning the values 1.35, 1.55, and 2.35 are assigned to bin centers $\{1, 2, 3\}$ non-deterministic. 
-%Value 1.35 has a 35\% probability to be assigned to bin center 2, and accordingly is assigned to bin center 1 with probability 65\%. 
-%1.55 is closer to the boundary between bin centers and has therefore a 45\% or 55\% chance to be assigned to bin centers 1 or 2, respectively.
-
-%Figure~\ref{fig:BinningTutorial} illustrates one possible outcome of the random binning process.
-
-The deterministic standard binning algorithm is an example of a ``direct" binning algorithm, in which all points are assigned with weight one to the nearest bin. ``Linear" binning  \citep{martin-gold} is a \textit{computationally intensive} alternative to direct binning  in which adjacent bins are assigned a weight  depending on the distance from the point to that bin, where all weights sum to one.  With large data sets, the calculations required for linear binning become unwieldy, but the random binning algorithm can be considered an approximation to linear binning. Specifically, the expectation of the random binning algorithm is the same as for linear binning.
-%However, linear binning requires evaluation of this expectation, whereas the random binning algorithm presented here uses a random sample from the underlying distribution, which is much more computationally tractable.
-In the next section, we examine the loss of visual and numerical information due to binning.
-% linear binning in Gold book - random algorithm as a less computational method of linear binning
-
-\subsection{Extensions to Rectangular Binning (old-to be removed)}
-
-The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_j^\ast)$, with $1 \le j \le N_X \cdot N_Y =J$, where $J$ total number of indexed bins \sout{in $\mathbb{R}^2$} \hh{XXX J is an integer number, definitely not a real-valued vector}. \ktm{The wording here was not clear. J does not exist in $\mathbb{R}^2$, but it is being used to index 2d bins that exist in that plane.} The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ is defined as 
-%
-\begin{eqnarray}\label{standrecbin}
-b(x_i,y_i) = (b_X(x_i),b_Y(y_i))
-\end{eqnarray}
-%
-where $b_X(x_i)$ and $b_Y(y_i)$ are the univariate standard binning algorithms for the X and Y dimensions respectively. The random rectangular binning function, $b^r(\cdot): (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ can similarly be defined as
-%
-\begin{eqnarray}\label{randrecbin}
-b^r(x_i,y_i) = (b^r_X(x_i),b^r_Y(y_i))
-\end{eqnarray}
-%
-where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for each dimension. Figure~\ref{fig:BinningTutorial} provides an illustration of each binning process extended to a two dimensional situation.
-
-\hh{The relationship between value pair $(x_i, y_i)$ and bin center $(x^\ast_j,y^\ast_j)$ needs to be discussed further - because it is not the same as for the univariate situation. $J$ is defined, as above as a multiple of $N_X$ and $N_Y$, this needs to be properly adjusted in the binning algorithm. It will be some linear relationship of the form $j_X\cdot N_X + j_Y$. }  \ktm{ I am having trouble trying to reconcile the indexing of bins in 2 dimensions.  If we use an pair of indices it makes the extension of binning to 2 dimensions easy; but it makes the notation messier and loss functions more difficult to define. }
-
-
-
-\subsection{Quantile Binning Algorithm (old - to be removed)}
-
-We could also consider a empirical quantile based binning algorithm where bin widths are adjusted such that each bin contains an equal proportion of the observed values. This is a fundamentally different approach than the standard and random binning algorithms defined previously where the goal was to display approximate density. This binning will not be considered for binning the data pairs directly, but instead for further binning the initial bin counts for the purposes of rendering colors on a discrete color palette.
-
-Suppose that we have values $c_j$ for $j \in \{1,2,...J\}$ that we wish to divide into quantile based bins. Defining the number of quantile based bins, $K$, results in a set of possible quantile bin centers. \hh{shouldn't you go back to the same notation as before? $N_X$, not $J$?  what are the $c_j$ bin centers? before they were $c_j^\ast$.} \ktm{I consciously decided to define quantile binning in a way consistent with how it will be used later in the paper for discretizing the color palettes for the $c_j$ counts. } It follows that the bin boundaries are $Q_{k/K}$ for $k \in \{1,\dots,K\}$, where $Q_p$ is the the $p^{th}$ empirical quantile of value using the inverse empirical distribution function. \ktm{Note this is the quantile function as defined in R; find related literature source.} \hh{which function exactly? There are multiple.} The bin centers are defined as the midpoint of each consecutive pair of bin boundaries $\{c^\ast_k = (Q_{k-1/K} + Q_{k/K})/2  \text{ for } k=0,\dots,K \}$. The quantile binning function $b^q_C(\cdot) : (c_j) \rightarrow c^\ast_k$ is defined as 
-%
-\begin{eqnarray}\label{quantbin}
-b^q_C(c_j) = (Q_{k-1/K} + Q_{k/K})/2 \text{ where } Q_{k-1/K} < c_j \le Q_{k/K}.
-\end{eqnarray}
-%
-The two dimensional analog for quantile binning is not explored, as this binning strategy will be used in strictly the univariate setting for this manuscript.
+% \subsection{Standard Rectangular Binning Algorithm (old - to be removed)}
+% \hh{XXX Speed this discussion up a bit - you don't need to lay out what you will do in this section, just do it.}
+% 
+% \hh{Define what $X$ is, what is $x_i$}
+% 
+% \hh{Use only $1 \le j \le N_X$  or $j \in \{1, ..., N_X\}$. }
+% 
+% \hh{I am still not sure how bin centers are defined in the end. XXX}
+% 
+% \hh{why does it say binwidths? Do you want to imply that the bins have potentially different widths? Clarify that!}
+% 
+% \ktm{  We define the process that allocates observed values, $x_i$ for $i \in \{1, ..., n\}$, to equal sized bins in a deterministic manner as a standard binning algorithm. The bins are controlled by two parameters: the center of the first bin, $x^\ast_1$ and the binwidth, $\omega_X$. This leads to bin centers $ x_j^\ast =  x_1^\ast + (j-1)\omega_X \text{ for } j \in \{1, ..., N_X\} $,  where $N_X$ is the overall number of bins.  }
+% 
+% 
+% Mathematically, the standard binning algorithm corresponds to a function $b_X(.)$ that assigns to a value $x_i$ the closest bin center $x^\ast_j$ for some bin $j \in \{1, ..., N_X\}$, i.e. the binning function   $b_X(.) : x_i \rightarrow x^\ast_j$ is defined as 
+% % \begin{center}
+% % $x^\ast_i = b_X(x_i) = x_{(1)}^\ast + \omega_X \cdot \left\lfloor (x_i-x_{(1)})/\omega_x \right\rfloor$ \hspace{.5cm} $\forall x_i < x_{(n)}$, and \\ 
+% % \vspace{.03}
+% % $x^\ast_i = b_X(x_i) = x_{(n)} - \omega_x/2$ \hspace{.5cm} $\forall x_i = x_{(n)}$
+% % \end{center}
+% \begin{eqnarray}\label{standbin}
+% b_X(x_i) =  x_{1}^\ast + \omega_X \cdot \left\lfloor (x_i-x_{1}^\ast)/\omega_x + 1/2 \right\rfloor
+% \end{eqnarray}
+% 
+% where $x_1^\ast$ is the center of the first bin and $\lfloor . \rfloor$ denotes the floor function, $\lfloor x \rfloor$ is the largest integer value smaller than $x$.  
+% \ktm{ This is equivalent to treating the $j^{th}$ bin as a half-open interval that contains all observations $x_i \in [x_j^\ast - \omega_X /2 , x_j^\ast + \omega_X /2  ) $. After all observations have been allocated to bins, the bin count, $c_j$, is joined with the bin center to form the tuple $(x^\ast_1, c_j)$ }
+% %\hh{something went wrong with the next sentence}
+% %An intuitive understanding of the formula is developed by noting $\left\lfloor (x_i-x_{1}^\ast)/\omega_x + 1/2 \right\rfloor$ represents the number of bin boundaries lie between $x_{1}^\ast$ and $x_i$.  Thus, the binning function is finding the location of the bin center for $x_i$ by adding the distance between $x_{1}^\ast$ and the center for $x_i$ to the known first bin center $x_{1}^\ast$.
+% 
+% \ktm{ A special case of standard binning divides the data range into $N_X$ equal sized bins.  This leads to the bin width, $\omega_X = (x_{(n)} - x_{(1)})/N_X$, where $x_{(1)}$ and $x_{(n)}$ denote the observed minimum and the maximum of $X$, respectively. The first bin would then be centered at $x_{(1)} + \omega_X/2$. }
+% 
+% 
+% 
+% %Note that the binning function above amounts to dividing up the range of data by a specified number of bins of equal width. A more flexible binning algorithm may be achieved if we allow the specification of the first bin center and bin width instead of the number of bins. This strategy would still fit into the framework of assigning values to the closest bin center. 
+% 
+% \subsection{Random Binning Algorithm (old-to be removed)}
+% 
+% An alternative to the standard binning processes discussed above, is the random binning algorithm which results in statistically nice properties. A random binning algorithm utilizes a non-deterministic bin function $b^r_X(\cdot)$ which randomly assigns a value $x_i$ to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability depending on the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
+% %
+% \begin{eqnarray}\label{randbin}
+% b^r_X(x_i) = \left\{\begin{array}{ll} 
+%   x^\ast_j & \text{ with probability } p = {(x^\ast_{j+1} - x_i)}/\omega_X \\
+%   x^\ast_{j+1} &\text{ with probability } 1-p = {(x_i - x^\ast_{j})}/\omega_X
+%   \end{array}\right.
+% \end{eqnarray}
+% 
+% % In this manner, the probability of assigning point $x$ to bin $x^\ast_j$ is inversely proportional to the distance between the bin center of bin $x^\ast_j$ and $x$, that is, the closer $x$ is to a bin center, the higher the probability that $x$ will be assigned to that bin. 
+% This method is easily extensible to also map $x_i$ into more than two bins and can accommodate non-uniform bin sizes, unlike the standard algorithm. 
+% 
+% %To take up the previous number example again, under random binning the values 1.35, 1.55, and 2.35 are assigned to bin centers $\{1, 2, 3\}$ non-deterministic. 
+% %Value 1.35 has a 35\% probability to be assigned to bin center 2, and accordingly is assigned to bin center 1 with probability 65\%. 
+% %1.55 is closer to the boundary between bin centers and has therefore a 45\% or 55\% chance to be assigned to bin centers 1 or 2, respectively.
+% 
+% %Figure~\ref{fig:BinningTutorial} illustrates one possible outcome of the random binning process.
+% 
+% The deterministic standard binning algorithm is an example of a ``direct" binning algorithm, in which all points are assigned with weight one to the nearest bin. ``Linear" binning  \citep{martin-gold} is a \textit{computationally intensive} alternative to direct binning  in which adjacent bins are assigned a weight  depending on the distance from the point to that bin, where all weights sum to one.  With large data sets, the calculations required for linear binning become unwieldy, but the random binning algorithm can be considered an approximation to linear binning. Specifically, the expectation of the random binning algorithm is the same as for linear binning.
+% %However, linear binning requires evaluation of this expectation, whereas the random binning algorithm presented here uses a random sample from the underlying distribution, which is much more computationally tractable.
+% In the next section, we examine the loss of visual and numerical information due to binning.
+% % linear binning in Gold book - random algorithm as a less computational method of linear binning
+% 
+% \subsection{Extensions to Rectangular Binning (old-to be removed)}
+% 
+% The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_j^\ast)$, with $1 \le j \le N_X \cdot N_Y =J$, where $J$ total number of indexed bins \sout{in $\mathbb{R}^2$} \hh{XXX J is an integer number, definitely not a real-valued vector}. \ktm{The wording here was not clear. J does not exist in $\mathbb{R}^2$, but it is being used to index 2d bins that exist in that plane.} The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ is defined as 
+% %
+% \begin{eqnarray}\label{standrecbin}
+% b(x_i,y_i) = (b_X(x_i),b_Y(y_i))
+% \end{eqnarray}
+% %
+% where $b_X(x_i)$ and $b_Y(y_i)$ are the univariate standard binning algorithms for the X and Y dimensions respectively. The random rectangular binning function, $b^r(\cdot): (x_i,y_i) \rightarrow (x^\ast_j,y^\ast_j)$ can similarly be defined as
+% %
+% \begin{eqnarray}\label{randrecbin}
+% b^r(x_i,y_i) = (b^r_X(x_i),b^r_Y(y_i))
+% \end{eqnarray}
+% %
+% where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for each dimension. Figure~\ref{fig:BinningTutorial} provides an illustration of each binning process extended to a two dimensional situation.
+% 
+% \hh{The relationship between value pair $(x_i, y_i)$ and bin center $(x^\ast_j,y^\ast_j)$ needs to be discussed further - because it is not the same as for the univariate situation. $J$ is defined, as above as a multiple of $N_X$ and $N_Y$, this needs to be properly adjusted in the binning algorithm. It will be some linear relationship of the form $j_X\cdot N_X + j_Y$. }  \ktm{ I am having trouble trying to reconcile the indexing of bins in 2 dimensions.  If we use an pair of indices it makes the extension of binning to 2 dimensions easy; but it makes the notation messier and loss functions more difficult to define. }
+% 
+% 
+% 
+% \subsection{Quantile Binning Algorithm (old - to be removed)}
+% 
+% We could also consider a empirical quantile based binning algorithm where bin widths are adjusted such that each bin contains an equal proportion of the observed values. This is a fundamentally different approach than the standard and random binning algorithms defined previously where the goal was to display approximate density. This binning will not be considered for binning the data pairs directly, but instead for further binning the initial bin counts for the purposes of rendering colors on a discrete color palette.
+% 
+% Suppose that we have values $c_j$ for $j \in \{1,2,...J\}$ that we wish to divide into quantile based bins. Defining the number of quantile based bins, $K$, results in a set of possible quantile bin centers. \hh{shouldn't you go back to the same notation as before? $N_X$, not $J$?  what are the $c_j$ bin centers? before they were $c_j^\ast$.} \ktm{I consciously decided to define quantile binning in a way consistent with how it will be used later in the paper for discretizing the color palettes for the $c_j$ counts. } It follows that the bin boundaries are $Q_{k/K}$ for $k \in \{1,\dots,K\}$, where $Q_p$ is the the $p^{th}$ empirical quantile of value using the inverse empirical distribution function. \ktm{Note this is the quantile function as defined in R; find related literature source.} \hh{which function exactly? There are multiple.} The bin centers are defined as the midpoint of each consecutive pair of bin boundaries $\{c^\ast_k = (Q_{k-1/K} + Q_{k/K})/2  \text{ for } k=0,\dots,K \}$. The quantile binning function $b^q_C(\cdot) : (c_j) \rightarrow c^\ast_k$ is defined as 
+% %
+% \begin{eqnarray}\label{quantbin}
+% b^q_C(c_j) = (Q_{k-1/K} + Q_{k/K})/2 \text{ where } Q_{k-1/K} < c_j \le Q_{k/K}.
+% \end{eqnarray}
+% %
+% The two dimensional analog for quantile binning is not explored, as this binning strategy will be used in strictly the univariate setting for this manuscript.
 
 \section{Loss due to Binning}
 While binning data has some notable advantages, it does result in loss of some information. Using a small number of bins removes much of the relevant information in the data, while an extremely large number of bins may not reduce the data size or complexity to a sufficient degree. 
