@@ -27,6 +27,7 @@ Dealing with the data deluge of the Big Data Age is both exciting and challengin
 
 
 \section{Introduction}
+\label{Intro}
 
 \hh{
 \begin{itemize}
@@ -134,6 +135,8 @@ In this paper we describe first the problem scatterplots are exposed to in large
 
 
 \section{Scatterplots for Large Data Sets}
+\label{Scatter}
+
 In the case of modestly sized data, scatterplots are great tools for showing relationships in two dimensions. For large data, scatterplots suffer from over-plotting -- i.e. \ktm{a large number of observations drawn in such close proximity that their points overlap}, thereby masking relevant structure.
 Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 139 seasons (from the years of 1871 -- 2009) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database (\url{http://www.seanlahman.com/baseball-archive/}).  The number of games played in a season is plotted versus number of strikeouts a pitcher threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(d1.ext)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data. 
 
@@ -196,6 +199,7 @@ As with histograms, the width of bins (or the number of bins) is an important fa
 
 
 \section{Binning Algorithms}
+\label{GenBinning}
 
 Binning in dimensions $X$ and $Y$ provides us with a more condensed form of the data that ideally preserves both the joint distribution as well as the margins, while reducing the amount of information to a fraction of the original.  Binning is a two-step procedure: we first assign each observation $(x, y)$ to a bin center $(x^\ast,y^\ast)$, and in a second step we count the number of observations assigned to each unique bin center; resulting in  triples  of the form $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$.
 
@@ -254,6 +258,7 @@ for $x_i \in [x^\ast_{j+1}, x^\ast_{j}]$.  This probability structure is inverse
 The deterministic standard binning algorithm is an example of a ``direct" binning algorithm, in which all points are assigned with weight one to the bin center. ``Linear" binning  \citep{martin-gold} is a \textit{computationally intensive} alternative to direct binning in which adjacent bins are assigned a weight depending on the distance from the point to that bin, where all weights sum to one.  With large data sets, the calculations required for linear binning become unwieldy, but the random binning algorithm can be considered an approximation to linear binning. Specifically, the expectation of the random binning algorithm is the same as for linear binning.
 
 \subsection{Extension to Two Dimensional Binning}
+\label{TwoDimBin}
 
 The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_k^\ast)$, with $j \in \{1,\dots,J\}$ and $k \in \{1,\dots,K\}$, where $J$ and $K$ are the number of bins in the X and Y dimensions, respectively. The two ($j$,$k$) pairs that index the bin centers can be linearized to a single index such that $\ell = j + J(k-1)$; thus making $j$ the fast running index and $k$ the slow running index.  With this linearized index for all bins we now have a set of bin centers of the form $(x_\ell^\ast,y_\ell^\ast)$, with $\ell \in \{1,\dots,L\}$, where $L=J\cdot K$.
 
@@ -512,6 +517,8 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 % The two dimensional analog for quantile binning is not explored, as this binning strategy will be used in strictly the univariate setting for this manuscript.
 
 \section{Loss due to Binning}
+\label{LossIntro}
+
 While binning data has some notable advantages, it does result in loss of some information. Using a small number of bins removes much of the relevant information in the data, while an extremely large number of bins may not reduce the data size or complexity to a sufficient degree. 
 Figure~\ref{binning} gives an overview of a data set and binned representations using different numbers of bins, demonstrating the loss of information with increasing bin size.
 
@@ -583,6 +590,7 @@ Note that even though these losses may turn out to be substantial, it is, in fac
 }
 
 \subsection{Spatial Loss}
+\label{SpatialLoss}
 
 \ktm{When the individual points of a scatterplot are collapsed to bin centers to be displayed as tiles in a binned scatterplot there is a loss of the location information.  This can be expressed as the Euclidean distance between points and the visual center of the tiles (i.e. the bin centers). Note that other distance metrics could be used, but the euclidean distance has a desirable interpretability in $\mathbb{R}^2$. The spatial loss for the $i^{th}$ observation, $L_i^S$ and the total spatial loss, $L^S$ are defined as}
 %
@@ -650,8 +658,11 @@ qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
 %------------------------------------------------
 
 \subsection{Frequency Loss}
+\label{FreqLoss}
 
-\ktm{If the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. While counts can certainly be modeled as continuous on the HSV color space (reference needed) discrete color breaks may be preferred for a few reasons. %The average person is able to  On the continuous scale, a viewer will likely not be able to exactly match a tile shading to the corresponding count on the color key in the legend of the plot without an aid such as interactive mouseover effects. 
+\ktm{ If the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. This is effectively a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins  using any of the previously mentioned univariate binning algorithms in Section~\ref{GenBinning}. }
+
+\ktm{ While counts can certainly be modeled as continuous on the HSV color space (reference needed) discrete color breaks may be preferred for a few reasons. The average person is able to distinguish  On the continuous scale, a viewer will likely not be able to exactly match a tile shading to the corresponding count on the color key in the legend of the plot without an aid such as interactive mouseover effects. 
 }
 
 
