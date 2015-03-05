@@ -592,17 +592,14 @@ Note that even though these losses may turn out to be substantial, it is, in fac
 \subsection{Spatial Loss}
 \label{SpatialLoss}
 
-\ktm{When the individual points of a scatterplot are collapsed to bin centers to be displayed as tiles in a binned scatterplot there is a loss of the location information.  This can be expressed as the Euclidean distance between points and the visual center of the tiles (i.e. the bin centers). Note that other distance metrics could be used, but the euclidean distance has a desirable interpretability in $\mathbb{R}^2$. The spatial loss for the $i^{th}$ observation, $L_i^S$ and the total spatial loss, $L^S$ are defined as}
-%
-\begin{eqnarray}\label{indspatloss}
-L_i^S = \sqrt{ (x_i-b_X(x_i))^2 + (y_i-b_Y(y_i))^2 }
-\end{eqnarray}
-%
+\ktm{When the individual points of a scatterplot are collapsed to bin centers to be displayed as tiles in a binned scatterplot there is a loss of the location information.  This can be expressed as the Euclidean distance between points and the visual center of the tiles (i.e. the bin centers). Note that other distance metrics could be used, but the euclidean distance has a desirable interpretability in $\mathbb{R}^2$. The \textit{total spatial loss}, $L^S$, is defined as }
 \begin{eqnarray}\label{totspatloss}
-L^S = \sum_{i=1}^{n} L_i^S
-\end{eqnarray}  
+L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ (x_i-b_X(x_i))^2 + (y_i-b_Y(y_i))^2 }
+\end{eqnarray} 
 %
-\ktm{Figure~\ref{fig:LossDisplay} visually displays the spatial loss for observations binned using a standard rectangular binning algorithm. Observations $(x_i,y_i)$ and bin centers $(x_\ell^\ast,y_\ell^\ast)$ are displayed as circular and triangular points, respectively. The length of line segments connecting these represent, $L^S_i$ the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  }
+\ktm{where $L_i^S$ is the $i^{th}$ observation. }
+%
+\ktm{Figure~\ref{fig:LossDisplay} visually displays the spatial loss for observations binned using a standard rectangular binning algorithm. Observations $(x_i,y_i)$ and bin centers $(x_\ell^\ast,y_\ell^\ast)$ are displayed as circular and triangular points, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  }
 
 <<SpatialLossDemo,echo=F,include=F,cache=T>>=
 #Try Multivariate Normal and Uniform for this plot
@@ -660,11 +657,17 @@ qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
 \subsection{Frequency Loss}
 \label{FreqLoss}
 
-\ktm{ If the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. This is effectively a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins  using any of the previously mentioned univariate binning algorithms in Section~\ref{GenBinning}. }
+\ktm{ If the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. This is effectively a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins  using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}. }
 
-\ktm{ While counts can certainly be modeled as continuous on the HSV color space (reference needed) discrete color breaks may be preferred for a few reasons. The average person is able to distinguish  On the continuous scale, a viewer will likely not be able to exactly match a tile shading to the corresponding count on the color key in the legend of the plot without an aid such as interactive mouseover effects. 
-}
+\ktm{ Bin counts can be displayed using a continuous shading scale in HSV color space (reference needed) and thus have no frequency loss. While the tiles of the binned scatterplot would be rendered precisely, the ability of a human with average vision to extract that information using a plot index for the frequency key for the plot is largely imprecise.  Color perception of shade is extremely context sensative (reference here) allowing an inaccurate mapping of tile shade to the corresponding shade on the frequency key.  }
 
+\ktm{The goal of binning the frequencies and using a ordinally shaded color palette is to provide more distinctive perceivable breaks to aid the information extraction; however it does so at the cost of using shade to display binned freqencies, $b_c(c_\ell)$ instead of the true frequencies, $c_\ell$. The \textit{total frequency loss}, $L^F$ are defined as}
+%
+\begin{eqnarray}\label{totfreqloss}
+L^F = \sum_{i=1}^{n} L_i^F = \sum_{i=1}^{n} (c_\ell-b_c(c_\ell))^2
+\end{eqnarray}  
+%
+\ktm{where $L_\ell^F$ is the frequency loss for the $\ell^{th}$ bin. Note that this is effectively a sum of squared error from binning frequencies.}
 
 \subsection{Old Loss Definitions (to be removed)}
 \ktm{The following \textit{numerical, visual and freq} loss descriptions are from the old list and will be removed: }
