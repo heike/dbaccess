@@ -584,27 +584,27 @@ qplot(x,y, asp=1, geom="blank") + geom_tile(binwidth=binwidth, aes(x=xbin, y=ybi
 \end{figure}
 In the first set of binned data, the bins and the points on the scatterplot are nearly identical, but the scatterplot contains information about overlapping points. The second and third sets of binned data, with bin width=0.25 and 0.50 respectively, show higher-level summaries of the data that contain some numerical and visual loss but which may also provide more visually accessible information about the shape of the two-dimensional density between $x$ and $y$. The fourth set of binned data with bin width = 1.0 is nearly unrecognizable, because the bins are large enough that they provide very little additional information. 
 
-\ktm{Loss of information occurs during the binning and rendering process. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent frequencies.  We distinguish two sources of loss in the construction of a binned scatterplot:
+Loss of information occurs during the binning and rendering process. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent frequencies.  We distinguish two sources of loss in the construction of a binned scatterplot:
 \begin{itemize}
-\item {\it Spatial Loss}, $L^\text{S}$, occurs when points ($x_i$,$y_i$) in the data set are reduced to a single points at the bin centers ($x_l^\ast$,$y_l^\ast$). By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
+\item {\it Spatial Loss}, $L^\text{S}$, occurs when points ($x_i$,$y_i$) \hh{XXX define $i$, $l$} in the data set are reduced to a single points at the bin centers ($x_l^\ast$,$y_l^\ast$). By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
 
 \item {\it Frequency Loss}, $L^\text{F}$, occurs when frequency information is not rendered accurately. If a discrete color scale is used to display bin counts, then entire ranges of counts will be mapped to the same color; thus losing precision in the display of frequencies.
 \end{itemize}
 
 Note that even though these losses may turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where information is masked in large data situations due to over-plotting of points. 
-}
+
 
 \subsection{Spatial Loss}
 \label{SpatialLoss}
 
 \ktm{When the individual points of a scatterplot are collapsed to bin centers to be displayed as tiles in a binned scatterplot there is a loss of the location information.  This can be expressed as the Euclidean distance between points and the visual center of the tiles (i.e. the bin centers). Note that other distance metrics could be used, but the euclidean distance has a desirable interpretability in $\mathbb{R}^2$. The \textit{total spatial loss}, $L^S$, is defined as }
 \begin{eqnarray}\label{totspatloss}
-L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ (x_i-b_X(x_i))^2 + (y_i-b_Y(y_i))^2 }
+L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ \left(x_i-b_X(x_i)\right)^2 + \left(y_i-b_Y(y_i)\right)^2 }
 \end{eqnarray} 
 %
-\ktm{where $L_i^S$ is the $i^{th}$ observation. }
+\ktm{where $L_i^S$ is the \hh{loss in the } $i^{th}$ observation. }
 %
-\ktm{Figure~\ref{fig:LossDisplay} visually displays the spatial loss for observations binned using a standard rectangular binning algorithm. Observations $(x_i,y_i)$ and bin centers $(x_\ell^\ast,y_\ell^\ast)$ are displayed as circular and triangular points, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  }
+\ktm{Figure~\ref{fig:LossDisplay} visually displays the spatial loss for observations binned using a standard rectangular binning algorithm. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as circular and triangular points, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  }
 
 <<SpatialLossDemo,echo=F,include=F,cache=T>>=
 #Try Multivariate Normal and Uniform for this plot
