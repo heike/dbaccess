@@ -588,7 +588,7 @@ Loss of information occurs during the binning and rendering process. For the rem
 \begin{itemize}
 \item {\it Spatial Loss}, $L^\text{S}$, occurs when points ($x_i$,$y_i$) \hh{XXX define $i$, $l$} in the data set are reduced to a single points at the bin centers ($x_l^\ast$,$y_l^\ast$). By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
 
-\item {\it Frequency Loss}, $L^\text{F}$, occurs when frequency information is not rendered accurately. If a discrete color scale is used to display bin counts, then entire ranges of counts will be mapped to the same color; thus losing precision in the display of frequencies.
+\item {\it Frequency Loss}, $L^\text{F}$, occurs when frequency information is not rendered, such as in standard scatterplots,  or not rendered accurately, e.g.\ when a discrete color scale is used to display bin counts, the entire ranges of counts is mapped to the same color; thus losing precision in the display of frequencies.
 \end{itemize}
 
 Note that even though these losses may turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where information is masked in large data situations due to over-plotting of points. 
@@ -597,14 +597,14 @@ Note that even though these losses may turn out to be substantial, it is, in fac
 \subsection{Spatial Loss}
 \label{SpatialLoss}
 
-\ktm{When the individual points of a scatterplot are collapsed to bin centers to be displayed as tiles in a binned scatterplot there is a loss of the location information.  This can be expressed as the Euclidean distance between points and the visual center of the tiles (i.e. the bin centers). Note that other distance metrics could be used, but the euclidean distance has a desirable interpretability in $\mathbb{R}^2$. The \textit{total spatial loss}, $L^S$, is defined as }
+When the individual points of a scatterplot are collapsed to bin centers to be displayed as tiles in a binned scatterplot there is a loss of the location information.  This can be expressed as the Euclidean distance between points and the visual center of the tiles (i.e.\ the bin centers). Note that other distance metrics could be used, but the euclidean distance has a desirable interpretability in $\mathbb{R}^2$. The \textit{total spatial loss}, $L^S$, is defined as 
 \begin{eqnarray}\label{totspatloss}
 L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ \left(x_i-b_X(x_i)\right)^2 + \left(y_i-b_Y(y_i)\right)^2 }
 \end{eqnarray} 
 %
-\ktm{where $L_i^S$ is the \hh{loss in the } $i^{th}$ observation. }
+where $L_i^S$ is the loss in the  $i^{th}$ observation. 
 %
-\ktm{Figure~\ref{fig:LossDisplay} visually displays the spatial loss for observations binned using a standard rectangular binning algorithm. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as circular and triangular points, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  }
+Figure~\ref{fig:LossDisplay} visually displays the spatial loss for observations binned using a standard rectangular binning algorithm. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as circular and triangular points, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
 
 <<SpatialLossDemo,echo=F,include=F,cache=T>>=
 #Try Multivariate Normal and Uniform for this plot
@@ -653,7 +653,7 @@ qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
   \centering
   \subfloat[Spatial Loss MVN Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayMVN.pdf}}
   \subfloat[Spatial Loss Uniform Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayUnif.pdf}}
-  \caption{Visualization of spatial loss. \ktm{Redundant plots using MVN and Uniform Data. Which makes a better plot?}}
+  \caption{Visualization of spatial loss. The distance between points and bin centers adds up to the spatial loss due to binning. }%\ktm{Redundant plots using MVN and Uniform Data. Which makes a better plot?}}
   \label{fig:LossDisplay}
 \end{figure}
 
@@ -661,6 +661,23 @@ qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
 
 \subsection{Frequency Loss}
 \label{FreqLoss}
+
+\hh{XXX I think we need a bit of discussion here, why it is not realistic, to expect readers to be able to map colors to a continuous color scheme, even though theoretically we certainly can distinguish enough different colors (see e.g.\ the discussion in \url{http://hypertextbook.com/facts/2006/JenniferLeong.shtml}). Figure~\ref{fig:context} shows an example of the context sensitivity of colors. Even though there is a lot of spread between the colors in this example, most onlookers have trouble answering the question about the relative relationship of the shading of the darkest/lightest points in each of the points clouds.
+}
+
+\begin{figure}[ht]
+\centering
+<<context, echo=false, fig.width=4, fig.height=4, out.width='.5\\textwidth'>>=
+col <- c(rnorm(200, mean=0, sd=10), rnorm(10, mean=50), rnorm(200, mean=100, sd=10), rnorm(10, mean=50))
+x <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=1, sd=0.075))
+y <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=1, sd=0.075))
+
+require(ggplot2)
+qplot(x, y, colour=col, size=I(5)) + theme_bw()
+@
+\caption{\label{fig:context}Assess the colors in this scatterplot. Are the darkest spots in the cloud of lighter points as dark as the lightest spots in the cloud of darker points? Darker? Lighter? }
+\end{figure}
+
 
 \ktm{ If the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. This is effectively a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins  using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}. }
 
