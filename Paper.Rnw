@@ -662,8 +662,14 @@ qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
 \subsection{Frequency Loss}
 \label{FreqLoss}
 
-\hh{XXX I think we need a bit of discussion here, why it is not realistic, to expect readers to be able to map colors to a continuous color scheme, even though theoretically we certainly can distinguish enough different colors (see e.g.\ the discussion in \url{http://hypertextbook.com/facts/2006/JenniferLeong.shtml}). Figure~\ref{fig:context} shows an example of the context sensitivity of colors. Even though there is a lot of spread between the colors in this example, most onlookers have trouble answering the question about the relative relationship of the shading of the darkest/lightest points in each of the points clouds.
+Bin counts can be displayed using a continuous shading scale in HSV color space (reference needed) and thus theoretically have no frequency loss. While the tiles of the binned scatterplot would be rendered precisely, the ability of a human with average vision to extract that information using a plot index for the frequency key for the plot is largely imprecise.  Color perception of shade is extremely context sensitive (reference here) allowing an inaccurate mapping of tile shade to the corresponding shade on the frequency key.  
+
+ Research suggests that even under optimal conditions, we can effectively compare only about seven colors \citep{colorperception}, which provides a physical upper limit on the amount of frequency variation we can perceive.
+
+
+\hh{It is therefore not realistic, to expect readers to be able to map colors to a continuous color scheme, even though theoretically we certainly can distinguish enough different colors (see e.g.\ the discussion in \url{http://hypertextbook.com/facts/2006/JenniferLeong.shtml}). Figure~\ref{fig:context} shows an example of the context sensitivity of colors. Even though there is a lot of spread between the colors in this example, most onlookers have trouble answering the question about the relative relationship of the shading of the darkest/lightest points in each of the points clouds.
 }
+
 
 \begin{figure}[ht]
 \centering
@@ -679,17 +685,19 @@ qplot(x, y, colour=col, size=I(5)) + theme_bw() + theme(aspect.ratio=1)
 \end{figure}
 
 
-\ktm{ If the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. This is effectively a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins  using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}. }
+As a result, a binning width which produces fewer than seven frequency categories is preferable, while minimizing numerical loss within that constraint. 
 
-\ktm{ Bin counts can be displayed using a continuous shading scale in HSV color space (reference needed) and thus have no frequency loss. While the tiles of the binned scatterplot would be rendered precisely, the ability of a human with average vision to extract that information using a plot index for the frequency key for the plot is largely imprecise.  Color perception of shade is extremely context sensitive (reference here) allowing an inaccurate mapping of tile shade to the corresponding shade on the frequency key.  }
+ Whenever the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. We can model this as a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins  using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}. 
 
-\ktm{The goal of binning the frequencies and using a ordinally shaded color palette is to provide more distinctive perceivable breaks to aid the information extraction; however it does so at the cost of using shade to display binned frequencies, $b_c(c_\ell)$ instead of the true frequencies, $c_\ell$. The \textit{total frequency loss}, $L^F$, is defined as}
+While this numerical assessment of frequency loss does not exactly account for limitations in human perceptual ability, it does provide a more realistic model for the loss in perception that does occur.
+
+The goal of binning the frequencies and using a ordinally shaded color palette is to provide more distinctive perceivable breaks to aid the information extraction; however it does so at the cost of using shade to display binned frequencies, $b_c(c_\ell)$ instead of the true frequencies, $c_\ell$. The \textit{total frequency loss}, $L^F$, is defined as
 %
 \begin{eqnarray}\label{totfreqloss}
 L^F = \sum_{\ell=1}^{L} L_\ell^F = \sum_{\ell=1}^{L} (c_\ell-b_c(c_\ell))^2
 \end{eqnarray}  
 %
-\ktm{where $L_\ell^F$ is the frequency loss for the $\ell^{th}$ bin. Note that this is effectively a sum of squared error from binning frequencies.}
+where $L_\ell^F$ is the frequency loss for the $\ell^{th}$ bin. Note that this is effectively a sum of squared error from binning frequencies.
 
 Frequency data consists of counts, which most commonly exhibit skew densities, i.e.\ there are usually a lot of cells with small cell counts and a few cells with extremely large counts. A log transformation therefore produces a more symmetric distribution of frequency information, increasing perceptual resolution. This is consistent with the Weber-Fechner law which suggests that increased stimulus intensity is perceptually mapped on the log scale \citep{sp}. Using a logarithmic mapping of frequency to the color or size aesthetic provides a more natural perceptual experience and simultaneously increases the perceptual resolution of the graph. The \textit{log frequency loss}, $L^{\log F}$, is defined as
 %
@@ -729,10 +737,6 @@ p2 <- qplot(id2, 2, geom="tile", fill=-fill2) +
 grid.arrange(p1,p2,nrow=2)
 #ggsave("./figure/FreqBin.pdf",width=5, height=1.5)
 @
-
-This numerical assessment of frequency loss does not account for limitations in human perceptual ability. Research suggests that under optimal conditions, we can effectively compare about seven colors \citep{colorperception}, which provides a physical upper limit on the amount of frequency variation we can perceive.
-As a result, a binning width which produces fewer than seven frequency categories is preferable, while minimizing numerical loss within that constraint. 
-
 
 
 \subsection{Old Loss Definitions (to be removed)}
