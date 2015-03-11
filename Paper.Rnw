@@ -667,13 +667,13 @@ qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
 
 \begin{figure}[ht]
 \centering
-<<context, echo=false, fig.width=4, fig.height=4, out.width='.5\\textwidth'>>=
+<<context, echo=F, fig.width=6, fig.height=4.5, out.width='.5\\textwidth'>>=
 col <- c(rnorm(200, mean=0, sd=10), rnorm(10, mean=50), rnorm(200, mean=100, sd=10), rnorm(10, mean=50))
 x <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=1, sd=0.075))
 y <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=1, sd=0.075))
 
 require(ggplot2)
-qplot(x, y, colour=col, size=I(5)) + theme_bw()
+qplot(x, y, colour=col, size=I(5)) + theme_bw() + theme(aspect.ratio=1)
 @
 \caption{\label{fig:context}Assess the colors in this scatterplot. Are the darkest spots in the cloud of lighter points as dark as the lightest spots in the cloud of darker points? Darker? Lighter? }
 \end{figure}
@@ -691,7 +691,7 @@ L^F = \sum_{\ell=1}^{L} L_\ell^F = \sum_{\ell=1}^{L} (c_\ell-b_c(c_\ell))^2
 %
 \ktm{where $L_\ell^F$ is the frequency loss for the $\ell^{th}$ bin. Note that this is effectively a sum of squared error from binning frequencies.}
 
-Frequency data consists of counts, which most commonly exhibit skew densities, i.e. there are usually a lot of cells with small cell counts and a few cells with extremely large counts. A log transformation therefore produces a more symmetric distribution of frequency information, increasing perceptual resolution. This is consistent with the Weber-Fechner law which suggests that increased stimulus intensity is perceptually mapped on the log scale \citep{sp}. Using a logarithmic mapping of frequency to the color or size aesthetic provides a more natural perceptual experience and simultaneously increases the perceptual resolution of the graph. The \textit{log frequency loss}, $L^{\log F}$, is defined as
+Frequency data consists of counts, which most commonly exhibit skew densities, i.e.\ there are usually a lot of cells with small cell counts and a few cells with extremely large counts. A log transformation therefore produces a more symmetric distribution of frequency information, increasing perceptual resolution. This is consistent with the Weber-Fechner law which suggests that increased stimulus intensity is perceptually mapped on the log scale \citep{sp}. Using a logarithmic mapping of frequency to the color or size aesthetic provides a more natural perceptual experience and simultaneously increases the perceptual resolution of the graph. The \textit{log frequency loss}, $L^{\log F}$, is defined as
 %
 \begin{eqnarray}\label{logfrequency}
 L^{\log F} = \sum_{\ell=1}^{L} L_\ell^{\log F} = \sum_{\ell=1}^{L} (\log(c_\ell+1) - \log(b_c(c_\ell+1)))^2
