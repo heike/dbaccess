@@ -211,7 +211,7 @@ In general, for the univariate case with observations, $x_i$ for $i \in \{1,\dot
 
 
 
-{\textit Rectangular binning} accomplishes this by defining a sequence of $J$ adjacent intervals, $(\beta_{j-1},\beta_{j}]$ for $j \in \{1,\dots,J\}$, which span over the range of the data. Note that half open intervals are used such that any observation falling on a bin boundary is assigned to a unique interval. Values $x_i$ exactly equal to the lowest bin boundar $\beta_0$ are grouped into the first bin to close the leftmost bound. Each observation is then mapped to a bin center, $x_j^\ast$; the midpoint for the interval to which the observation belongs. 
+{\textit Rectangular binning} accomplishes this by defining a sequence of $J$ adjacent intervals, $(\beta_{j-1},\beta_{j}]$ for $j \in \{1,\dots,J\}$, which span over the range of the data. Note that half open intervals are used such that any observation falling on a bin boundary is assigned to a unique interval. Values $x_i$ exactly equal to the lowest bin boundary $\beta_0$ are grouped into the first bin to close the leftmost bound. Each observation is then mapped to a bin center, $x_j^\ast$; the midpoint for the interval to which the observation belongs. 
 
 % This is expressed mathematically using the binning function $b_X(.) : x_i \rightarrow x^\ast_j$ is defined as 
 % %
@@ -225,7 +225,7 @@ In general, for the univariate case with observations, $x_i$ for $i \in \{1,\dot
 
 \textit{Standard rectangular binning} is a special cases of general rectangular binning that uses intervals of equal size for all bins; thus only the origin of the first bin, $\beta_0$, and a binwidth, $\omega_X$, need to be specified. Standard rectangular binning is necessarily used in the construction of all histograms;  the consistent binwidth makes the display of frequency proportional to density. Fixed width binning procedures are also highly computationally efficient \citep{Wickham2013Bin}. 
 
-Note that this \hh{XXX which binning procedure are you referring to by 'this'?} binning procedure utilizes intervals that are open to the left and closes the outer bound of the leftmost bin. These specifications are consistent with the binning procedure used in the \texttt{hist()} function for creating histograms in base \texttt{R}. These specifications were selected for this paper, but these choices are by no means consider universal for binning.  For example, the \texttt{ggplot2} package creates histograms with intervals open to the right and does not close the outer bound of the rightmost bin. 
+Note that this standard rectangular binning procedure utilizes intervals that are open to the left and closes the outer bound of the leftmost bin. These specifications are consistent with the binning procedure used in the \texttt{hist()} function for creating histograms in base \texttt{R}. These specifications were selected for this paper, but these choices are by no means consider universal for binning.  For example, the \texttt{ggplot2} package creates histograms with intervals open to the right and does not close the outer bound of the rightmost bin. 
 
 \textit{Quantile binning} is another option that divides the range of the observations into bins each containing equal number of points. The $j^{th}$ bin intervals is $(Q_X((j-1)/J),Q_X((j)/J)]$, where $Q_X(p)$ is the the $p^{th}$ empirical quantile using the inverse empirical distribution function. Note that this binning approach is \textit{not} desirable for visualizing density patterns, as it effectively balances the frequency counts in all bins; it does however have desirable properties for creating discernible groups in visualization using discrete color palettes.
   
@@ -586,7 +586,7 @@ In the first set of binned data, the bins and the points on the scatterplot are 
 
 Loss of information occurs during the binning and rendering process. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent frequencies.  We distinguish two sources of loss in the construction of a binned scatterplot:
 \begin{itemize}
-\item {\it Spatial Loss}, $L^\text{S}$, occurs when points ($x_i$,$y_i$) \hh{XXX define $i$, $l$} in the data set are reduced to a single points at the bin centers ($x_l^\ast$,$y_l^\ast$). By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
+\item {\it Spatial Loss}, $L^\text{S}$, occurs when points ($x_i$,$y_i$) \hh{XXX define $i$, $l$} in the data set are reduced to a single points at the bin centers ($x_\ell^\ast$,$y_\ell^\ast$). By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
 
 \item {\it Frequency Loss}, $L^\text{F}$, occurs when frequency information is not rendered, such as in standard scatterplots,  or not rendered accurately, e.g.\ when a discrete color scale is used to display bin counts, the entire ranges of counts is mapped to the same color; thus losing precision in the display of frequencies.
 \end{itemize}
