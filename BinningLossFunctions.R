@@ -23,7 +23,7 @@ StandRectBin1d <- function(xs, origin, width){
 #     above highest center (bxJ)
 RandRectBin1d <- function(xs, origin, width){
   bx1 <- origin + width/2
-  bxJ <- width*(floor((max(xs)-bx1)/width) + .5)
+  bxJ <- origin + width*(floor((max(xs)-bx1)/width) + .5)
   lbs <- bx1 + width*floor((xs-bx1)/width)
   ubs <- bx1 + width*ceiling((xs-bx1)/width)
   # initially assign all values to upper bound
