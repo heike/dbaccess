@@ -53,21 +53,62 @@ QuantBin1d <- function(cs, nbin){
 
 
 ## 2d Rectangular Binning (for either Standard or Random)
+# standard is straight forward extension of 1d binning
+# random binning needs post processing to calculate minimum spatial loss
 RectBin2d <- function(xs,ys, originx, originy, widthx, widthy, type="standard"){
-  if(type=="standard"){
   tempdat <- data.frame(xs = xs, ys=ys,
                         binxs = StandRectBin1d(xs,originx,widthx),
                         binys = StandRectBin1d(ys,originy,widthy))
-  }
+  
   if(type=="random"){
-  tempdat <- data.frame(xs = xs, ys=ys,
-                          binxs = RandRectBin1d(xs,originx,widthx),
-                          binys = RandRectBin1d(ys,originy,widthy))
+    tempdat<- data.frame( tempdat,
+                          randbinxs = RandRectBin1d(xs,originx,widthx),
+                          randbinys = RandRectBin1d(ys,originy,widthy))
+    tempdat$binname <- paste(tempdat$binxs,tempdat$binys)
+    tempdat$randbinname <- paste(tempdat$randbinxs,tempdat$randbinys)
+    tempdat$randdist <- with(tempdat,sqrt((xs-randbinxs)^2 + (ys-randbinys)^2))
+    tempdat$index <- 1:length(xs)
+    # points where mismatch between standard and random binning
+    mismatchindex <- which(tempdat$binxs != tempdat$randbinxs | tempdat$binys != tempdat$randbinys )
+    mmdat <- tempdat[mismatchindex,]
+    # identify which need to be swapped to standard for net spatial loss
+    
+    #loop over all neighboring bin pairs (shift all xs over by 1 then all )
+    xbins <- seq(min(c(tempdat$binxs,tempdat$randbinxs)) , max(c(tempdat$binxs,tempdat$randbinxs)), by=widthx)
+    ybins <- seq(min(c(tempdat$binys,tempdat$randbinys)) , max(c(tempdat$binys,tempdat$randbinys)), by=widthy)
+    nbrs <- data.frame(binxs = rep(rep(xbins,length(ybins)),2) ,
+                       binys = rep(rep(ybins,each=length(xbins)),2),
+                       nbrsxs = c(rep(xbins+widthx,length(ybins)),rep(xbins,length(ybins))),
+                       nbrsys = c(rep(ybins,each=length(xbins)), rep(ybins+widthy,each=length(xbins))) )
+    nbrs$binname <- paste(nbrs$binxs,nbrs$binys)
+    nbrs$nbrsname <- paste(nbrs$nbrsxs,nbrs$nbrsys)   
+    
+    swapindex <- NULL    
+    for (i in 1:nrow(nbrs)){
+      #id points in standard bin i assigned to bin j
+      itoj <- which(mmdat$binname == nbrs$binname[i] & mmdat$randbinname == nbrs$nbrsname[i])
+      #id points in standard bin j assigned to bin i
+      jtoi <- which(mmdat$binname == nbrs$nbrsname[i] & mmdat$randbinname == nbrs$binname[i])
+      # number to swap in bins i and j is equal to minimum misplaced
+      nswap <- min(length(itoj), length(jtoi))
+      # if there are points to swap, then pick the ones with largest distance
+      # from point to random bin center
+      if(nswap > 0){ 
+        swapindex <- c(swapindex,mmdat$index[itoj][order(mmdat$randdist[itoj],decreasing=TRUE)[nswap]])
+        swapindex <- c(swapindex,mmdat$index[jtoi][order(mmdat$randdist[jtoi],decreasing=TRUE)[nswap]])
+      }
+    }
+    swapindex <- unique(swapindex)
+    tempdat$binxs[!(tempdat$index %in% swapindex)] <- tempdat$randbinxs[!(tempdat$index %in% swapindex)]
+    tempdat$binys[!(tempdat$index %in% swapindex)] <- tempdat$randbinys[!(tempdat$index %in% swapindex)]
   }
+  
+  
   outdat <- ddply(tempdat, .(binxs,binys), summarise,
                   binfreq = length(xs),
                   binspatialloss = sum(sqrt((xs-binxs)^2+(ys-binys)^2)) )
-  centerofdata <- c((max(xs)-min(xs))/2,(max(ys)-min(ys))/2)
+  #centerofdata <- c((max(xs)-min(xs))/2,(max(ys)-min(ys))/2)
+  centerofdata <- c(mean(xs),mean(ys))
   summarydata <- data.frame( originx = originx, originy = originy, 
                              widthx = widthx, widthy = widthy,
                              totalSpatialLoss = sum(outdat$binspatialloss) ,
