@@ -604,11 +604,18 @@ L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ \left(x_i-b_X(x_i)\right)^2 +
 %
 where $L_i^S$ is the loss in the  $i^{th}$ observation. 
 %
-Figure~\ref{fig:LossDisplay} visually displays the spatial loss for observations binned using a standard rectangular binning algorithm. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as circular and triangular points, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
+Figure~\ref{fig:spatlossdemo2} visually displays the spatial loss for observations binned using a standard rectangular binning algorithm. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
+
+For random assignment the total spatial loss can be calculated by simply replacing $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.  This total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be payed to the two points that with spatial losses highlighted in red; in standard binning these points are in neighboring bins and have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are reallocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  
+
+The minimum total spatial loss from all binning combinations that result in the same reduced data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}.  The net spatial loss for standard binned data will always be equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by exchanging bin assignments for pairs of points in neighboring bins that are exist further from their own bin center that their partner's bin center.
+
+
+
 
 <<SpatialLossDemo,echo=F,include=F,cache=T>>=
 #Try Multivariate Normal and Uniform for this plot
-
+library(MASS)
 #MVN plot
 n=15
 set.seed(2)
@@ -649,13 +656,131 @@ qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
       ggsave("./figure/SpatialLossDisplayUnif.pdf", width=5, height=5, units="in")
 @
 
-\begin{figure}[h]
-  \centering
-  \subfloat[Spatial Loss MVN Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayMVN.pdf}}
-  \subfloat[Spatial Loss Uniform Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayUnif.pdf}}
-  \caption{Visualization of spatial loss. The distance between points and bin centers adds up to the spatial loss due to binning. }%\ktm{Redundant plots using MVN and Uniform Data. Which makes a better plot?}}
-  \label{fig:LossDisplay}
-\end{figure}
+% \begin{figure}[h]
+%   \centering
+%   \subfloat[Spatial Loss MVN Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayMVN.pdf}}
+%   \subfloat[Spatial Loss Uniform Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayUnif.pdf}}
+%   \caption{Visualization of spatial loss. The distance between points and bin centers adds up to the spatial loss due to binning. }%\ktm{Redundant plots using MVN and Uniform Data. Which makes a better plot?}}
+%   \label{fig:LossDisplay}
+% \end{figure}
+
+
+<<spatlossdemo2,echo=F,include=T,eval=T,fig.width=12, fig.height=6, out.width='1\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Visualization of spatial loss for same data using standard, random and post-processed random binning algorithms.  Note that the total spatial loss for the standard algorithm is smaller than by random binning. The net spatial loss for the original random binned data is the total spatial loss of the post-processed assignment." >>= 
+
+RandRectBin1d <- function(xs, origin, width){
+  bx1 <- origin + width/2
+  bxJ <- origin + width*(floor((max(xs)-bx1)/width) + .5)
+  lbs <- bx1 + width*floor((xs-bx1)/width)
+  ubs <- bx1 + width*ceiling((xs-bx1)/width)
+  # initially assign all values to upper bound
+  binxs <- ubs
+  # then use runif to reassign based on distance from 
+  plower <- (ubs - xs)/width
+  lowerindex <- (plower > runif(length(xs), 0, 1))
+  binxs[lowerindex] <- lbs[lowerindex]
+  binxs[xs < bx1] <- bx1
+  binxs[xs > bxJ] <- bxJ
+  return(binxs)
+}
+#---------------------------------------------------
+n=12
+param1 = 1
+param2 = 1.6
+set.seed(52)
+x <- rbeta(n,param1, param2)*20-10
+y <- rbeta(n,param1, param2)*20-10
+# standard bin centers
+xcent <- rep(-5,n) ; xcent[x>0] <- 5
+ycent <- rep(-5,n) ; ycent[y>0] <- 5
+# standard bin gridlines
+temp <- data.frame(   
+  x=c( -10,   0,  10, -10, -10, -10), 
+  xend=c( -10,   0,  10,  10, 10, 10), 
+  y=c( -10, -10 , -10 , -10, 0 , 10), 
+  yend=c(10, 10 , 10, -10, 0, 10 ))
+
+p1 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
+      geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) + 
+      geom_segment(aes(x = x, y = y, xend = xcent, yend = ycent)) + 
+      geom_point(aes(x=x,y=y), size=I(3))+ 
+      theme_bw() + xlab("") + ylab("") +
+      ggtitle("Standard Binning") +
+      theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
+            legend.position="none",plot.margin = unit(c(0,1,0, 1),"cm"))
+
+# random bin centers
+set.seed(14)
+rxcent <- RandRectBin1d(x, -10, 10)
+rycent <- RandRectBin1d(y, -10, 10)
+# point 1 and 11 are special 
+linecolor <- rep("blue", 12)
+linecolor[c(1,11)] <- "red"
+
+p2 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) + 
+  geom_segment(aes(x = x, y = y, xend = rxcent, yend = rycent, color=linecolor)) + 
+  scale_colour_manual(values = c("darkblue","red"))+
+  geom_point(aes(x=x,y=y), size=I(3))+ 
+  theme_bw() + xlab("") + ylab("") +
+  ggtitle("Random Binning") +
+  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
+        legend.position="none",plot.margin = unit(c(0,1,0, 1),"cm"))
+
+# post process random bin centers to visually 
+# equivalent allocation with minimum spatial loss
+rxcentpost <- rxcent
+rycentpost <- rycent
+rxcentpost[1] <- rxcent[11]
+rycentpost[1] <- rycent[11]
+rxcentpost[11] <- rxcent[1]
+rycentpost[11] <- rycent[1]
+# point 1 and 11 are special 
+linecolor <- rep("blue", 12)
+linecolor[c(1,11)] <- "red"
+
+p3 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) + 
+  geom_segment(aes(x = x, y = y, xend = rxcentpost, yend = rycentpost, color=linecolor)) + 
+  scale_colour_manual(values = c("darkblue","red"))+
+  geom_point(aes(x=x,y=y), size=I(3))+ 
+  theme_bw() + xlab("") + ylab("") +
+  ggtitle("Post-Processed Random Binning") +
+  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
+        legend.position="none",plot.margin = unit(c(0,1,0, 1),"cm"))
+
+allbin <- data.frame(type=rep(c("Standard","Random","Post-Processed Random"),each=n),
+                     binxs = c(xcent,rxcent,rxcentpost), 
+                     binys = c(ycent,rycent,rycentpost))
+allbinfreq <- ddply(allbin, .(type,binxs,binys),summarise,
+                     freq = length(binxs))
+
+p4 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
+  geom_tile(aes(x=binxs, y=binys, fill=freq),data=subset(allbinfreq,type=="Standard")) + 
+  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend") + 
+  theme_bw() + xlab("") + ylab("")  +
+  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
+        plot.margin = unit(c(0,1,0, 1),"cm"))+
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) 
+
+p5 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
+  geom_tile(aes(x=binxs, y=binys, fill=freq),data=subset(allbinfreq,type=="Random")) + 
+  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend") + 
+  theme_bw() + xlab("") + ylab("") +
+  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
+        plot.margin = unit(c(0,1,0, 1),"cm"))+
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) 
+
+p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
+  geom_tile(aes(x=binxs, y=binys, fill=freq),data=subset(allbinfreq,type=="Post-Processed Random")) + 
+  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend") + 
+  theme_bw() + xlab("") + ylab("") +
+  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
+        plot.margin = unit(c(0,1,0, 1),"cm"))+
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) 
+
+grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
+@
+
 
 %------------------------------------------------
 
