@@ -506,8 +506,7 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
   5 & 5 & 2 \\  \hline
 \end{tabularx}}
 \end{minipage}
-\label{DataReductionExample}
-\caption{Original, Binned and Reduced Binned Data Tables, with data storage sizes.  Binned using standard rectangular approach with origin at (-10,-10) and binwidths $\omega_x = \omega_y = 10$. }
+\caption{\label{DataReductionExample}Original, Binned and Reduced Binned Data Tables, with data storage sizes.  Binned using standard rectangular approach with origin at (-10,-10) and binwidths $\omega_x = \omega_y = 10$. }
 \end{table}
 
 Information recovery comes with a two-fold cost: the additional storage of numeric bin centers triples the amount of information stored, and the computational cost to compute numeric bin centers is O($nm^2$), where $n$ is the number of data points and $m^2$, the total number of bins.
@@ -721,7 +720,7 @@ L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ \left(x_i-b_X(x_i)\right)^2 +
 %
 where $L_i^S$ is the loss in the  $i^{th}$ observation. 
 %
-Figure~\ref{fig:spatlossdemo2} visually displays the spatial loss for observations binned using a standard rectangular binning algorithm. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
+Figure~\ref{fig:spatlossdemo2} visually displays the spatial loss for the data from  Table~\ref{DataReductionExample} as a result of standard rectangular binning. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
 
 For random assignment the total spatial loss can be calculated by simply replacing $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.  This total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be payed to the two points that with spatial losses highlighted in red; in standard binning these points are in neighboring bins and have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are reallocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  
 
