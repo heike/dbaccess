@@ -553,11 +553,12 @@ qplot(x,y, asp=1, geom="blank") +
   geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
                                 by=binwidth)+binwidth/2), colour="grey90") + 
   geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
-                                by=binwidth)+binwidth/2), colour="grey90") + 
-  theme_bw()+ theme(legend.position="bottom") +
+                                by=binwidth)+binwidth/2), colour="grey90") +
+  theme_bw() + theme(panel.grid.major= element_blank(),
+                     panel.grid.minor= element_blank(), legend.position="bottom") +
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
-                      trans="log", breaks=c(1, 2, 5, 10, 20))+
-  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank())
+                      trans="log", breaks=c(1, 2, 5, 10, 20))
+
 @
 \end{minipage}\hfil
 \begin{minipage}{.495\linewidth}
@@ -570,11 +571,11 @@ qplot(x,y, asp=1, geom="blank") +
   geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
                                 by=binwidth)+binwidth/2), colour="grey90") + 
   geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
-                                by=binwidth)+binwidth/2), colour="grey90") + 
-  theme_bw()+ theme(legend.position="bottom") +
+                                by=binwidth)+binwidth/2), colour="grey90") +
+  theme_bw() + theme(panel.grid.major= element_blank(),
+                     panel.grid.minor= element_blank(), legend.position="bottom") +
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
-                      trans="log", breaks=c(1, 2, 5, 10, 20))+
-  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank())
+                      trans="log", breaks=c(1, 2, 5, 10, 20))
 @
 \end{minipage}\\
 \hfil\begin{minipage}{.495\linewidth}
@@ -587,11 +588,11 @@ qplot(x,y, asp=1, geom="blank") +
   geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
                                 by=binwidth)+binwidth/2), colour="grey90") + 
   geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
-                                by=binwidth)+binwidth/2), colour="grey90") + 
-  theme_bw()+ theme(legend.position="bottom") +
+                                by=binwidth)+binwidth/2), colour="grey90") +
+  theme_bw() + theme(panel.grid.major= element_blank(),
+                     panel.grid.minor= element_blank(), legend.position="bottom") +
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
-                      trans="log", breaks=c(1, 2, 5, 10, 20))+
-  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank())
+                      trans="log", breaks=c(1, 2, 5, 10, 20))
 @
 \end{minipage}\hfil
 \begin{minipage}{.495\linewidth}
@@ -604,11 +605,11 @@ qplot(x,y, asp=1, geom="blank") +
   geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
                                 by=binwidth)+binwidth/2), colour="grey90") + 
   geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
-                                by=binwidth)+binwidth/2), colour="grey90") + 
-  theme_bw()+ theme(legend.position="bottom") +
+                                by=binwidth)+binwidth/2), colour="grey90") +
+  theme_bw() + theme(panel.grid.major= element_blank(),
+                     panel.grid.minor= element_blank(), legend.position="bottom") +
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
-                      trans="log", breaks=c(1, 2, 5, 10, 20))+
-  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank())
+                      trans="log", breaks=c(1, 2, 5, 10, 20))
 @
 \end{minipage}
 \end{minipage}
@@ -774,7 +775,7 @@ p4 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend") + 
   theme_bw() + xlab("") + ylab("")  +
   theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
-        plot.margin = unit(c(0,1,0, 1),"cm"))+
+        plot.margin = unit(c(0,1,0, 1),"cm"),legend.position="bottom")+
   geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) 
 
 p5 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
@@ -782,7 +783,7 @@ p5 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend") + 
   theme_bw() + xlab("") + ylab("") +
   theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
-        plot.margin = unit(c(0,1,0, 1),"cm"))+
+        plot.margin = unit(c(0,1,0, 1),"cm"),legend.position="bottom")+
   geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) 
 
 p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
@@ -790,7 +791,7 @@ p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend") + 
   theme_bw() + xlab("") + ylab("") +
   theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
-        plot.margin = unit(c(0,1,0, 1),"cm"))+
+        plot.margin = unit(c(0,1,0, 1),"cm"),legend.position="bottom")+
   geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) 
 
 grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
@@ -847,12 +848,10 @@ L^{\log F} = \sum_{\ell=1}^{L} L_\ell^{\log F} = \sum_{\ell=1}^{L} (\log(c_\ell+
 %
 Note that we have added one count to every cell before taking the logarithm to avoid problems with empty cells. 
 
-\ktm{Plot needed here to demonstrate shading scales under binning.}
+\ktm{Can't figure out how to get rid of the ``washed-out'' look in the continuous color scale figure.  It looks lighter because it is being rendered with tiny gaps between the 1000 narrow tiles which lightens the whole plot because the background is showing through.}
 
 <<FreqLossDemo,echo=F,include=T,eval=T,fig.width=6, fig.height=3, out.width='.8\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, fig.show='hold'>>= 
-library(ggplot2)
-library(gridExtra)
-J = 0.01
+J= 1
 J2 = 200
 bound = 1000
 id <- seq(0+J/2,bound-J/2,by=J )
@@ -862,8 +861,8 @@ fill2 <- seq(J2/2,bound-(J2/2), by=J2)
 p1 <- qplot(id, 2, geom="tile", fill=-fill) +
   theme(plot.margin = unit(c(0.1,1,0.1, 1),"cm"), 
         legend.position = "none",
-        axis.ticks=element_blank(),
-        axis.text.y=element_blank(),
+        axis.ticks=element_blank(),axis.text.y=element_blank(),
+        panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
         panel.background=element_blank()
         ) + 
   ylab("Continuous") + xlab("")
@@ -874,52 +873,53 @@ p2 <- qplot(id2, 2, geom="tile", fill=-fill2) +
         axis.text.y=element_blank(),
         panel.background=element_blank()) + 
   ylab("Discrete") + xlab("Count")
+
 grid.arrange(p1,p2,nrow=2)
 #ggsave("./figure/FreqBin.pdf",width=5, height=1.5)
 @
 
 
-\subsection{Old Loss Definitions (to be removed)}
-\ktm{The following \textit{numerical, visual and freq} loss descriptions are from the old list and will be removed: }
-\begin{itemize}
-\item {\it Numerical Loss}, $L^\text{N}$, occurs when points in the data set are reduced to a single points at the bin means.  Allocating points to the numerical center, or the mean of the data corresponding to that bin, causes a loss of information about the exact location of the points.
-
-\item {\it Visual Loss}, $L^\text{V}$, is an implicit loss due to the rendering;  visually we perceive the center of a bin to be the center of the tile. This visual center will generally different from the numerical mean, causing some bias in the perception. Thus visual loss for a bin, $L_i^\text{N}$, is the euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The visual loss is the sum of these bin distances.
-
-\item {\it Frequency Loss} results from our inability to render the frequency information accurately. Different rendering methods for the frequency information will lead to different losses. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent this information. The number of colors that can be differentiated and mapped back to frequency information accurately is fairly limited. Note that even though this loss will turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where frequency information is masked in large data situations due to over-plotting of points.
-
+% \subsection{Old Loss Definitions (to be removed)}
+% \ktm{The following \textit{numerical, visual and freq} loss descriptions are from the old list and will be removed: }
+% \begin{itemize}
+% \item {\it Numerical Loss}, $L^\text{N}$, occurs when points in the data set are reduced to a single points at the bin means.  Allocating points to the numerical center, or the mean of the data corresponding to that bin, causes a loss of information about the exact location of the points.
 % 
-% , so we must balance perceptual limits of frequency information with the limits of overplotting single points. 
-
-
-% which may not be the center of the data within the bin, causing bias and numerical loss.
+% \item {\it Visual Loss}, $L^\text{V}$, is an implicit loss due to the rendering;  visually we perceive the center of a bin to be the center of the tile. This visual center will generally different from the numerical mean, causing some bias in the perception. Thus visual loss for a bin, $L_i^\text{N}$, is the euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The visual loss is the sum of these bin distances.
 % 
-% Visual loss occurs in the graphical display of the data, as individual points are represented as tiles, and tiles are perceived according to their visual center, rather than according to the center of the data.
+% \item {\it Frequency Loss} results from our inability to render the frequency information accurately. Different rendering methods for the frequency information will lead to different losses. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent this information. The number of colors that can be differentiated and mapped back to frequency information accurately is fairly limited. Note that even though this loss will turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where frequency information is masked in large data situations due to over-plotting of points.
 % 
-%  
-\end{itemize}
-
-We explore the different types of loss in the remainder of this section in more detail. For clarity we will again be specifying loss using notation for a one dimensional binning process. This notation can then be extended to higher dimensions in applications.
-
-\subsection{Numerical and Visual Loss}
-Reducing data points $\mathbf{x}$ to the visual bin centers $\mathbf{x}^\ast$ results in a loss of information, as there is a reduction in the variability of the data when data points are transformed from individual values to bin centers on a grid.
-If the visual bin centers are the same as the numerical centers for each bin, then any loss could be strictly attributed to difference between points and the bin centers. 
-The problem is that the visual center and the numerical center for bins will rarely match, which introduces  visual bias  to the graphical representation of the data, as we perceive the bin center to be the physical middle of the symbol representing the data.
-
-Therefore we distinguish two contributions to the total loss. 
-Numerical loss results from the binning process as points are reduced to the numerical center point. The loss for an individual point, $L_i^\text{N}$, is the euclidean distance between the $i^{th}$ data point $(x_i,y_i)$ and the corresponding bin numerical center $(\bar{x}, \bar{y})$. The overall numerical loss is thus the sum of numerical losses for individual points ($L^\text{N} = \sum_{i=1}^n L_i^\text{N}$).
-Visual loss is due to the distance between the numerical centers and the visual centers. The visual loss for each bin, $L_j^\text{V}$, is the euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The overall visual loss is the sum of these bin distances ($L^\text{V} = \sum_{j=1}^{N_x} L_j^\text{V}$). 
-This discrepancy is particularly clear as demonstrated in Figure~\ref{fig:stdBinTutorial2}, in which the visual center of the bin varies significantly from the numerical center of the data contained within the bin under the standard algorithm.  
-This discrepancy between the visual center of the bin and the numerical center of the data within the bin occurs in both binning algorithms, and we can note that the loss functions apply to either approach to binning.
-
-The magnitude of the numerical and visual losses are clearly dictated by the scale on which the data was recorded, thus and the loss values have no direct interpretation. However, we can examine both the numerical and the visual loss from the perspective of proportion of the greatest possible loss.  
-To do this for numerical loss we consider the binning scenario that would always lead to greatest possible loss; allocating all data points into a single bin.  Thus we can define the greatest possible numerical loss as
-
-\begin{center}
-$ L_0^\text{N} = \sum_{i=1}^{n} \sqrt{(x_i-\bar{x})^2 + (y_i-\bar{y})^2}  $, 
-\end{center}
-
-where $\bar{x}$ and $\bar{y}$ are the sample averages for x and y respectively.  After we select a binning strategy and binwidth we can then assess the proportion of possible numerical loss incurred due to binning by computing $L^\text{N} / L_0^\text{N}$.
+% % 
+% % , so we must balance perceptual limits of frequency information with the limits of overplotting single points. 
+% 
+% 
+% % which may not be the center of the data within the bin, causing bias and numerical loss.
+% % 
+% % Visual loss occurs in the graphical display of the data, as individual points are represented as tiles, and tiles are perceived according to their visual center, rather than according to the center of the data.
+% % 
+% %  
+% \end{itemize}
+% 
+% We explore the different types of loss in the remainder of this section in more detail. For clarity we will again be specifying loss using notation for a one dimensional binning process. This notation can then be extended to higher dimensions in applications.
+% 
+% \subsection{Numerical and Visual Loss}
+% Reducing data points $\mathbf{x}$ to the visual bin centers $\mathbf{x}^\ast$ results in a loss of information, as there is a reduction in the variability of the data when data points are transformed from individual values to bin centers on a grid.
+% If the visual bin centers are the same as the numerical centers for each bin, then any loss could be strictly attributed to difference between points and the bin centers. 
+% The problem is that the visual center and the numerical center for bins will rarely match, which introduces  visual bias  to the graphical representation of the data, as we perceive the bin center to be the physical middle of the symbol representing the data.
+% 
+% Therefore we distinguish two contributions to the total loss. 
+% Numerical loss results from the binning process as points are reduced to the numerical center point. The loss for an individual point, $L_i^\text{N}$, is the euclidean distance between the $i^{th}$ data point $(x_i,y_i)$ and the corresponding bin numerical center $(\bar{x}, \bar{y})$. The overall numerical loss is thus the sum of numerical losses for individual points ($L^\text{N} = \sum_{i=1}^n L_i^\text{N}$).
+% Visual loss is due to the distance between the numerical centers and the visual centers. The visual loss for each bin, $L_j^\text{V}$, is the euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The overall visual loss is the sum of these bin distances ($L^\text{V} = \sum_{j=1}^{N_x} L_j^\text{V}$). 
+% This discrepancy is particularly clear as demonstrated in Figure~\ref{fig:stdBinTutorial2}, in which the visual center of the bin varies significantly from the numerical center of the data contained within the bin under the standard algorithm.  
+% This discrepancy between the visual center of the bin and the numerical center of the data within the bin occurs in both binning algorithms, and we can note that the loss functions apply to either approach to binning.
+% 
+% The magnitude of the numerical and visual losses are clearly dictated by the scale on which the data was recorded, thus and the loss values have no direct interpretation. However, we can examine both the numerical and the visual loss from the perspective of proportion of the greatest possible loss.  
+% To do this for numerical loss we consider the binning scenario that would always lead to greatest possible loss; allocating all data points into a single bin.  Thus we can define the greatest possible numerical loss as
+% 
+% \begin{center}
+% $ L_0^\text{N} = \sum_{i=1}^{n} \sqrt{(x_i-\bar{x})^2 + (y_i-\bar{y})^2}  $, 
+% \end{center}
+% 
+% where $\bar{x}$ and $\bar{y}$ are the sample averages for x and y respectively.  After we select a binning strategy and binwidth we can then assess the proportion of possible numerical loss incurred due to binning by computing $L^\text{N} / L_0^\text{N}$.
 
 %-------
 % Cut "total loss" stuff, because this was all a relic of "spatial loss" part of paper
@@ -934,7 +934,6 @@ where $\bar{x}$ and $\bar{y}$ are the sample averages for x and y respectively. 
 %L_s(\mathbf{x}) =  1/S^2_{\emptyset} \cdot \left(\sum_i^n L^N_i + \sum_j^{N_x} L^V_j\right)
 %\end{eqnarray}
 %-------
-
 <<smoothing, echo=FALSE, include=FALSE, out.width="0.5\\textwidth", fig.width=5.4, fig.height=4.05>>=
 set.seed(53022)
 data <- data.frame(x=rnorm(200, 0, 2), y=rnorm(200, 0, 2), Freq=1)
@@ -947,7 +946,6 @@ ggplot()+geom_histogram(aes(x=data$x, y=..count..), binwidth=1/4, fill=I("grey80
 ggsave("./figure/FreqLoss.pdf", width=5.4*.8, height=4.05*.8)
 @
 
-\noindent
 
 %The decomposition also holds for the random binning algorithm as well as the standard binning algorithm. 
 %The expected total loss for either algorithm depends on the distribution the underlying data. 
@@ -958,12 +956,12 @@ ggsave("./figure/FreqLoss.pdf", width=5.4*.8, height=4.05*.8)
 %It is worth noting that the loss function is a monotonically increasing function of binwidth. An interesting feature of the random binning algorithm is that the increase in loss that we experience by doubling the bin width is deterministic, even though the assignment of bins is not. This holds for repeated doubling of the bin width. A proof of this can be found in appendix \ref{proof:constantloss}. Doubling bin widths is, particularly in the framework of visualizations, a very natural step, making this an important property of the random binning.
 %---
 
-\begin{figure}[hbtp]
-    \centering
-		\subfloat[Numerical and Visual Loss]{\includegraphics[keepaspectratio=true, width=.46\textwidth]{./figure/Binning-DataVisualNumericalCenter.pdf}}
-    \subfloat[Frequency Loss]{\includegraphics[keepaspectratio=true, width=.54\textwidth]{./figure/FreqLoss.pdf}}
-\caption{\label{fig:stdBinTutorial2} Types of loss due to binning: (a) Numerical loss associated with the cumulative difference from the binned data to the numerical center and visual loss associated with the difference between the numerical and visual bin centers.  (b) Frequency loss associated with a change of bin width to 1 from 0.25 in the example of Figure~\ref{binning}.}   
-	\end{figure}
+% \begin{figure}[hbtp]
+%     \centering
+% 		\subfloat[Numerical and Visual Loss]{\includegraphics[keepaspectratio=true, width=.46\textwidth]{./figure/Binning-DataVisualNumericalCenter.pdf}}
+%     \subfloat[Frequency Loss]{\includegraphics[keepaspectratio=true, width=.54\textwidth]{./figure/FreqLoss.pdf}}
+% \caption{\label{fig:stdBinTutorial2} Types of loss due to binning: (a) Numerical loss associated with the cumulative difference from the binned data to the numerical center and visual loss associated with the difference between the numerical and visual bin centers.  (b) Frequency loss associated with a change of bin width to 1 from 0.25 in the example of Figure~\ref{binning}.}   
+% 	\end{figure}
 
 \subsection{Loss of Frequency Information} 
 Loss of frequency information in a scatterplot happens because of our inability to render elements of a third dimension efficiently. By employing a color scheme for filling tiles according to the observed frequencies corresponds to a binning of the frequencies into a few different levels, with losses stemming from the same source as the previously discussed numerical loss.
