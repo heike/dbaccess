@@ -63,6 +63,8 @@ library(xtable)
 library(RColorBrewer)
 library(hexbin)
 library(MASS)
+#source in binning functions
+source("BinningLossFunctions.R")
 
 connect <- dbConnect(dbDriver("MySQL"), host="mysql2.stat.iastate.edu", 
                      port=3306, user="dbaccess", dbname="baseball")
@@ -533,9 +535,7 @@ Figure~\ref{binning} gives an overview of a data set and binned representations 
 set.seed(46)
 x <- round(rnorm(200), digits=2)
 y <- round(rnorm(200), digits=2)
-library(ggplot2)
 X <- data.frame(x,y)
-library(plyr)
 @
 \begin{minipage}{.35\linewidth}
 <<first, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=4>>=
@@ -546,37 +546,69 @@ qplot(x,y, asp=1, main='Unbinned Data')+theme_bw()
 \begin{minipage}{.495\linewidth}
 <<bin001, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
 binwidth=0.1
-X$xbin <- round(X$x/binwidth,0)*binwidth
-X$ybin <- round(X$y/binwidth,0)*binwidth
-Xsmall <- ddply(X, .(xbin, ybin), summarize, count=length(xbin))
-qplot(x,y, asp=1, geom="blank") + geom_tile(binwidth=binwidth, aes(x=xbin, y=ybin, fill=count), data=Xsmall) + ggtitle(sprintf("binwidth = %.2f", binwidth)) + geom_vline(aes(xintercept=seq(min(X$xbin)-binwidth, max(X$xbin), by=binwidth)+binwidth/2), colour="grey90") + geom_hline(aes(yintercept=seq(min(X$ybin)-binwidth, max(X$ybin), by=binwidth)+binwidth/2), colour="grey90") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 2, 5, 10, 20))
+binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
+qplot(x,y, asp=1, geom="blank") +
+  geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
+  ggtitle(sprintf("binwidth = %.2f", binwidth)) +
+  geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
+                                by=binwidth)+binwidth/2), colour="grey90") + 
+  geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
+                                by=binwidth)+binwidth/2), colour="grey90") + 
+  theme_bw()+ theme(legend.position="bottom") +
+  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
+                      trans="log", breaks=c(1, 2, 5, 10, 20))+
+  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank())
 @
 \end{minipage}\hfil
 \begin{minipage}{.495\linewidth}
 <<bin025, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
 binwidth=0.25
-X$xbin <- round(X$x/binwidth,0)*binwidth
-X$ybin <- round(X$y/binwidth,0)*binwidth
-Xsmall <- ddply(X, .(xbin, ybin), summarize, count=length(xbin))
-qplot(x,y, asp=1, geom="blank") + geom_tile(binwidth=binwidth, aes(x=xbin, y=ybin, fill=count), data=Xsmall) + ggtitle(sprintf("binwidth = %.2f", binwidth)) + geom_vline(aes(xintercept=seq(min(X$xbin)-binwidth, max(X$xbin), by=binwidth)+binwidth/2), colour="grey80") + geom_hline(aes(yintercept=seq(min(X$ybin)-binwidth, max(X$ybin), by=binwidth)+binwidth/2), colour="grey80")+ theme_bw()+ theme(legend.position="bottom") +scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 2, 5, 10, 20))
+binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
+qplot(x,y, asp=1, geom="blank") +
+  geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
+  ggtitle(sprintf("binwidth = %.2f", binwidth)) +
+  geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
+                                by=binwidth)+binwidth/2), colour="grey90") + 
+  geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
+                                by=binwidth)+binwidth/2), colour="grey90") + 
+  theme_bw()+ theme(legend.position="bottom") +
+  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
+                      trans="log", breaks=c(1, 2, 5, 10, 20))+
+  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank())
 @
 \end{minipage}\\
 \hfil\begin{minipage}{.495\linewidth}
 <<bin05, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
 binwidth=0.5
-X$xbin <- round(X$x/binwidth,0)*binwidth
-X$ybin <- round(X$y/binwidth,0)*binwidth
-Xsmall <- ddply(X, .(xbin, ybin), summarize, count=length(xbin))
-qplot(x,y, asp=1, geom="blank") + geom_tile(binwidth=binwidth, aes(x=xbin, y=ybin, fill=count), data=Xsmall) + ggtitle(sprintf("binwidth = %.2f", binwidth)) + geom_vline(aes(xintercept=seq(min(X$xbin)-binwidth, max(X$xbin), by=binwidth)+binwidth/2), colour="grey70") + geom_hline(aes(yintercept=seq(min(X$ybin)-binwidth, max(X$ybin), by=binwidth)+binwidth/2), colour="grey70")+ theme_bw()+ theme(legend.position="bottom") +scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 2, 5, 10, 20))
+binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
+qplot(x,y, asp=1, geom="blank") +
+  geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
+  ggtitle(sprintf("binwidth = %.2f", binwidth)) +
+  geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
+                                by=binwidth)+binwidth/2), colour="grey90") + 
+  geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
+                                by=binwidth)+binwidth/2), colour="grey90") + 
+  theme_bw()+ theme(legend.position="bottom") +
+  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
+                      trans="log", breaks=c(1, 2, 5, 10, 20))+
+  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank())
 @
 \end{minipage}\hfil
 \begin{minipage}{.495\linewidth}
 <<bin1, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
 binwidth=1
-X$xbin <- round(X$x/binwidth,0)*binwidth
-X$ybin <- round(X$y/binwidth,0)*binwidth
-Xsmall <- ddply(X, .(xbin, ybin), summarize, count=length(xbin))
-qplot(x,y, asp=1, geom="blank") + geom_tile(binwidth=binwidth, aes(x=xbin, y=ybin, fill=count), data=Xsmall) + ggtitle(sprintf("binwidth = %.2f", binwidth)) + geom_vline(aes(xintercept=seq(min(X$xbin)-binwidth, max(X$xbin), by=binwidth)+binwidth/2), colour="grey60") + geom_hline(aes(yintercept=seq(min(X$ybin)-binwidth, max(X$ybin), by=binwidth)+binwidth/2), colour="grey60")+ theme_bw()+ theme(legend.position="bottom") +scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 2, 5, 10, 20))
+binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
+qplot(x,y, asp=1, geom="blank") +
+  geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
+  ggtitle(sprintf("binwidth = %.2f", binwidth)) +
+  geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
+                                by=binwidth)+binwidth/2), colour="grey90") + 
+  geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
+                                by=binwidth)+binwidth/2), colour="grey90") + 
+  theme_bw()+ theme(legend.position="bottom") +
+  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
+                      trans="log", breaks=c(1, 2, 5, 10, 20))+
+  theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank())
 @
 \end{minipage}
 \end{minipage}
@@ -666,23 +698,6 @@ qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
 
 
 <<spatlossdemo2,echo=F,include=T,eval=T,fig.width=12, fig.height=6, out.width='1\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Visualization of spatial loss for same data using standard, random and post-processed random binning algorithms.  Note that the total spatial loss for the standard algorithm is smaller than by random binning. The net spatial loss for the original random binned data is the total spatial loss of the post-processed assignment." >>= 
-
-RandRectBin1d <- function(xs, origin, width){
-  bx1 <- origin + width/2
-  bxJ <- origin + width*(floor((max(xs)-bx1)/width) + .5)
-  lbs <- bx1 + width*floor((xs-bx1)/width)
-  ubs <- bx1 + width*ceiling((xs-bx1)/width)
-  # initially assign all values to upper bound
-  binxs <- ubs
-  # then use runif to reassign based on distance from 
-  plower <- (ubs - xs)/width
-  lowerindex <- (plower > runif(length(xs), 0, 1))
-  binxs[lowerindex] <- lbs[lowerindex]
-  binxs[xs < bx1] <- bx1
-  binxs[xs > bxJ] <- bxJ
-  return(binxs)
-}
-#---------------------------------------------------
 n=12
 param1 = 1
 param2 = 1.6
