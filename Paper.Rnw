@@ -139,13 +139,10 @@ In this paper we describe first the problem scatterplots are exposed to in large
 \section{Scatterplots for Large Data Sets}
 \label{Scatter}
 
-In the case of modestly sized data, scatterplots are great tools for showing relationships in two dimensions. For large data, scatterplots suffer from over-plotting, %-- i.e.\ a number of observations drawn in such close proximity that their points overlap, 
-thereby masking relevant structure.
-Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 139 seasons (from the years of 1871 -- 2009) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database (\url{http://www.seanlahman.com/baseball-archive/}).  The number of games played in a season is plotted versus number of strikeouts a pitcher threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(d1.ext)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data. 
+In the case of modestly sized data, scatterplots are great tools for showing relationships in two dimensions. With large data, scatterplots suffer from over-plotting of points, %-- i.e.\ a number of observations drawn in such close proximity that their points overla
+which masks relevant structure. Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 139 seasons (from the years of 1871 -- 2009) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database (\url{http://www.seanlahman.com/baseball-archive/}).  The number of games played in a season is plotted versus number of strikeouts a pitcher threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(d1.ext)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data. 
 
-Figure~\ref{fig:scatter-alpha}a shows a traditional scatterplot with each observation is drawn with a filled circle. A triangular structure is apparent with some outliers at a medium number of games and high number of strikeouts; however the density within the triangular mass of points is indistinguishable. \citet{tukey} suggested the use of open circles (see Figure~\ref{fig:scatter-alpha}b) to mitigate the problem of over-plotting. Open circles make points visible that are close together. This technique is  not suitable to determine the magnitude, but gives more information than is available with filled points. 
-%\hh{We need to decide on one way for referring to $\alpha$-blending in one way - we've got about four different ways of writing it right now. I'm ok with any of them, but we need to stick to it.}
-A modern alternative to open circles is alpha blending (see Figure~\ref{fig:scatter-alpha}c). Alpha blending provides more frequency information, allowing a distinction of higher-resolution density. 
+Figure~\ref{fig:scatter-alpha}a shows a traditional scatterplot with each observation is drawn with a filled circle. A triangular structure is apparent with some outliers at a medium number of games and high number of strikeouts; however the density within the triangular mass of points is indistinguishable. \citet{tukey} suggested the use of open circles (see Figure~\ref{fig:scatter-alpha}b) to mitigate the problem of over-plotting. Open circles make points that are close together more visually distinct; thus allowing for the perception of more density information than with filled points.  A modern alternative to open circles is alpha blending (see Figure~\ref{fig:scatter-alpha}c). Alpha blending provides more frequency information, allowing a distinction of higher-resolution density. 
 
 \begin{figure}[hbtp]
   \subfloat[Overplotted data ]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{Overplotting.pdf}}
@@ -161,9 +158,9 @@ A modern alternative to open circles is alpha blending (see Figure~\ref{fig:scat
 All of these methods fall short in the example.
 As can be seen in Figure~\ref{fig:scatter-alpha}, strategy (a) is the least effective, as it provides information about the outliers and range of the data but cannot provide any point density information. Tukey's open circles (b) help to a degree, but are also prone to over-plotting  when the data set is very large. Alpha blending (c) highlights the structure, but minimizes the visual impact of outliers. The data set is large enough that neither alpha blending nor open circles are completely effective, and so we must pursue a different strategy which can provide better information about the relative density of points at a given location.
 
-%\hh{discussion of sufficient statistics for graphics could go here. Idea: the problems with large data in scatterplots all arise from overplotting, which is a form of implicit data aggregation. In order to keep track of overplotting, we switch to a weighted form of displays and explicitly keep track of overplotting. The aggregated data forms the sufficient statistics for a scatterplot, i.e. provide all of the information necessary to render it. The scatterplot therefore does not display more than that information. Making the data aggregation explicit allows us to calculate the loss we experience.}
-
 Other scatterplot adaptations have been introduced that avoid overplotting by manipulating the display of the points by distorting the locations or the scales. Generalized scatterplots \citep{Keim2010GenScatter} display all individual observations (including ties) but use distortion of the point locations by having points repel one another to avoid overlapping points.  An extension of generalized scatterplots uses clustering and local principal components to allow ellipsoid oriented distortion to display local correlation structure in the data \citep{Janetzko2013Ellipse}. Variable-binned scatterplots \citep{Hao2010visual} break the display into a non-uniform rectangular grid and resize the rows of cells according to density of points. This variable binning fragments the continuity of the axes into  segments on different scales and also does not deal with ties. Generalized and variable-binned scatterplots make fine data structure more visible and allow color to be reserved for a third variable instead of frequency; however, the distortion of the point locations and/or axes warp the visual display of the association between the two primary variables.
+
+\hh{discussion of sufficient statistics for graphics could go here. Idea: the problems with large data in scatterplots all arise from overplotting, which is a form of implicit data aggregation. In order to keep track of overplotting, we switch to a weighted form of displays and explicitly keep track of overplotting. The aggregated data forms the sufficient statistics for a scatterplot, i.e. provide all of the information necessary to render it. The scatterplot therefore does not display more than that information. Making the data aggregation explicit allows us to calculate the loss we experience.}
 
 Another approach is to reduce the graphical complexity by plotting binned aggregations of the data, namely frequencies, as opposed to plotting every observation as an individual point. This has the additional advantage of reducing the size of the stored data necessary for the construction of the plot, as only the bin centers and the frequency of observations which correspond to that bin must be stored. Wickham argues for a ``bin-summarize-smooth'' procedure to be applied to the visualization of big data and he notes that simple summary functions, such as counts, scale  well with the size of data \citep{Wickham2013Bin}. Liu, Jiang and Heer employ the computational benefits of binning for their interactive big data visualization program, \textit{imMens} \citep{Liu2013imMens}.  \hh{also add \citep{gold} for binning reference - it's called `weighting' there.}
 
@@ -208,26 +205,23 @@ Binning in dimensions $X$ and $Y$ provides us with a more condensed form of the 
 
 We will proceed with rectangular bins for simplicity, but other binning schemes, such as hexagonal bins \citep{scatterplots} are also common.  While hexagonal binning has been shown to have slightly better graphical properties \citep{scott2009multivariate}; rectangular bins are advantageous because bins in $x$ and $y$ are orthogonal to each other, thus we can present the one-dimensional case which will easily generalize to two or more dimensions.  We will however only consider binning in up to two dimensions, $X$ and $Y$. The algorithms we discuss are immediately applicable to higher dimension, but we do not feel that the paper would benefit from a more general discussion.
 
-In general, for the univariate case with observations, $x_i$ for $i \in \{1,\dots,n\}$, binning algorithms require a set of bin centers $x_j^\ast$ for $j \in \{1,\dots,J\}$ and a binning function $b_X(.) : x_i \rightarrow x^\ast_j$ that maps observations to  bin centers. 
+For the univariate case with observations, $x_i$ for $i \in \{1,\dots,n\}$, binning algorithms require a set of bin centers $x_j^\ast$ for $j \in \{1,\dots,J\}$ and a binning function $b_X(.) : x_i \rightarrow x^\ast_j$ that maps observations to  bin centers. 
 
+\textit{Rectangular binning} accomplishes this by defining a sequence of $J$ adjacent intervals, $(\beta_{j-1},\beta_{j}]$ for $j \in \{1,\dots,J\}$, which span over the range of the data. Note that half open intervals are used such that any observation falling on a bin boundary is assigned to a unique interval. Values $x_i$ exactly equal to the lowest bin boundary $\beta_0$ are grouped into the first bin to close the leftmost bound. Each observation is then mapped to a bin center, $x_j^\ast$; the midpoint for the interval to which the observation belongs. 
 
-
-
-{\textit Rectangular binning} accomplishes this by defining a sequence of $J$ adjacent intervals, $(\beta_{j-1},\beta_{j}]$ for $j \in \{1,\dots,J\}$, which span over the range of the data. Note that half open intervals are used such that any observation falling on a bin boundary is assigned to a unique interval. Values $x_i$ exactly equal to the lowest bin boundary $\beta_0$ are grouped into the first bin to close the leftmost bound. Each observation is then mapped to a bin center, $x_j^\ast$; the midpoint for the interval to which the observation belongs. 
-
-% This is expressed mathematically using the binning function $b_X(.) : x_i \rightarrow x^\ast_j$ is defined as 
-% %
-% \begin{eqnarray}\label{rectbin}
-% b_X(x_i) = \left\{\begin{array}{ll} 
-%   x^\ast_{1} &\text{ for all } x_i = \beta_{0} \\
-%   x^\ast_j & \text{ for all } x_i \in (\beta_{j-1} , \beta_j] 
-%   \end{array}\right.
-% \end{eqnarray}  
-% %
+This is expressed mathematically using the binning function $b_X(.) : x_i \rightarrow x^\ast_j$ is defined as 
+%
+\begin{eqnarray}\label{rectbin}
+b_X(x_i) = \left\{\begin{array}{ll} 
+  x^\ast_{1} &\text{ for all } x_i = \beta_{0} \\
+  x^\ast_j & \text{ for all } x_i \in (\beta_{j-1} , \beta_j] 
+  \end{array}\right.
+\end{eqnarray}  
+%
 
 \textit{Standard rectangular binning} is a special cases of general rectangular binning that uses intervals of equal size for all bins; thus only the origin of the first bin, $\beta_0$, and a binwidth, $\omega_X$, need to be specified. Standard rectangular binning is necessarily used in the construction of all histograms;  the consistent binwidth makes the display of frequency proportional to density. Fixed width binning procedures are also highly computationally efficient \citep{Wickham2013Bin}. 
 
-Note that this standard rectangular binning procedure utilizes intervals that are open to the left and closes the outer bound of the leftmost bin. These specifications are consistent with the binning procedure used in the \texttt{hist()} function for creating histograms in base \texttt{R}. These specifications were selected for this paper, but these choices are by no means consider universal for binning.  For example, the \texttt{ggplot2} package creates histograms with intervals open to the right and does not close the outer bound of the rightmost bin. 
+Note that this standard rectangular binning procedure utilizes intervals that are open to the left and closes the outer bound of the leftmost bin. These specifications are consistent with the binning procedure used in the \texttt{hist()} function for creating histograms in base \texttt{R} \citep{R}. These specifications were selected for this paper, but these choices are by no means consider universal for binning.  For example, the \texttt{ggplot2} package creates histograms with intervals open to the right and does not close the outer bound of the rightmost bin \citep{ggplot2}. 
 
 \textit{Quantile binning} is another option that divides the range of the observations into bins each containing equal number of points. The $j^{th}$ bin intervals is $(Q_X((j-1)/J),Q_X((j)/J)]$, where $Q_X(p)$ is the the $p^{th}$ empirical quantile using the inverse empirical distribution function. Note that this binning approach is \textit{not} desirable for visualizing density patterns, as it effectively balances the frequency counts in all bins; it does however have desirable properties for creating discernible groups in visualization using discrete color palettes.
   
@@ -251,7 +245,7 @@ Random &  ---  & $\{x_j^\ast \text{ }|\text{ } x_j^\ast > x_{j-1}^\ast \}$  \\
 \label{tab:rectbinning}
 \end{table}
 %
-An alternative to the rectangular binning processes discussed above, is the random binning algorithm which utilizes a non-deterministic bin function $b^r_X(\cdot)$ which randomly assigns a value $x_i$ to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability depending on the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
+An alternative to the rectangular binning processes discussed above, is the random binning algorithm which utilizes a non-deterministic bin function $b^r_X(\cdot)$ which randomly assigns a value $x_i$ to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability inversely proportional to the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
 %
 \begin{eqnarray}\label{randbin1}
 b^r_X(x_i) = \left\{\begin{array}{ll} 
@@ -428,7 +422,7 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
   \label{fig:BinningTutorial}
 \end{figure}
 
-
+%--------------------------------------------------------------
 
 \subsection{Binned Data Reduction}
 
@@ -606,6 +600,9 @@ In spite of the costs, information recovery is still useful for very large data,
 % %
 % The two dimensional analog for quantile binning is not explored, as this binning strategy will be used in strictly the univariate setting for this manuscript.
 
+
+%--------------------------------------------------------------
+
 \section{Loss due to Binning}
 \label{LossIntro}
 
@@ -722,63 +719,7 @@ where $L_i^S$ is the loss in the  $i^{th}$ observation.
 %
 Figure~\ref{fig:spatlossdemo2} visually displays the spatial loss for the data from  Table~\ref{DataReductionExample} as a result of standard rectangular binning. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
 
-For random assignment the total spatial loss can be calculated by simply replacing $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.  This total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be payed to the two points that with spatial losses highlighted in red; in standard binning these points are in neighboring bins and have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are reallocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  
-
-The minimum total spatial loss from all binning combinations that result in the same reduced data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}.  The net spatial loss for standard binned data will always be equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by exchanging bin assignments for pairs of points in neighboring bins that are exist further from their own bin center that their partner's bin center.
-
-<<SpatialLossDemo,echo=F,include=F,cache=T>>=
-#Try Multivariate Normal and Uniform for this plot
-library(MASS)
-#MVN plot
-n=15
-set.seed(2)
-Sigma <- matrix(c(16,12,12,14),2,2)
-dat <- mvrnorm(n = n, rep(0, 2), Sigma)
-x <- dat[,1]
-y <- dat[,2]
-xcent <- rep(-5,n) ; xcent[x>0] <- 5
-ycent <- rep(-5,n) ; ycent[y>0] <- 5
-temp <- data.frame(   
-  x=c( -10,   0,  10, -10, -10, -10), 
-  xend=c( -10,   0,  10,  10, 10, 10), 
-  y=c( -10, -10 , -10 , -10, 0 , 10), 
-  yend=c(10, 10 , 10, -10, 0, 10 ))
-qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
-  geom_segment(aes(x = x, y = y, xend = xcent, yend = ycent)) + 
-  geom_point(aes(x=x,y=y), size=I(3))+ 
-  geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) + 
-  theme_bw() + xlab("") + ylab("")
-      ggsave("./figure/SpatialLossDisplayMVN.pdf", width=5, height=5, units="in")
-
-#uniform plot
-set.seed(2)
-x <- runif(n, -10,10)
-y <- runif(n, -10,10)
-xcent <- rep(-5,n) ; xcent[x>0] <- 5
-ycent <- rep(-5,n) ; ycent[y>0] <- 5
-temp <- data.frame(   
-  x=c( -10,   0,  10, -10, -10, -10), 
-  xend=c( -10,   0,  10,  10, 10, 10), 
-  y=c( -10, -10 , -10 , -10, 0 , 10), 
-  yend=c(10, 10 , 10, -10, 0, 10 ))
-qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
-  geom_segment(aes(x = x, y = y, xend = xcent, yend = ycent)) + 
-  geom_point(aes(x=x,y=y), size=I(3))+ 
-  geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) + 
-  theme_bw() + xlab("") + ylab("")
-      ggsave("./figure/SpatialLossDisplayUnif.pdf", width=5, height=5, units="in")
-@
-
-% \begin{figure}[h]
-%   \centering
-%   \subfloat[Spatial Loss MVN Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayMVN.pdf}}
-%   \subfloat[Spatial Loss Uniform Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayUnif.pdf}}
-%   \caption{Visualization of spatial loss. The distance between points and bin centers adds up to the spatial loss due to binning. }%\ktm{Redundant plots using MVN and Uniform Data. Which makes a better plot?}}
-%   \label{fig:LossDisplay}
-% \end{figure}
-
-
-<<spatlossdemo2,echo=F,include=T,eval=T,fig.width=12, fig.height=6, out.width='1\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Visualization of spatial loss for same data using standard, random and post-processed random binning algorithms.  Note that the total spatial loss for the standard algorithm is smaller than by random binning. The net spatial loss for the original random binned data is the total spatial loss of the post-processed assignment." >>= 
+<<spatlossdemo2,echo=F,include=T,eval=T,fig.width=12, fig.height=6, out.width='1\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Visualization of spatial loss for same data using standard, random and post-processed random binning algorithms.  Note that the total spatial loss for the standard algorithm is smaller than by random binning. The net spatial loss for the original random binned data is the total spatial loss of the post-processed assignment." >>= 
 n=12
 param1 = 1
 param2 = 1.6
@@ -877,7 +818,60 @@ p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
 grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
 @
 
+For random assignment the total spatial loss can be calculated by simply replacing $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.  This total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be payed to the two points that with spatial losses highlighted in red; in standard binning these points are in neighboring bins and have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are reallocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  
 
+The minimum total spatial loss from all binning combinations that result in the same reduced data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}.  The net spatial loss for standard binned data will always be equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by exchanging bin assignments for pairs of points in neighboring bins that are exist further from their own bin center that their partner's bin center.
+
+<<SpatialLossDemo,echo=F,include=F,cache=T>>=
+#Try Multivariate Normal and Uniform for this plot
+library(MASS)
+#MVN plot
+n=15
+set.seed(2)
+Sigma <- matrix(c(16,12,12,14),2,2)
+dat <- mvrnorm(n = n, rep(0, 2), Sigma)
+x <- dat[,1]
+y <- dat[,2]
+xcent <- rep(-5,n) ; xcent[x>0] <- 5
+ycent <- rep(-5,n) ; ycent[y>0] <- 5
+temp <- data.frame(   
+  x=c( -10,   0,  10, -10, -10, -10), 
+  xend=c( -10,   0,  10,  10, 10, 10), 
+  y=c( -10, -10 , -10 , -10, 0 , 10), 
+  yend=c(10, 10 , 10, -10, 0, 10 ))
+qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
+  geom_segment(aes(x = x, y = y, xend = xcent, yend = ycent)) + 
+  geom_point(aes(x=x,y=y), size=I(3))+ 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) + 
+  theme_bw() + xlab("") + ylab("")
+      ggsave("./figure/SpatialLossDisplayMVN.pdf", width=5, height=5, units="in")
+
+#uniform plot
+set.seed(2)
+x <- runif(n, -10,10)
+y <- runif(n, -10,10)
+xcent <- rep(-5,n) ; xcent[x>0] <- 5
+ycent <- rep(-5,n) ; ycent[y>0] <- 5
+temp <- data.frame(   
+  x=c( -10,   0,  10, -10, -10, -10), 
+  xend=c( -10,   0,  10,  10, 10, 10), 
+  y=c( -10, -10 , -10 , -10, 0 , 10), 
+  yend=c(10, 10 , 10, -10, 0, 10 ))
+qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
+  geom_segment(aes(x = x, y = y, xend = xcent, yend = ycent)) + 
+  geom_point(aes(x=x,y=y), size=I(3))+ 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) + 
+  theme_bw() + xlab("") + ylab("")
+      ggsave("./figure/SpatialLossDisplayUnif.pdf", width=5, height=5, units="in")
+@
+
+% \begin{figure}[h]
+%   \centering
+%   \subfloat[Spatial Loss MVN Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayMVN.pdf}}
+%   \subfloat[Spatial Loss Uniform Data]{\includegraphics[keepaspectratio=true, width=3in]{./figure/SpatialLossDisplayUnif.pdf}}
+%   \caption{Visualization of spatial loss. The distance between points and bin centers adds up to the spatial loss due to binning. }%\ktm{Redundant plots using MVN and Uniform Data. Which makes a better plot?}}
+%   \label{fig:LossDisplay}
+% \end{figure}
 %------------------------------------------------
 
 \subsection{Frequency Loss}
@@ -885,28 +879,29 @@ grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
 
 Bin counts can be displayed using a continuous shading scale in HSV color space (reference needed) and thus theoretically have no frequency loss. While the tiles of the binned scatterplot would be rendered precisely, the ability of a human with average vision to extract that information using a plot index for the frequency key for the plot is largely imprecise.  Color perception of shade is extremely context sensitive (reference here) allowing an inaccurate mapping of tile shade to the corresponding shade on the frequency key.  
 
- Research suggests that even under optimal conditions, we can effectively compare only about seven colors \citep{colorperception}, which provides a physical upper limit on the amount of frequency variation we can perceive.
-
-
 \hh{It is therefore not realistic, to expect readers to be able to map colors to a continuous color scheme, even though theoretically we certainly can distinguish enough different colors (see e.g.\ the discussion in \url{http://hypertextbook.com/facts/2006/JenniferLeong.shtml}). Figure~\ref{fig:context} shows an example of the context sensitivity of colors. Even though there is a lot of spread between the colors in this example, most onlookers have trouble answering the question about the relative relationship of the shading of the darkest/lightest points in each of the points clouds.
 }
-
 
 \begin{figure}[ht]
 \centering
 <<context, echo=F, fig.width=6, fig.height=4.5, out.width='.5\\textwidth'>>=
-col <- c(rnorm(200, mean=0, sd=10), rnorm(10, mean=50), rnorm(200, mean=100, sd=10), rnorm(10, mean=50))
-x <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=1, sd=0.075))
-y <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=1, sd=0.075))
+#col <- c(rnorm(200, mean=0, sd=10), rnorm(10, mean=50), rnorm(200, mean=100, sd=10), rnorm(10, mean=50))
+Shade <- c(rbeta(200, 1,10),rep(.5,10), rbeta(200,10,1), rep(.5,10))
+x <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
+y <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
+Shape <- c(rep("circle",200),rep("triangle",10),rep("circle",200),rep("triangle",10))
 
 require(ggplot2)
-qplot(x, y, colour=col, size=I(5)) + theme_bw() + theme(aspect.ratio=1)
+qplot(x, y, colour=Shade, size=I(5),shape=Shape) + theme_bw() + 
+  xlab("") + ylab("")+
+  theme(aspect.ratio=1, axis.ticks=element_blank(), axis.text=element_blank()) +
+  scale_colour_gradient(limits=c(0,1), breaks=c(0,.5,1))
 @
-\caption{\label{fig:context}Assess the colors in this scatterplot. Are the darkest spots in the cloud of lighter points as dark as the lightest spots in the cloud of darker points? Darker? Lighter? }
+\caption{\label{fig:context}Assess the colors in this scatterplot. Are the triangles in the lighter cloud of points as dark as the triangles in the darker cloud of points? The answer is that all the triangles have the exact same shade!}
 \end{figure}
 
 
-As a result, a binning width which produces fewer than seven frequency categories is preferable, while minimizing numerical loss within that constraint. 
+Research suggests that even under optimal conditions, we can effectively compare only about seven colors \citep{colorperception}, which provides a physical upper limit on the amount of frequency variation we can perceive.As a result, a binning width which produces fewer than seven frequency categories is preferable, while minimizing numerical loss within that constraint. 
 
  Whenever the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. We can model this as a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins  using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}. 
 
