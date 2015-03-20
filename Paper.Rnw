@@ -1242,6 +1242,59 @@ By additionally increasing the bin width, we  provide increasingly higher-level 
 
 %-----------------------------------------------------------------------------
 
+\section{Exploring Properties of Loss}
+
+\begin{itemize}
+\item Binning and frequency binning involve choices (standard/random/quantile, origin, binwidth, number of colors) want to make optimal choices given goals of binning.
+\item 3 simulated data sets: from bivariate Exponential, Normal, Uniform
+\item Since most data recorded to rough resolution we also assess loss when each dataset is rounded to nearest even value.  
+\end{itemize}
+
+%-----------------------------------------------------------------------------
+
+\subsection{Spatial binning choices}
+
+\begin{itemize}
+\item Binning Algorithm: total and net spatial losses are always larger for random binning than standard (analytical proof)
+\item Origin: 
+  \begin{itemize}
+    \item Doesn't much matter for fine resolution data but it does for coarse data.
+    \item If recorded to resolution $\alpha$, origin at $x_{(1)} - \alpha/2$ is optimal (analytical proof then demo)
+  \end{itemize} 
+\item Binwidth: 
+  \begin{itemize}
+    \item generally smaller $\omega \rightarrow$ smaller $L^s$. 
+    \item for fine data any binwidth is fine
+    \item for coarse data need binwidths $\omega \ge \alpha$ (show plot with whitespace gaps)
+    \item for coarse data binwidths should be scalar multiple of $\alpha$ (show plot with strips)
+    \item Does the distribution type matter? 
+  \end{itemize}
+\end{itemize}
+
+%-----------------------------------------------------------------------------
+
+\subsection{Frequency binning choices}
+
+\begin{itemize}
+\item Freq Binning Type
+  \begin{itemize}
+    \item Comparison of standard, log and quantile binning
+  \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+\item Number of Colors:
+  \begin{itemize}
+    \item Perception driven limitation to 7 or less color bins
+    \item As number colors increases, freq loss goes up?
+  \end{itemize}
+\end{itemize}
+
+
+
+
+%-----------------------------------------------------------------------------
+
 \section{Discussion and Examples}
 \subsection{Comparison of Loss in Binning Algorithms}
 <<LossTableGraphs,echo=F,results="hide",cache=TRUE, eval=TRUE>>=
