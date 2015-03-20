@@ -413,10 +413,10 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 
 \begin{figure}[h]
   \centering
-  \subfloat[Standard Binning]{\includegraphics[keepaspectratio=true, width=3in]{./figure/Binning-DataAndBin.pdf}}
+  \subfloat[Standard Binning]{\includegraphics[keepaspectratio=true, width=2.5in]{./figure/Binning-DataAndBin.pdf}}
 %   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
 %   {./figure/RandomBinningDataPoints1}}
-  \subfloat[Random Binning]{\includegraphics[keepaspectratio=TRUE, width=3in]
+  \subfloat[Random Binning]{\includegraphics[keepaspectratio=TRUE, width=2.5in]
   {./figure/RandomBinningDataPoints2.pdf}}
   \caption{Visualization of how data pairs are assigned to bins centered at (5, 25) and (15,25) under the two rectangular binning algorithms. Points in the standard algorithm are contained within the defined bin region, where points from the random algorithm may be assigned to any of the surrounding bin centers.}
   \label{fig:BinningTutorial}
@@ -426,11 +426,11 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 
 \subsection{Binned Data Reduction}
 
-\ktm{Section to describe how data is stored post binning. Section will discuss difference between binned data (bin centers added to original data, still n rows) and "reduced binned data" (aggregated into frequencies), sufficiency for constructing binned scatterplot and storage size.  Want to reference these ideas in later sections.}
+\ktm{ As previously mentioned second stage of binning requires that we count the number of observations assigned to each unique bin center; forming data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} uses a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c).  The reduced binned data is sufficient for constructing the binned scatterplot, as only bin centers and frequencies are necessary.  As such the storage size for the information and the computation time needed to construct the plot is greatly reduced. }
 
-% As shown before, the overall loss partitions naturally into visual and numerical loss (see equation \hh{XXX need new equation reference} %\ref{eqn:partition}
-% ). We can make use of this and
-%  recover some of the numerical information lost due to binning by storing the numerical center $(\bar{x},\bar{y})$ instead of the visual center $(x^\ast,y^\ast)$ for use in subsequent calculations. Storing the binned data as the arithmetic mean rather than the visual center reduces the total loss, and the visual center can be recovered from the bin width and  bin center $(O_X, O_Y)$, see table \ref{RecoveryComparison} for a numeric example for this. 
+\ktm{ The data reduction comes at the expense of spatial information of any of the individual points. After the binned data is aggregated, there is no way to recover the original spatial locations. The loss of information incurred from binning will be explored in following sections. }
+
+% recover some of the numerical information lost due to binning by storing the numerical center $(\bar{x},\bar{y})$ instead of the visual center $(x^\ast,y^\ast)$ for use in subsequent calculations. Storing the binned data as the arithmetic mean rather than the visual center reduces the total loss, and the visual center can be recovered from the bin width and  bin center $(O_X, O_Y)$, see table \ref{RecoveryComparison} for a numeric example for this. 
 
 <<DataReduction,echo=FALSE,eval=FALSE,results='asis'>>=
 n=12
@@ -503,10 +503,9 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
 \caption{\label{DataReductionExample}Original, Binned and Reduced Binned Data Tables, with data storage sizes.  Binned using standard rectangular approach with origin at (-10,-10) and binwidths $\omega_x = \omega_y = 10$. }
 \end{table}
 
-Information recovery comes with a two-fold cost: the additional storage of numeric bin centers triples the amount of information stored, and the computational cost to compute numeric bin centers is O($nm^2$), where $n$ is the number of data points and $m^2$, the total number of bins.
-O($nm^2$) $\approx$ O($n$), as $m$ is generally negligible compared to $n$.
+%Information recovery comes with a two-fold cost: the additional storage of numeric bin centers triples the amount of information stored, and the computational cost to compute numeric bin centers is O($nm^2$), where $n$ is the number of data points and $m^2$, the total number of bins. O($nm^2$) $\approx$ O($n$), as $m$ is generally negligible compared to $n$.
 
-In spite of the costs, information recovery is still useful for very large data, where the unbinned data set is  computationally intractable. Minimizing numerical loss in this manner provides for more accurate calculations from the data, while maintaining the storage space advantages of binning. 
+% In spite of the costs, information recovery is still useful for very large data, where the unbinned data set is  computationally intractable. Minimizing numerical loss in this manner provides for more accurate calculations from the data, while maintaining the storage space advantages of binning. 
 
 % \subsection{Standard Rectangular Binning Algorithm (old - to be removed)}
 % \hh{XXX Speed this discussion up a bit - you don't need to lay out what you will do in this section, just do it.}
@@ -599,7 +598,6 @@ In spite of the costs, information recovery is still useful for very large data,
 % \end{eqnarray}
 % %
 % The two dimensional analog for quantile binning is not explored, as this binning strategy will be used in strictly the univariate setting for this manuscript.
-
 
 %--------------------------------------------------------------
 
