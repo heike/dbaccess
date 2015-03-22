@@ -816,9 +816,9 @@ p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
 grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
 @
 
-For random assignment the total spatial loss can be calculated by simply replacing $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.  The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be payed to the two points that with spatial losses highlighted in red; in standard binning these points are in neighboring bins and have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are reallocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  
+\ktm{ For random assignment the total spatial loss can be calculated by simply replacing $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.  The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be payed to the two points that with spatial losses highlighted in red; in standard binning these points are in neighboring bins and have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are reallocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  }
 
-The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}.  The net spatial loss for standard binned data will always be equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then finding the total spatial loss from this processed binned data.
+\ktm{ The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}.  The net spatial loss for standard binned data will always be equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then finding the total spatial loss from this processed binned data. }
 
 <<SpatialLossDemo,echo=F,include=F,cache=T>>=
 #Try Multivariate Normal and Uniform for this plot
@@ -1244,22 +1244,32 @@ By additionally increasing the bin width, we  provide increasingly higher-level 
 
 \section{Exploring Properties of Loss}
 
+\ktm{ Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm and also the parameters of the chosen binning algorithm.  This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of scenarios.  Some results are derived optimal choices through analytical proofs while others are recommendation based on numerical from empirical exploration of loss from binning.  } 
+
+\ktm{ Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices. Bivariate datasets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform.  These distributions were selected for their variety in terms of shape, center and spread. 100,000 observation pairs were simulated for each set of simulated data, and the x and y values were drawn independently from univariate distributions; Exponental(11), Normal(50,$11^2$) and Uniform(0,100), respectively.  The parameters were selected to have data values roughly span the region $[0,100]^2$.  }
+
+\ktm{ These simulated datasets are from continous distributions, and thus the values are recorded to many decimal places. Real data is recorded to only the number of digits that the measurements allow; in many cases rounded to the nearest whole dollar or five minutes or two miles.  To observe binning loss under more realistic conditions, three corresponding data sets were also created by rounding the values from the original simulated data sets to the nearest even number. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution to which data is recorded. }
+
+
+\ktm{
 \begin{itemize}
 \item Binning and frequency binning involve choices (standard/random/quantile, origin, binwidth, number of colors) want to make optimal choices given goals of binning.
 \item 3 simulated data sets: from bivariate Exponential, Normal, Uniform
 \item Since most data recorded to rough resolution we also assess loss when each dataset is rounded to nearest even value.  
 \end{itemize}
+}
 
 %-----------------------------------------------------------------------------
 
 \subsection{Spatial binning choices}
 
+\ktm{
 \begin{itemize}
 \item Binning Algorithm: total and net spatial losses are always larger for random binning than standard (analytical proof)
 \item Origin: 
   \begin{itemize}
     \item Doesn't much matter for fine resolution data but it does for coarse data.
-    \item If recorded to resolution $\alpha$, origin at $x_{(1)} - \alpha/2$ is optimal (analytical proof then demo) Proof in Appendix~\ref{proof:offset}
+    \item If recorded to resolution $\alpha$, origin at $x_{(1)} - \alpha/2$ is optimal (analytical proof then demo) Proof in Appendix~\ref{proof:offset}.
   \end{itemize} 
 \item Binwidth: 
   \begin{itemize}
@@ -1270,11 +1280,13 @@ By additionally increasing the bin width, we  provide increasingly higher-level 
     \item Does the distribution type matter? 
   \end{itemize}
 \end{itemize}
+}
 
 %-----------------------------------------------------------------------------
 
 \subsection{Frequency binning choices}
 
+\ktm{
 \begin{itemize}
 \item Freq Binning Type
   \begin{itemize}
@@ -1289,6 +1301,7 @@ By additionally increasing the bin width, we  provide increasingly higher-level 
     \item As number colors increases, freq loss goes up?
   \end{itemize}
 \end{itemize}
+}
 
 %-----------------------------------------------------------------------------
 
@@ -1570,6 +1583,7 @@ We have presented two algorithms for binning; the standard algorithm, which has 
 %----------------------------------------------------------------------------
 \subsection{Optimal Offset for Uniform Data Recorded to Resolution $\alpha$}\label{proof:offset}
 
+\ktm{
 The following is proof that when univariate data is uniformly distributed at resolution $\alpha$ and standard rectangular binning is used with binwidths that are a scalar multiple of the data resolution (i.e. $\omega = k\alpha$ for some $k \in \{1,2,\dots\})$, then spatial loss is minimized by setting the binning origin to $\alpha/2$ units below the minimum data value; set $\beta = x_{(1)} - \alpha/2$.\\
 
 \noindent Let $x_1, x_2, \dots, x_k \in \mathbb{R}$ represent the values in a single bin such that $x_{i+1} = x_i + \alpha$ for some constant $\alpha \in \mathbb{R}$. Thus $x_j = x_1 + (j-1)\alpha$.\\ 
@@ -1592,6 +1606,7 @@ Thus the optimal offset for reducing spatial loss in this scenario is $\theta = 
 
 If the same conditions are extended to the two dimensional case, then the origin for minimal spatial loss is at $(x_{(1)}-\alpha_x/2, y_{(1)}-\alpha_y/2)$ where $\alpha_x$ and $\alpha_y$  are the data resolution for each dimesion, respectively. 
 
+} %end ktm color
 %----------------------------------------------------------------------------
 
 \subsection{Partition of Spatial Loss}\label{proof:partition}
