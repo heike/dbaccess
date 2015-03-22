@@ -1259,7 +1259,7 @@ By additionally increasing the bin width, we  provide increasingly higher-level 
 \item Origin: 
   \begin{itemize}
     \item Doesn't much matter for fine resolution data but it does for coarse data.
-    \item If recorded to resolution $\alpha$, origin at $x_{(1)} - \alpha/2$ is optimal (analytical proof then demo)
+    \item If recorded to resolution $\alpha$, origin at $x_{(1)} - \alpha/2$ is optimal (analytical proof then demo) Proof in Appendix~\ref{proof:offset}
   \end{itemize} 
 \item Binwidth: 
   \begin{itemize}
