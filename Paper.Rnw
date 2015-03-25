@@ -909,21 +909,30 @@ Research suggests that even under optimal conditions, we can effectively compare
  Whenever the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. We can model this as a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}.  Figure~\ref{fig:FreqLossDemo} provides a visual example of a discrete color palette resulting from frequency binning.  
 
 <<FreqLossDemo,echo=F,include=T,eval=T,fig.width=6, fig.height=3, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Continuous and discrete color scales for counts in the range 0 to 1000. Frequency binning done using standard rectangular binning with origin $\\beta_0 = 0$ and binwidth $\\omega_X = 200$. \\ktm{Can't figure out how to get rid of the ``washed-out'' look in the continuous color scale figure.  It looks lighter because it is being rendered with tiny gaps between the 1000 narrow tiles which lightens the whole plot because the background is showing through.}">>= 
-J= 1
+#J= 1
 J2 = 200
 bound = 1000
-id <- seq(0+J/2,bound-J/2,by=J )
-fill <- seq(0+J/2,bound-J/2,by=J )
+#id <- seq(0+J/2,bound-J/2,by=J )
+#fill <- seq(0+J/2,bound-J/2,by=J )
 id2 <- seq(0+J2/2,bound-J2/2, by=J2)
 fill2 <- seq(J2/2,bound-(J2/2), by=J2)
-p1 <- qplot(id, 2, geom="tile", fill=-fill) +
+
+low = "#132B43"
+high = "#56B1F7"
+library(scales)
+blueGradient <- matrix(seq_gradient_pal(high, low, "Lab")(0:4400/4400), byrow=TRUE,
+       nrow=1000, ncol=4401)
+g <- rasterGrob(blueGradient, interpolate=TRUE)
+
+p1 <- qplot(c(0,1000), 2, geom="blank") +   # just to set up the dimensions
+  annotation_custom(g, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) +  
   theme(plot.margin = unit(c(0.1,1,0.1, 1),"cm"), 
         legend.position = "none",
         axis.ticks=element_blank(),axis.text.y=element_blank(),
         panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
         panel.background=element_blank()
-        ) + 
-  ylab("Continuous") + xlab("")
+        ) + scale_x_continuous("", breaks=c(0,250,500,750,1000), labels=c(0,250,500,750,1000)) + 
+  ylab("Continuous") 
 p2 <- qplot(id2, 2, geom="tile", fill=-fill2) + 
   theme(plot.margin = unit(c(0.1,1,0.1, 1),"cm"), 
         legend.position = "none",
