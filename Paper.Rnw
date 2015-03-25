@@ -1,4 +1,4 @@
-\documentclass[letterpaper,12pt]{article}
+\documentclass[letterpaper,10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amsthm,amssymb}
 \usepackage{fullpage}
@@ -426,9 +426,13 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 
 \subsection{Binned Data Reduction}
 
-\ktm{ As previously mentioned second stage of binning requires that we count the number of observations assigned to each unique bin center; forming data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} uses a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c).  The reduced binned data is sufficient for constructing the binned scatterplot, as only bin centers and frequencies are necessary.  As such the storage size for the information and the computation time needed to construct the plot is greatly reduced. }
+The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c).
+The reduced binned data is sufficient for constructing the binned scatterplot. %, as only bin centers and frequencies are necessary.  
+Binning greatly reduces the storage size for the information and the computation time needed to construct the plot.
+\hh{XXX this is not always true - when the bins have only 1s the binned data set is actually bigger than the original. }
 
-\ktm{ The data reduction comes at the expense of spatial information of any of the individual points. After the binned data is aggregated, there is no way to recover the original spatial locations. The loss of information incurred from binning will be explored in following sections. }
+Data reduction comes at the expense of spatial information of any of the individual points.
+After aggregation the original spatial locations cannot be recovered. The loss of information incurred from binning will be explored in following sections. 
 
 % recover some of the numerical information lost due to binning by storing the numerical center $(\bar{x},\bar{y})$ instead of the visual center $(x^\ast,y^\ast)$ for use in subsequent calculations. Storing the binned data as the arithmetic mean rather than the visual center reduces the total loss, and the visual center can be recovered from the bin width and  bin center $(O_X, O_Y)$, see table \ref{RecoveryComparison} for a numeric example for this. 
 
@@ -693,11 +697,13 @@ qplot(x,y, asp=1, geom="blank") +
 \end{minipage}
 \caption{\label{binning}Series of scatterplots showing the original data (scatterplot, left), and versions of the binned data for different bin widths. The visual loss from binning at 0.1 is minimal, while a bin width of 1 gives a rough approximation.}
 \end{figure}
+
+\hh{XXX do not use symbols in the text; write out = as 'equal to'}
 In the first set of binned data, the bins and the points on the scatterplot are nearly identical, but the scatterplot contains information about overlapping points. The second and third sets of binned data, with bin width=0.25 and 0.50 respectively, show higher-level summaries of the data but which may also provide more visually accessible information about the shape of the two-dimensional density between $x$ and $y$. The fourth set of binned data with bin width = 1.0 is nearly unrecognizable, because the bins are large enough that they provide very little additional information. 
 
 Loss of information occurs during the binning and rendering process. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent frequencies.  We distinguish two sources of loss in the construction of a binned scatterplot:
 \begin{itemize}
-\item {\it Spatial Loss}, $L^\text{S}$, occurs when points ($x_i$,$y_i$) for observations $i \in \{1,\dots,n\}$ in the data set are reduced to a single points at the bin centers ($x_\ell^\ast$,$y_\ell^\ast$) for bins $\ell \in \{1,\dots,L\}$. By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
+\item {\it Spatial Loss}, $L^\text{S}$, occurs when points $(x_i, y_i)$ for observations $i \in \{1,\dots,n\}$ in the data set are reduced to a single points at the bin centers $(x_\ell^\ast, y_\ell^\ast)$ for bins $\ell \in \{1,\dots,L\}$. By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
 
 \item {\it Frequency Loss}, $L^\text{F}$, occurs when frequency information is not rendered, such as in standard scatterplots,  or not rendered accurately, e.g.\ when a discrete color scale is used to display bin counts, the entire ranges of counts is mapped to the same color; thus losing precision in the display of frequencies.
 \end{itemize}
@@ -713,9 +719,9 @@ When the individual points of a scatterplot are collapsed to bin centers to be d
 L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ \left(x_i-b_X(x_i)\right)^2 + \left(y_i-b_Y(y_i)\right)^2 }
 \end{eqnarray} 
 %
-where $L_i^S$ is the loss in the  $i^{th}$ observation. 
+where $L_i^S$ is the loss in the  $i$th observation. 
 %
-Figure~\ref{fig:spatlossdemo2} visually displays the spatial loss for the data from  Table~\ref{DataReductionExample} as a result of standard rectangular binning. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
+Figure~\ref{fig:spatlossdemo2} \hh{XXX in the figure, make the tiles at the bottom squares, so they match with the scatter plot above. This is a neat picture! XXX} visually displays the spatial loss for the data from  Table~\ref{DataReductionExample} as a result of standard rectangular binning. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
 
 <<spatlossdemo2,echo=F,include=T,eval=T,fig.width=12, fig.height=6, out.width='1\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Visualization of spatial loss for same data using standard, random and post-processed random binning algorithms.  Note that the total spatial loss for the standard algorithm is smaller than by random binning. The net spatial loss for the original random binned data is the total spatial loss of the post-processed assignment." >>= 
 n=12
