@@ -128,7 +128,7 @@ freqBin <- function(binout, binType="standard", ncolor, logCount=FALSE){
   # add frequency bin centers and bin labels of the form "(a,b]" to binout
   # binning depends on type / log counts
   if (logCount)  cs <- log(binout[[1]]$binfreq+1)
-    if(binType=="standard"){
+  if(binType=="standard"){
       width <- ceiling((max(cs)-min(cs))/ncolor)
       binout[[1]]$freqgroup <- round(StandRectBin1d(cs, min(cs) , width),2)
       binout[[1]]$freqlabel <- paste("(",round(binout[[1]]$freqgroup - width/2,2),
@@ -137,7 +137,7 @@ freqBin <- function(binout, binType="standard", ncolor, logCount=FALSE){
       closeidx <- binout[[1]]$freqlabel == min(binout[[1]]$freqlabel)
       binout[[1]]$freqlabel[closeidx] <- paste("[",round(min(binout[[1]]$freqgroup) - width/2,2),
                                      ",",round(min(binout[[1]]$freqgroup) + width/2,2),"]",sep="")
-    } 
+  } 
   if(binType=="quantile"){
     binout[[1]]$freqgroup <- round(QuantBin1d(cs, ncolor),2)
     quantbounds <- unique(quantile(cs, (0:ncolor)/ncolor))
