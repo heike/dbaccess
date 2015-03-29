@@ -823,7 +823,17 @@ grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
 
 \ktm{ For random assignment the total spatial loss can be calculated by simply replacing $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.  The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be payed to the two points that with spatial losses highlighted in red; in standard binning these points are in neighboring bins and have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are reallocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  }
 
-\ktm{ The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}.  The net spatial loss for standard binned data will always be equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then finding the total spatial loss from this processed binned data. }
+\ktm{ The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}, $L^S_{net}$.  The net spatial loss for standard binned data will always be equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then finding the total spatial loss from this processed binned data. }
+
+\ktm{ The net spatial loss is perhaps more interpretable if it is viewed in comparison with the spatial loss from a ``worst-case scenario''. The largest displacement of points will occur if we place all points into a single bin.  While the total spatial loss for single bin could be made arbitrarily large if the bin center is placed far away from the data values, we will consider a reasonable specification of a bin with boundaries that span only the range of the data in each dimension; thus centered at  $( (x_{(1)}-x_{(n)})/2$ , $(y_{(1)}-y_{(n)})/2 )$.  The total spatial loss for this ``worst-case'' bin will be referred to as the \textit{potential spatial loss}, $L^S_p$, which is defined as }
+\begin{eqnarray}\label{potspatloss}
+L^S_p = \sum_{i=1}^{n} \sqrt{ \left(x_i-(x_{(1)}-x_{(n)})/2\right)^2 + \left(y_i-(y_{(1)}-y_{(n)})/2\right)^2 }
+\end{eqnarray} 
+%
+\ktm{ Thus the net spatial loss as a proportion of potential spatial loss, $L^S_{net}/L^S_p$, will be used as the primary metric for assessing spatial loss incurred from binning.} 
+
+%\ktm{ We recognize that the spatial loss is inherently influenced by the scale and units of the data. Standardizing the data pairs with respect to each axis will ensure that one of the dimensions does not have an inordinate effect on the spatial loss value. }
+
 
 <<SpatialLossDemo,echo=F,include=F,cache=T>>=
 #Try Multivariate Normal and Uniform for this plot
