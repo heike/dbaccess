@@ -107,8 +107,8 @@ RectBin2d <- function(xs,ys, originx, originy, widthx, widthy, type="standard"){
   outdat <- ddply(tempdat, .(binxs,binys), summarise,
                   binfreq = length(xs),
                   binspatialloss = sum(sqrt((xs-binxs)^2+(ys-binys)^2)) )
-  #centerofdata <- c((max(xs)-min(xs))/2,(max(ys)-min(ys))/2)
-  centerofdata <- c(mean(xs),mean(ys))
+  centerofdata <- c((max(xs)-min(xs))/2,(max(ys)-min(ys))/2)
+  #centerofdata <- c(mean(xs),mean(ys))
   summarydata <- data.frame( originx = originx, originy = originy, 
                              widthx = widthx, widthy = widthy,
                              totalSpatialLoss = sum(outdat$binspatialloss) ,
