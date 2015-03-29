@@ -698,8 +698,7 @@ qplot(x,y, asp=1, geom="blank") +
 \caption{\label{binning}Series of scatterplots showing the original data (scatterplot, left), and versions of the binned data for different bin widths. The visual loss from binning at 0.1 is minimal, while a bin width of 1 gives a rough approximation.}
 \end{figure}
 
-\hh{XXX do not use symbols in the text; write out = as 'equal to'}
-In the first set of binned data, the bins and the points on the scatterplot are nearly identical, but the scatterplot contains information about overlapping points. The second and third sets of binned data, with bin width=0.25 and 0.50 respectively, show higher-level summaries of the data but which may also provide more visually accessible information about the shape of the two-dimensional density between $x$ and $y$. The fourth set of binned data with bin width = 1.0 is nearly unrecognizable, because the bins are large enough that they provide very little additional information. 
+In the first set of binned data, the bins and the points on the scatterplot are nearly identical, but the scatterplot contains information about overlapping points. The second and third sets of binned data, with bin width equal to 0.25 and 0.50 respectively, show higher-level summaries of the data but which may also provide more visually accessible information about the shape of the two-dimensional density between $x$ and $y$. The fourth set of binned data with bin width equal to 1.0 is nearly unrecognizable, because the bins are large enough that they provide very little additional information. 
 
 Loss of information occurs during the binning and rendering process. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent frequencies.  We distinguish two sources of loss in the construction of a binned scatterplot:
 \begin{itemize}
@@ -908,7 +907,7 @@ Research suggests that even under optimal conditions, we can effectively compare
 
  Whenever the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. We can model this as a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}.  Figure~\ref{fig:FreqLossDemo} provides a visual example of a discrete color palette resulting from frequency binning.  
 
-<<FreqLossDemo,echo=F,include=T,eval=T,fig.width=6, fig.height=3, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Continuous and discrete color scales for counts in the range 0 to 1000. Frequency binning done using standard rectangular binning with origin $\\beta_0 = 0$ and binwidth $\\omega_X = 200$. \\ktm{Can't figure out how to get rid of the ``washed-out'' look in the continuous color scale figure.  It looks lighter because it is being rendered with tiny gaps between the 1000 narrow tiles which lightens the whole plot because the background is showing through.}">>= 
+<<FreqLossDemo,echo=F,include=T,eval=T,fig.width=6, fig.height=3, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Continuous and discrete color scales for counts in the range 0 to 1000. Frequency binning done using standard rectangular binning with origin $\\beta_0 = 0$ and binwidth $\\omega_X = 200$. ">>= 
 #J= 1
 J2 = 200
 bound = 1000
