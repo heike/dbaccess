@@ -1597,8 +1597,8 @@ The following is proof that when univariate data is uniformly distributed at res
 $ b(x_i) = Q_x(.5) $ \\
 $ \Rightarrow (x_1 - \theta) + (k\alpha/2) = (x_{\lceil\frac{k+1}{2}\rceil}+x_{\lfloor \frac{k+1}{2}\rfloor})/2 $ \\
 $ \Rightarrow 2x_1 - 2\theta + k\alpha = (x_1 + (\lceil\frac{k+1}{2}\rceil - 1)\alpha ) + (x_1 + (\lfloor\frac{k+1}{2}\rfloor - 1)\alpha ) $ \\
-$ \Rightarrow -2\theta + k\alpha = (\lceil\frac{k+1}{2}\rceil - 1)\alpha ) + (\lfloor\frac{k+1}{2}\rfloor - 1)\alpha ) $ \\
-$ \Rightarrow -2\theta + k\alpha = ((k+1) - 2)\alpha ) $ \\
+$ \Rightarrow -2\theta + k\alpha = (\lceil\frac{k+1}{2}\rceil - 1)\alpha  + (\lfloor\frac{k+1}{2}\rfloor - 1)\alpha  $ \\
+$ \Rightarrow -2\theta + k\alpha = ((k+1) - 2)\alpha  $ \\
 $ \Rightarrow -2\theta = -\alpha $ \\
 $ \Rightarrow \theta = \alpha/2 $ \\
 
