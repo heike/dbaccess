@@ -1072,202 +1072,202 @@ ggsave("./figure/FreqLoss.pdf", width=5.4*.8, height=4.05*.8)
 %     \subfloat[Frequency Loss]{\includegraphics[keepaspectratio=true, width=.54\textwidth]{./figure/FreqLoss.pdf}}
 % \caption{\label{fig:stdBinTutorial2} Types of loss due to binning: (a) Numerical loss associated with the cumulative difference from the binned data to the numerical center and visual loss associated with the difference between the numerical and visual bin centers.  (b) Frequency loss associated with a change of bin width to 1 from 0.25 in the example of Figure~\ref{binning}.}   
 % 	\end{figure}
-
-\subsection{Loss of Frequency Information (old writeup - to be reworked or removed)} 
-Loss of frequency information in a scatterplot happens because of our inability to render elements of a third dimension efficiently. By employing a color scheme for filling tiles according to the observed frequencies corresponds to a binning of the frequencies into a few different levels, with losses stemming from the same source as the previously discussed numerical loss.
-We will assume that we have a set of size $n_C$ of  frequency levels $\{c^\ast_k\}$ with $1 \le k \le n_C$. An observed frequency $c_j$ with $1 \le j \le N_x \times N_y$, where $N_x$ and $N_y$ are the number of bin divisions in the X and Y directions respectively,  is assigned to the closest frequency level $c^\ast_k = b(c_j)$.  
-The \textit{unscaled} frequency loss is then defined as
-\begin{eqnarray}\label{eqn:frequency}
-L_\text{Freq} = \sum_{j=1}^{N_x N_y} \left(c_j - b(c_j)\right)^2
-\end{eqnarray}
-
-% When we consider loss of frequency information, we must consider both dimensions simultaneously, as frequency information is based on the combination of binning in $x$ and  $y$ direction. We define loss of frequency information as: \hh{what's that in words?}
-% $$ L_\text{Freq} = \sum_j \left(c_j - \frac{1}{n_X n_Y}\sum_j c_j\right)^2,$$ 
-% where $n_X, n_Y$ are the number of bins in $x$ and $y$, respectively. 
-
-The loss of frequency information due to binning results from tiling over larger areas, thus results from {\it smoothing} the frequency variation (see Figure~\ref{fig:stdBinTutorial2}). 
-
-Frequency data consists of counts, which most commonly exhibit skew densities, i.e. there are usually a lot of cells with small cell counts and a few cells with extremely large counts. A log transformation therefore produces a more symmetric distribution of frequency information, increasing perceptual resolution. This is consistent with the Weber-Fechner law which suggests that increased stimulus intensity is perceptually mapped on the log scale \citep{sp}. Using a logarithmic mapping of frequency to the color or size aesthetic provides a more natural perceptual experience and simultaneously increases the perceptual resolution of the graph. This suggests that frequency loss be calculated as 
-%
-\begin{eqnarray}\label{eqn:logfrequency}
-L_{\log \text{Freq}} = \sum_{j=1}^{N_x N_y} \left(\log(c_j+1) - \log(b(c_j)+1)\right)^2
-\end{eqnarray}
-%
-Note that we have added one count to every cell before taking the logarithm to avoid problems with empty cells. 
-
-This numerical assessment of frequency loss does not account for limitations in human perceptual ability. Research suggests that under optimal conditions, we can effectively compare about seven colors \citep{colorperception}, which provides a physical upper limit on the amount of frequency variation we can perceive.
-As a result, a binning width which produces fewer than seven frequency categories is preferable, while minimizing numerical loss within that constraint. 
-
-To examine this further, we simulated points from three different distributions: Uniform, Normal, and Exponential to determine under what circumstances log frequency scaling is performing better than linear frequency scaling. Figure~\ref{fig:logcolor} gives an overview of this simulation. In the top row binned scatterplots with a color scheme based on linear frequency scaling is used, the bottom row shows the same data based on log frequency scaled colors.
-
-For uniformly distributed data (right column) the choice of color scheme does not have a huge impact, but under both the normal and exponential distribution, log frequency scaling results in categories which account for more uniform proportions of the data (as can be seen by the color strips in the second and third row of Figure~\ref{fig:logcolor}). This is desirable because it provides more discernible frequency information. 
-\begin{figure}[hbtp]
-\centering
-<<FrequencyCategories,echo=FALSE, results='hide', cache=TRUE>>=
-options(stringsAsFactors=FALSE)
-library(plyr)
-library(ggplot2)
-library(RColorBrewer)
-set.seed(5032)
-data <- rbind(data.frame(x=runif(1000, 0, 20), y=runif(1000, 0, 20), 
-                         Freq=1, Distribution="Uniform"), 
-              data.frame(x=rnorm(1000, 10, 3), y=rnorm(1000, 10, 3), 
-                         Freq=1, Distribution="Normal"),
-              data.frame(x=rexp(1000, .3), y=rexp(1000, .3), 
-                         Freq=1, Distribution="Exponential"))
-data <- data[which(abs(data$x-10)<10 & abs(data$y-10)<10),]
-# qplot(data=data, x=x, y=y, geom="point")+facet_wrap(~Distribution)
-
-data.bin <- data
-data.bin[,1:3] <- round(data[,1:3])
-data.bin <- ddply(data.bin, .(Distribution, x, y), summarise, Freq=sum(Freq))
-data.bin <- data.bin[order(data.bin$Distribution, data.bin$Freq),]
-# 
-# 
-# qplot(data=data.bin, x=Freq,geom="blank") + geom_density(aes(y=..scaled..),adjust=2) + facet_wrap(~Distribution, scales="free") + ylab("Density")
-# 
-# qplot(data=data.bin, x=Freq, geom="blank") + geom_density(aes(y=..scaled..), adjust=2) + facet_wrap(~Distribution,scales="free") + scale_x_continuous(trans="log", breaks=c(1, 5, 10, 20, 40, 60)) + ylab("Density")
-# 
-
-get.upper <- function(x){
-  num <- sapply(x, function(i) strsplit(i, ",", fixed=TRUE)[[1]][2])
-  num <- sapply(num, function(i) substr(i, 1, nchar(i)-1))
-  return(as.numeric(num))
-}
-get.lower <- function(x){
-  num <- sapply(x, function(i) strsplit(i, ",", fixed=TRUE)[[1]][1])
-  num <- sapply(num, function(i) substr(i, 2, nchar(i)))
-  return(as.numeric(num))
-}
-
-labelsToValues <- function(x){
-  return(data.frame(lower=get.lower(x), upper=get.upper(x)))
-}
-
-
-linearbins <- cbind(data.bin, ddply(data.bin, .(Distribution), function(x) return(data.frame(fill=as.numeric(cut(x$Freq, 7)), label=as.character(cut(x$Freq,7)), id=1:nrow(x))))[,2:4])
-linearbins$fill <- factor(linearbins$fill)
-
-x <- subset(linearbins, Distribution=="Uniform" & fill==1)
-linearbins2 <- ddply(linearbins, .(Distribution, fill),
-                     function(x){
-                       temp <- labelsToValues(x$label[1])
-                       return(cbind(temp, height=nrow(x)/(temp$upper-temp$lower), label=unique(x$label)))
-                     })
-linearbins2 <- ddply(linearbins2, .(Distribution), transform, height=height/sum(height))
-
-
-
-logbins <- cbind(data.bin, ddply(data.bin, .(Distribution), function(x) return(data.frame(fill=as.numeric(cut(log(x$Freq), 7)), label=as.character(cut(log(x$Freq),7)), id=1:nrow(x))))[,2:4])
-logbins$fill <- factor(logbins$fill)
-
-x <- subset(logbins, Distribution=="Uniform" & fill==1)
-logbins2 <- ddply(logbins, .(Distribution, fill),
-                  function(x){
-                    temp <- exp(labelsToValues(x$label[1]))
-                    newlabel <- paste(c("(", round(temp[1], 3), ",", round(temp[2], 3), "]"), sep="", collapse="")
-                    return(cbind(temp, height=nrow(x)/(temp$upper-temp$lower), label=unique(x$label)))
-                  })
-
-logbins2 <- ddply(logbins2, .(Distribution), transform, height=height/sum(height))
-
-colors <- brewer.pal(9, "Blues")[-c(1:2)]
-
-multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL, heights=NULL) {
-  require(grid)
-  
-  # Make a list from the ... arguments and plotlist
-  plots <- c(list(...), plotlist)
-  
-  numPlots = length(plots)
-  
-  # If layout is NULL, then use 'cols' to determine layout
-  if (is.null(layout)) {
-    # Make the panel
-    # ncol: Number of columns of plots
-    # nrow: Number of rows needed, calculated from # of cols
-    nrow = ceiling(numPlots/cols)
-    
-    if (is.null(heights)) heights = unit(rep(1, numPlots), "null")
-    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
-                     ncol = cols, nrow = nrow)
-  }
-  
-  if (numPlots==1) {
-    print(plots[[1]])
-    
-  } else {
-    # Set up the page
-    grid.newpage()
-    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout), heights=heights)))
-    
-    # Make each plot, in the correct location
-    for (i in 1:numPlots) {
-      # Get the i,j matrix positions of the regions that contain this subplot
-      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
-      
-      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
-                                      layout.pos.col = matchidx$col))
-    }
-  }
-}
-
-p1 <- qplot(data=linearbins, x=x, y=y, geom="tile", fill=fill)+facet_wrap(~Distribution) +
-  scale_fill_manual(values=colors, name="Frequency", guide="none") + theme_bw() +
-  ggtitle("(a) Joint Density: Linear Binning") +  theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,0), "cm"))
-
-X <- data.frame(fill=with(linearbins, rep(fill, Freq)), Distribution = with(linearbins, rep(Distribution, Freq)))
-X <- ddply(X, .(Distribution), transform, id=1:length(Distribution))
-p2 <- qplot(id, binwidth=1, fill=fill, data=X, alpha=I(1)) + 
-  scale_fill_manual(values=colors, name="Frequency", guide="none") + 
-  facet_grid(.~Distribution, scales="free") +
-  xlab("Count") + theme_bw() + ylab("") +
-  ggtitle("(b) Color Frequency: Linear Binning") + 
-  theme(axis.text.y=element_text(colour="white"), axis.ticks=element_blank()) + 
-  theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,-0.35), "cm"))
-# linear binning
-pdf(file="p2.pdf", width=8, height=3)
-p2
-dev.off()
-
-# p2 <- qplot(data=linearbins2, xmin=lower, xmax=upper, ymin=0, ymax=height*1000, fill=fill, geom="blank", asp=1.5) + 
-#   geom_rect(colour=I("grey50"), show_guide=FALSE, size=0.5)+
-#   scale_fill_manual("Tile Color", values=colors)+
-#   facet_wrap(~Distribution, scales="free") + 
-#   theme_bw() + scale_x_continuous("Bin Frequency") + 
-#   scale_y_continuous("") + ggtitle("(b) Distribution of Frequency: Linear Binning") + theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,0), "cm"))
-
-# p4 <- qplot(data=logbins2, xmin=lower, xmax=upper, ymin=0, ymax=1000*height, fill=fill,  geom="blank", asp=1.5) + 
-#   geom_rect(colour=I("grey50"), show_guide=FALSE, size=0.5)+
-#   scale_fill_manual("Tile Color", values=colors)+
-#   facet_wrap(~Distribution, scales="free") + 
-#   theme_bw() + scale_x_continuous("Bin Frequency") + 
-#   scale_y_continuous("") + ggtitle("(c) Distribution of Frequency: Log Binning") + theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,0), "cm"))
-
-X <- data.frame(fill=with(logbins, rep(fill, Freq)), Distribution = with(logbins, rep(Distribution, Freq)))
-X <- ddply(X, .(Distribution), transform, id=1:length(Distribution))
-p4 <- qplot(id, binwidth=1, fill=fill, data=X, alpha=I(NULL)) + 
-  scale_fill_manual(values=colors, name="Frequency", guide="none") + 
-  facet_grid(.~Distribution, scales="free") +
-  xlab("Count") + theme_bw() + ylab("") +
-  ggtitle("(c) Color Frequency: Log Binning") + 
-  theme(axis.text.y=element_text(colour="white"), axis.ticks=element_blank()) + 
-  theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,-0.35), "cm"))
-
-
-p3 <- qplot(data=logbins, x=x, y=y, geom="tile", fill=fill, asp=1.0)+facet_wrap(~Distribution) +
-  scale_fill_manual(values=colors, name="Frequency", guide="none") + theme_bw() +
-  ggtitle("(d) Joint Density: Log Binning") + theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,0), "cm"))
-
-multiplot(p1, p2, p4, p3, cols=1, heights=c(2.2,1,1,2.2))
-#ggsave("./figure/MultipleDensityFigure.png", width=8.5, height=11, dpi=1200)
-@
-%\includegraphics[width=\textwidth]{figure/MultipleDensityFigure.pdf}
-\caption{\label{fig:logcolor} Linear and Log Frequency Binning  to Simulated Data from Uniform, Normal, and Exponential distributions}
-\end{figure}
-
-Frequency loss is much more difficult to normalize, as we must balance the partial loss of frequency information due to over-plotting with the total loss of frequency information that results if we use only a single bin to categorize the data. 
-For the purposes of numerical assessment of frequency loss, we calculate the baseline frequency loss as the loss corresponding to a minimal bin width given by the smallest non-zero absolute difference of successive values in the original data set, as shown in Figure~\ref{binning}.
+% 
+% \subsection{Loss of Frequency Information (old writeup - to be reworked or removed)} 
+% Loss of frequency information in a scatterplot happens because of our inability to render elements of a third dimension efficiently. By employing a color scheme for filling tiles according to the observed frequencies corresponds to a binning of the frequencies into a few different levels, with losses stemming from the same source as the previously discussed numerical loss.
+% We will assume that we have a set of size $n_C$ of  frequency levels $\{c^\ast_k\}$ with $1 \le k \le n_C$. An observed frequency $c_j$ with $1 \le j \le N_x \times N_y$, where $N_x$ and $N_y$ are the number of bin divisions in the X and Y directions respectively,  is assigned to the closest frequency level $c^\ast_k = b(c_j)$.  
+% The \textit{unscaled} frequency loss is then defined as
+% \begin{eqnarray}\label{eqn:frequency}
+% L_\text{Freq} = \sum_{j=1}^{N_x N_y} \left(c_j - b(c_j)\right)^2
+% \end{eqnarray}
+% 
+% % When we consider loss of frequency information, we must consider both dimensions simultaneously, as frequency information is based on the combination of binning in $x$ and  $y$ direction. We define loss of frequency information as: \hh{what's that in words?}
+% % $$ L_\text{Freq} = \sum_j \left(c_j - \frac{1}{n_X n_Y}\sum_j c_j\right)^2,$$ 
+% % where $n_X, n_Y$ are the number of bins in $x$ and $y$, respectively. 
+% 
+% The loss of frequency information due to binning results from tiling over larger areas, thus results from {\it smoothing} the frequency variation (see Figure~\ref{fig:stdBinTutorial2}). 
+% 
+% Frequency data consists of counts, which most commonly exhibit skew densities, i.e. there are usually a lot of cells with small cell counts and a few cells with extremely large counts. A log transformation therefore produces a more symmetric distribution of frequency information, increasing perceptual resolution. This is consistent with the Weber-Fechner law which suggests that increased stimulus intensity is perceptually mapped on the log scale \citep{sp}. Using a logarithmic mapping of frequency to the color or size aesthetic provides a more natural perceptual experience and simultaneously increases the perceptual resolution of the graph. This suggests that frequency loss be calculated as 
+% %
+% \begin{eqnarray}\label{eqn:logfrequency}
+% L_{\log \text{Freq}} = \sum_{j=1}^{N_x N_y} \left(\log(c_j+1) - \log(b(c_j)+1)\right)^2
+% \end{eqnarray}
+% %
+% Note that we have added one count to every cell before taking the logarithm to avoid problems with empty cells. 
+% 
+% This numerical assessment of frequency loss does not account for limitations in human perceptual ability. Research suggests that under optimal conditions, we can effectively compare about seven colors \citep{colorperception}, which provides a physical upper limit on the amount of frequency variation we can perceive.
+% As a result, a binning width which produces fewer than seven frequency categories is preferable, while minimizing numerical loss within that constraint. 
+% 
+% To examine this further, we simulated points from three different distributions: Uniform, Normal, and Exponential to determine under what circumstances log frequency scaling is performing better than linear frequency scaling. Figure~\ref{fig:logcolor} gives an overview of this simulation. In the top row binned scatterplots with a color scheme based on linear frequency scaling is used, the bottom row shows the same data based on log frequency scaled colors.
+% 
+% For uniformly distributed data (right column) the choice of color scheme does not have a huge impact, but under both the normal and exponential distribution, log frequency scaling results in categories which account for more uniform proportions of the data (as can be seen by the color strips in the second and third row of Figure~\ref{fig:logcolor}). This is desirable because it provides more discernible frequency information. 
+% \begin{figure}[hbtp]
+% \centering
+% <<FrequencyCategories,echo=FALSE, results='hide', cache=TRUE>>=
+% options(stringsAsFactors=FALSE)
+% library(plyr)
+% library(ggplot2)
+% library(RColorBrewer)
+% set.seed(5032)
+% data <- rbind(data.frame(x=runif(1000, 0, 20), y=runif(1000, 0, 20), 
+%                          Freq=1, Distribution="Uniform"), 
+%               data.frame(x=rnorm(1000, 10, 3), y=rnorm(1000, 10, 3), 
+%                          Freq=1, Distribution="Normal"),
+%               data.frame(x=rexp(1000, .3), y=rexp(1000, .3), 
+%                          Freq=1, Distribution="Exponential"))
+% data <- data[which(abs(data$x-10)<10 & abs(data$y-10)<10),]
+% # qplot(data=data, x=x, y=y, geom="point")+facet_wrap(~Distribution)
+% 
+% data.bin <- data
+% data.bin[,1:3] <- round(data[,1:3])
+% data.bin <- ddply(data.bin, .(Distribution, x, y), summarise, Freq=sum(Freq))
+% data.bin <- data.bin[order(data.bin$Distribution, data.bin$Freq),]
+% # 
+% # 
+% # qplot(data=data.bin, x=Freq,geom="blank") + geom_density(aes(y=..scaled..),adjust=2) + facet_wrap(~Distribution, scales="free") + ylab("Density")
+% # 
+% # qplot(data=data.bin, x=Freq, geom="blank") + geom_density(aes(y=..scaled..), adjust=2) + facet_wrap(~Distribution,scales="free") + scale_x_continuous(trans="log", breaks=c(1, 5, 10, 20, 40, 60)) + ylab("Density")
+% # 
+% 
+% get.upper <- function(x){
+%   num <- sapply(x, function(i) strsplit(i, ",", fixed=TRUE)[[1]][2])
+%   num <- sapply(num, function(i) substr(i, 1, nchar(i)-1))
+%   return(as.numeric(num))
+% }
+% get.lower <- function(x){
+%   num <- sapply(x, function(i) strsplit(i, ",", fixed=TRUE)[[1]][1])
+%   num <- sapply(num, function(i) substr(i, 2, nchar(i)))
+%   return(as.numeric(num))
+% }
+% 
+% labelsToValues <- function(x){
+%   return(data.frame(lower=get.lower(x), upper=get.upper(x)))
+% }
+% 
+% 
+% linearbins <- cbind(data.bin, ddply(data.bin, .(Distribution), function(x) return(data.frame(fill=as.numeric(cut(x$Freq, 7)), label=as.character(cut(x$Freq,7)), id=1:nrow(x))))[,2:4])
+% linearbins$fill <- factor(linearbins$fill)
+% 
+% x <- subset(linearbins, Distribution=="Uniform" & fill==1)
+% linearbins2 <- ddply(linearbins, .(Distribution, fill),
+%                      function(x){
+%                        temp <- labelsToValues(x$label[1])
+%                        return(cbind(temp, height=nrow(x)/(temp$upper-temp$lower), label=unique(x$label)))
+%                      })
+% linearbins2 <- ddply(linearbins2, .(Distribution), transform, height=height/sum(height))
+% 
+% 
+% 
+% logbins <- cbind(data.bin, ddply(data.bin, .(Distribution), function(x) return(data.frame(fill=as.numeric(cut(log(x$Freq), 7)), label=as.character(cut(log(x$Freq),7)), id=1:nrow(x))))[,2:4])
+% logbins$fill <- factor(logbins$fill)
+% 
+% x <- subset(logbins, Distribution=="Uniform" & fill==1)
+% logbins2 <- ddply(logbins, .(Distribution, fill),
+%                   function(x){
+%                     temp <- exp(labelsToValues(x$label[1]))
+%                     newlabel <- paste(c("(", round(temp[1], 3), ",", round(temp[2], 3), "]"), sep="", collapse="")
+%                     return(cbind(temp, height=nrow(x)/(temp$upper-temp$lower), label=unique(x$label)))
+%                   })
+% 
+% logbins2 <- ddply(logbins2, .(Distribution), transform, height=height/sum(height))
+% 
+% colors <- brewer.pal(9, "Blues")[-c(1:2)]
+% 
+% multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL, heights=NULL) {
+%   require(grid)
+%   
+%   # Make a list from the ... arguments and plotlist
+%   plots <- c(list(...), plotlist)
+%   
+%   numPlots = length(plots)
+%   
+%   # If layout is NULL, then use 'cols' to determine layout
+%   if (is.null(layout)) {
+%     # Make the panel
+%     # ncol: Number of columns of plots
+%     # nrow: Number of rows needed, calculated from # of cols
+%     nrow = ceiling(numPlots/cols)
+%     
+%     if (is.null(heights)) heights = unit(rep(1, numPlots), "null")
+%     layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+%                      ncol = cols, nrow = nrow)
+%   }
+%   
+%   if (numPlots==1) {
+%     print(plots[[1]])
+%     
+%   } else {
+%     # Set up the page
+%     grid.newpage()
+%     pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout), heights=heights)))
+%     
+%     # Make each plot, in the correct location
+%     for (i in 1:numPlots) {
+%       # Get the i,j matrix positions of the regions that contain this subplot
+%       matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+%       
+%       print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+%                                       layout.pos.col = matchidx$col))
+%     }
+%   }
+% }
+% 
+% p1 <- qplot(data=linearbins, x=x, y=y, geom="tile", fill=fill)+facet_wrap(~Distribution) +
+%   scale_fill_manual(values=colors, name="Frequency", guide="none") + theme_bw() +
+%   ggtitle("(a) Joint Density: Linear Binning") +  theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,0), "cm"))
+% 
+% X <- data.frame(fill=with(linearbins, rep(fill, Freq)), Distribution = with(linearbins, rep(Distribution, Freq)))
+% X <- ddply(X, .(Distribution), transform, id=1:length(Distribution))
+% p2 <- qplot(id, binwidth=1, fill=fill, data=X, alpha=I(1)) + 
+%   scale_fill_manual(values=colors, name="Frequency", guide="none") + 
+%   facet_grid(.~Distribution, scales="free") +
+%   xlab("Count") + theme_bw() + ylab("") +
+%   ggtitle("(b) Color Frequency: Linear Binning") + 
+%   theme(axis.text.y=element_text(colour="white"), axis.ticks=element_blank()) + 
+%   theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,-0.35), "cm"))
+% # linear binning
+% pdf(file="p2.pdf", width=8, height=3)
+% p2
+% dev.off()
+% 
+% # p2 <- qplot(data=linearbins2, xmin=lower, xmax=upper, ymin=0, ymax=height*1000, fill=fill, geom="blank", asp=1.5) + 
+% #   geom_rect(colour=I("grey50"), show_guide=FALSE, size=0.5)+
+% #   scale_fill_manual("Tile Color", values=colors)+
+% #   facet_wrap(~Distribution, scales="free") + 
+% #   theme_bw() + scale_x_continuous("Bin Frequency") + 
+% #   scale_y_continuous("") + ggtitle("(b) Distribution of Frequency: Linear Binning") + theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,0), "cm"))
+% 
+% # p4 <- qplot(data=logbins2, xmin=lower, xmax=upper, ymin=0, ymax=1000*height, fill=fill,  geom="blank", asp=1.5) + 
+% #   geom_rect(colour=I("grey50"), show_guide=FALSE, size=0.5)+
+% #   scale_fill_manual("Tile Color", values=colors)+
+% #   facet_wrap(~Distribution, scales="free") + 
+% #   theme_bw() + scale_x_continuous("Bin Frequency") + 
+% #   scale_y_continuous("") + ggtitle("(c) Distribution of Frequency: Log Binning") + theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,0), "cm"))
+% 
+% X <- data.frame(fill=with(logbins, rep(fill, Freq)), Distribution = with(logbins, rep(Distribution, Freq)))
+% X <- ddply(X, .(Distribution), transform, id=1:length(Distribution))
+% p4 <- qplot(id, binwidth=1, fill=fill, data=X, alpha=I(NULL)) + 
+%   scale_fill_manual(values=colors, name="Frequency", guide="none") + 
+%   facet_grid(.~Distribution, scales="free") +
+%   xlab("Count") + theme_bw() + ylab("") +
+%   ggtitle("(c) Color Frequency: Log Binning") + 
+%   theme(axis.text.y=element_text(colour="white"), axis.ticks=element_blank()) + 
+%   theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,-0.35), "cm"))
+% 
+% 
+% p3 <- qplot(data=logbins, x=x, y=y, geom="tile", fill=fill, asp=1.0)+facet_wrap(~Distribution) +
+%   scale_fill_manual(values=colors, name="Frequency", guide="none") + theme_bw() +
+%   ggtitle("(d) Joint Density: Log Binning") + theme(plot.title = element_text(hjust=0, lineheight=.8, size=12), plot.margin = unit(c(0,0,0,0), "cm"))
+% 
+% multiplot(p1, p2, p4, p3, cols=1, heights=c(2.2,1,1,2.2))
+% #ggsave("./figure/MultipleDensityFigure.png", width=8.5, height=11, dpi=1200)
+% @
+% %\includegraphics[width=\textwidth]{figure/MultipleDensityFigure.pdf}
+% \caption{\label{fig:logcolor} Linear and Log Frequency Binning  to Simulated Data from Uniform, Normal, and Exponential distributions}
+% \end{figure}
+% 
+% Frequency loss is much more difficult to normalize, as we must balance the partial loss of frequency information due to over-plotting with the total loss of frequency information that results if we use only a single bin to categorize the data. 
+% For the purposes of numerical assessment of frequency loss, we calculate the baseline frequency loss as the loss corresponding to a minimal bin width given by the smallest non-zero absolute difference of successive values in the original data set, as shown in Figure~\ref{binning}.
 
 
 \paragraph{Traditional Scatterplots and Frequency Information: (old writeup - to be reworked or removed)}
@@ -1332,7 +1332,25 @@ qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1)) +
 
 %-----------------------------------------------------------------------------
 
-\subsection{Spatial binning choices}
+\subsection{Binning Specification and Spatial Loss}
+
+To explore the spatial loss properties under different binning approaches we begin with a comparison of standard and random binning. If equivalent bin widths are used, the net spatial loss under standard binning will always be less than or equal to the net spatial loss under random binning. This is because the minimal spatial loss for each data point under random binning is to allocate to the nearest bin center, which is how the point would be allocated in standard binning. 
+
+Figure~\ref{fig:SpatialLossCompare} displays the proportion of potential spatial loss from binning each set of simulated data with standard and random binning algorithms using square bins ranging from 2 units to 20 units. It is clear to see that the spatial loss for random binning is always higher than for standard binning and that the loss grows as binwidth increases. Also, the proportion of potential spatial loss from random binning increases with binwidth at a faster rate than with standard binning, as indicated by the widening gap and steeper slopes.  
+
+Another attribute that stands out in Figure~\ref{fig:SpatialLossCompare} is that proportion of potential spatial loss is much lower for the exponential data than for the normal or uniform data; this is because the potential spatial loss is much higher for skewed data than symmetric. This is not surprising when we consider that if a single rectangular tile were placed over the bivariate range of the exponential data, the center of the tile would be a fair distance away from the center of mass for the points. The plot is reflecting that the ``worst-case'' binning scenario for skewed data is worse than for symmetric data.
+
+<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=3.5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for proportion of potential spatial loss over a range of bin sizes for standard and random binning of the fine version of the simulated data from each bivariate distribution.">>= 
+spatlossdat <- read.csv("SpatialLossData.csv",header=TRUE)
+# use all the square bins to plot bin width against proportion of max spataial loss
+spatlossdatSquareBins <- spatlossdat[spatlossdat$widthx==spatlossdat$widthy,]
+qplot(widthx,propSpatialLoss,geom="path",colour=bintype, linetype=bintype,
+      data=spatlossdatSquareBins,group=bintype, facets=.~distrib, size=I(1)) +
+  theme_bw() + ylab("Prop. of Potential Spatial Loss") +
+  xlab("Width/Height of Square Bins")
+@
+
+
 
 \ktm{
 \begin{itemize}
