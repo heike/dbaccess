@@ -1352,7 +1352,34 @@ qplot(widthx,propSpatialLoss,geom="path",colour=bintype, linetype=bintype,
 
 All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. Smaller binwidths coincide with smaller spatial losses, but reducing bin sizes comes with a few important caveats. With smaller bins comes more computation requirements; a non-negligable consideration in settings with truly massive data. Additionally, the binwidth should be an integer multiple of the resolution of the data to avoid undesirable visual attributes in the binned scatterplot.
 
-Consider the simulated uniform data, we have the fine version and the coarse version, which rounded to nearest even integer. Figure~\ref{fig:strippedplots} displays the binned scatterplots under several scenarios. 
+Consider the simulated uniform data, we have the fine version and the coarse version, which rounded to nearest even integer. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. 
+
+<<UniformStripes, echo=F,include=T,eval=T,fig.width=5, fig.height=5, out.width='.7\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned Scatterplots of Uniform Data with 5X5 Bins">>= 
+### Binned Scatterplots for Uniform Data to Show stripes
+# create binned data for standard and random with binwidth 5
+binoutfine <- RectBin2d(datlist[[1]]$x,datlist[[1]]$y,0,0,5,5,type="standard")
+binoutcoarse <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,5,5,type="standard")
+binoutfineRand <- RectBin2d(datlist[[1]]$x,datlist[[1]]$y,0,0,5,5,type="random")
+binoutcoarseRand <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,5,5,type="random")
+
+allbindat <- rbind(binoutfine[[1]],binoutcoarse[[1]],
+                   binoutfineRand[[1]],binoutcoarseRand[[1]])
+allbindat$SimDataType <- factor(rep(c("Fine","Coarse","Fine","Coarse"), 
+                             each=nrow(binoutfine[[1]])),
+                             levels=c("Fine","Coarse"))
+allbindat$BinningType <- factor(rep(c("Standard","Random"),
+                             each=2*nrow(binoutfine[[1]])),
+                             levels=c("Standard","Random"))
+
+qplot(binxs, binys, geom="tile", fill=binfreq, data=allbindat) +
+  facet_grid(BinningType ~ SimDataType)+
+  ggtitle(" ") +  
+  scale_fill_gradient(low="#56B1F7", high="#132B43",
+                      limits=c(0, 450),name="Bin Count") + 
+  theme_bw() + theme(legend.position="bottom",aspect.ratio=1) +
+  xlab("X") + ylab("Y")
+@
+
 
 \ktm{
 \begin{itemize}
