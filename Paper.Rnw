@@ -821,16 +821,16 @@ p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
 grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
 @
 
-\ktm{ For random assignment the total spatial loss can be calculated by simply replacing $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.  The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be payed to the two points that with spatial losses highlighted in red; in standard binning these points are in neighboring bins and have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are reallocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  }
+\ktm{ For random assignment the total spatial loss can be calculated by simply replacing  \hh{call these guys by name} $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.}  The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be paid to the two points highlighted in red in the panel for random binning: in standard binning these points are in neighboring bins but have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are re-allocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  
 
-\ktm{ The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}, $L^S_{net}$.  The net spatial loss for standard binned data will always be equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then finding the total spatial loss from this processed binned data. }
+ The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}, $L^S_{net}$.  The net spatial loss for standard binned data is always  equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then finding the total spatial loss from this processed binned data. 
 
-\ktm{ The net spatial loss is a euclidean distance, but requires a reference scale on which the magnitude may be interpretable. We will use the spatial loss from a ``worst-case'' binning scenario as a reference value. The largest displacement of points will occur if we place all points into a single bin.  While the total spatial loss for single bin could be made arbitrarily large if the bin center is placed far away from the data values, we will consider a reasonable specification of a bin with boundaries that span only the range of the data in each dimension; thus centered at  $( (x_{(1)}-x_{(n)})/2$ , $(y_{(1)}-y_{(n)})/2 )$.  The total spatial loss for this ``worst-case'' bin will be referred to as the \textit{potential spatial loss}, $L^S_p$, which is defined as }
+The net spatial loss is a euclidean distance, but requires a reference scale on which the magnitude may be interpretable. We  use the spatial loss from a ``worst-case'' binning scenario as a reference value. The largest displacement of points  occurs if we place all points into a single bin.  While the total spatial loss for single bin could be made arbitrarily large if the bin center is placed far away from the data values, we will consider a reasonable specification of a bin with boundaries that span only the range of the data in each dimension centered at  $( (x_{(1)}-x_{(n)})/2$ , $(y_{(1)}-y_{(n)})/2 )$.  The total spatial loss for this ``worst-case'' bin will be referred to as the \textit{potential spatial loss}, $L^S_p$, which is defined as 
 \begin{eqnarray}\label{potspatloss}
 L^S_p = \sum_{i=1}^{n} \sqrt{ \left(x_i-(x_{(1)}-x_{(n)})/2\right)^2 + \left(y_i-(y_{(1)}-y_{(n)})/2\right)^2 }
 \end{eqnarray} 
 %
-\ktm{ Thus the net spatial loss, as a proportion of potential spatial loss, $L^S_{net}/L^S_p$, will be used as the primary metric for assessing spatial loss incurred from binning.} 
+We use net spatial loss as a proportion of potential spatial loss, $L^S_{net}/L^S_p$,  as the primary metric for assessing spatial loss incurred from binning.
 
 %\ktm{ We recognize that the spatial loss is inherently influenced by the scale and units of the data. Standardizing the data pairs with respect to each axis will ensure that one of the dimensions does not have an inordinate effect on the spatial loss value. }
 
@@ -975,19 +975,19 @@ L^{\log F} = \sum_{\ell=1}^{L} L_\ell^{\log F} = \sum_{\ell=1}^{L} (\log(c_\ell+
 %
 Note that we have added one count to every cell before taking the logarithm to avoid problems with empty cells. 
 
-\ktm{ As with spatial binning, there will be a ``worst-case'' scenario for frequency binning that will provide context to the magnitude of the total frequency loss.  If we elect to use a single frequency bin then all tiles of the binned scatterplot will be rendered with the same shade; thus the shade would represent the average bin density, $\bar{c} =  (\sum_{\ell=1}^{L} c_\ell) /L$.  We define the total frequency loss in the single shade scenario as the \textit{protential frequency loss}, $L^F_p$,  where
+ Similar to spatial binning, \hh{we define} a worst-case scenario for frequency binning that provides context to the magnitude of the total frequency loss.  If we use a single frequency bin then all tiles of the binned scatterplot are rendered with the same shade; thus the shade  represents the average bin density \hh{XXX this is different from the spatial loss - visually the shade would be half way between lowest and highest frequency, wouldn't it?}, $\bar{c} =  (\sum_{\ell=1}^{L} c_\ell) /L$.  We define the total frequency loss in the single shade scenario as the \textit{potential frequency loss}, $L^F_p$,  where
 %
 \begin{eqnarray}\label{potfreqloss}
 L^F_p = \sum_{\ell=1}^{L} (c_\ell-\bar{c})^2.
 \end{eqnarray}  
 %
-Thus total frequency loss after binning will be interpreted through the proportion of potential frequency loss, $L^F / L^F_p$.  Similarly we define the \textit{protential log frequency loss}, $L^{\log F}_p$, as 
+Thus total frequency loss after binning can be interpreted through the proportion of potential frequency loss, $L^F / L^F_p$.  Similarly we define the \textit{potential log frequency loss}, $L^{\log F}_p$, as 
 %
 \begin{eqnarray}\label{potlogfreqloss}
 L^{\log F}_p = \sum_{\ell=1}^{L} (\log(c_\ell+1)-\log(\bar{c}+1))^2,
 \end{eqnarray}  
 % 
-which can then be used to find the proportion of potential log frequency loss, $L^{\log F} / L^{\log F}_p$, in cases where log frequency binning was conducted. } %end ktm{} red
+which can then be used to find the proportion of potential log frequency loss, $L^{\log F} / L^{\log F}_p$, in cases where log frequency binning was conducted. \hh{XXX could you give a couple more details what you mean by cases where frequency binning was conducted?}
 
 % \subsection{Old Loss Definitions (to be removed)}
 % \ktm{The following \textit{numerical, visual and freq} loss descriptions are from the old list and will be removed: }
@@ -1281,9 +1281,9 @@ By additionally increasing the bin width, we  provide increasingly higher-level 
 
 \section{Exploring Properties of Loss}
 
-\ktm{ Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm and also the parameters of the chosen binning algorithm.  This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of scenarios.  Some results are derived optimal choices through analytical proofs while others are recommendation based on numerical from empirical exploration of loss from binning.  } 
+Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm as well as a choice of parameters associated with the  binning algorithm.  This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of scenarios.  \ktm Some results are derived \hh{XXX check the sentence} optimal choices through analytical proofs while others are recommendation based on numerical from empirical exploration of loss from binning.  }
 
-\ktm{ Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices. Bivariate datasets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform.  These distributions were selected for their variety in terms of shape, center and spread. 100,000 observation pairs were simulated for each set of simulated data, and the x and y values were drawn independently from univariate distributions; Exponental(11), Normal(50,$11^2$) and Uniform(0,100), respectively.  The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. }
+Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices. Datasets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform.  These distributions were selected for their variety in terms of shape, center and spread. 100,000 observation pairs were simulated for each set of simulated data, and the $x$ and $y$ values were drawn independently from univariate distributions; Exponental(11), Normal(50,$11^2$) and Uniform(0,100), respectively.  The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. 
 
 <<SimDataScatterplots,echo=F,include=T,eval=T,fig.width=8, fig.height=6, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data.">>= 
 ### Try 2d binning with MVN data
