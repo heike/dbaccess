@@ -1347,8 +1347,6 @@ For rectangular binning there are many specification options; including type of 
 
 Figure~\ref{fig:SpatialLossCompare} displays the net spatial loss from binning each set of simulated data with standard and random binning algorithms using square bins with a sizes ranging from 2 units$^2$ to 20 units$^2$. It is easily apparent that  the spatial loss for random binning is always higher than for standard binning and the loss grows as bin width increases. The net spatial loss from random binning increases with bin width at a faster rate than from standard binning, as indicated by the widening gap between the lines and the steeper slopes.  
 
-Another attribute that stands out in Figure~\ref{fig:SpatialLossCompare} is that proportion of potential spatial loss is much lower for the exponential data than for the normal or uniform data; this is because the potential spatial loss is much higher for skewed data than symmetric. This is not surprising when we consider that if a single rectangular tile were placed over the bivariate range of the exponential data, the center of the tile would be a fair distance away from the center of mass for the points. The plot is reflecting that the ``worst-case'' binning scenario for skewed data is worse than for symmetric data.
-
 <<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=3.5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss over a range of bin sizes for standard and random binning of the fine version of the simulated data from each bivariate distribution.">>= 
 spatlossdat <- read.csv("SpatialLossData.csv",header=TRUE)
 # use all the square bins to plot bin width against proportion of max spataial loss
@@ -1359,34 +1357,61 @@ qplot(widthx,totalSpatialLoss,geom="path",colour=bintype, linetype=bintype,
   xlab("Width/Height of Square Bins")
 @
 
-All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. Smaller bin widths coincide with smaller spatial losses, but reducing bin sizes comes with a few important caveats. With smaller bins comes more computation requirements; a non-negligible consideration in settings with truly massive data. Additionally, the bin width should be an integer multiple of the resolution of the data to avoid undesirable visual attributes in the binned scatterplot.
+All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a non-negligible consideration in settings with truly massive data.
 
-Consider the simulated uniform data, we have the fine version and the coarse version, which rounded to nearest even integer. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. 
+While bin widths can be set to any positive real value, the selection should be restricted to an integer multiple of the resolution of the data to avoid undesirable visual attributes in the binned scatterplot. If the bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of bins throughout the binned scatterplot.  These white-space gaps are undesireable because they create artificial discontinuity that interfers with interpretation of bivariate density. If bin dimensions are not integer multiples of the bivariate data resolution there is also a distruptive visual consequence of ``stripping'', where bins have systematically different numbers of possible data values that can cause artifical density stripes to appear in the binned scatterplot.  
 
-<<UniformStripes, echo=F,include=T,eval=T,fig.width=5, fig.height=5, out.width='.7\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned Scatterplots of Uniform Data with 5X5 Bins">>= 
-### Binned Scatterplots for Uniform Data to Show stripes
-# create binned data for standard and random with binwidth 5
-binoutfine <- RectBin2d(datlist[[1]]$x,datlist[[1]]$y,0,0,5,5,type="standard")
-binoutcoarse <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,5,5,type="standard")
-binoutfineRand <- RectBin2d(datlist[[1]]$x,datlist[[1]]$y,0,0,5,5,type="random")
-binoutcoarseRand <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,5,5,type="random")
+To demonstrate the importance of properly selecting binwidths consider the coarse version of the simulated uniform data which is recorded to a resolution of 2 units. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with 1 X 1 unit bins, stripes with 5 X 5 unit bins and the correct even spread density with 4X4 unit bins.  Note that here the random binning is effective at eliminating the misleading visual effects when non-integer multiples of the data resolution are selected.
 
-allbindat <- rbind(binoutfine[[1]],binoutcoarse[[1]],
-                   binoutfineRand[[1]],binoutcoarseRand[[1]])
-allbindat$SimDataType <- factor(rep(c("Fine","Coarse","Fine","Coarse"), 
-                             each=nrow(binoutfine[[1]])),
-                             levels=c("Fine","Coarse"))
-allbindat$BinningType <- factor(rep(c("Standard","Random"),
-                             each=2*nrow(binoutfine[[1]])),
-                             levels=c("Standard","Random"))
+<<UniformStripes, echo=F,include=T,eval=T,fig.width=8, fig.height=5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots of coarse uniform data with square bins of size 1, 4 and 5">>= 
+# Commented out code for data generation: run once then recomment
+### Create data to demonstrate stripes from improper binwidths
+# binoutcoarse1 <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,1,1,type="standard")[[1]]
+# binoutcoarse4 <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,4,4,type="standard")[[1]]
+# binoutcoarse5 <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,5,5,type="standard")[[1]]
+# binoutcoarse1Rand <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,1,1,type="random")[[1]]
+# binoutcoarse4Rand <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,4,4,type="random")[[1]]
+# binoutcoarse5Rand <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,5,5,type="random")[[1]]
+# 
+# binoutcoarse1$BinSize <- "1 X 1 Unit" ; binoutcoarse1$BinningType <- "Standard" 
+# binoutcoarse4$BinSize <- "4 X 4 Unit" ; binoutcoarse4$BinningType <- "Standard" 
+# binoutcoarse5$BinSize <- "5 X 5 Unit" ; binoutcoarse5$BinningType <- "Standard" 
+# binoutcoarse1Rand$BinSize <- "1 X 1 Unit" ; binoutcoarse1Rand$BinningType <- "Random" 
+# binoutcoarse4Rand$BinSize <- "4 X 4 Unit" ; binoutcoarse4Rand$BinningType <- "Random" 
+# binoutcoarse5Rand$BinSize <- "5 X 5 Unit" ; binoutcoarse5Rand$BinningType <- "Random" 
+# 
+# allbindat <- rbind(binoutcoarse1,binoutcoarse4,binoutcoarse5,
+#                    binoutcoarse1Rand,binoutcoarse4Rand,binoutcoarse5Rand)
+# write.csv(allbindat,"StripeBinData.csv", row.names=FALSE)
+allbindat <- read.csv("StripeBinData.csv",header=TRUE)
+allbindat$BinningType <- factor(allbindat$BinningType, levels=c("Standard","Random"))
 
-qplot(binxs, binys, geom="tile", fill=binfreq, data=allbindat) +
-  facet_grid(BinningType ~ SimDataType)+
-  ggtitle(" ") +  
+p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=subset(allbindat,BinSize=="1 X 1 Unit")) +
+  facet_grid(BinningType~BinSize)+
+  ggtitle(" ") +   xlab("") + ylab("") +
   scale_fill_gradient(low="#56B1F7", high="#132B43",
                       limits=c(0, 450),name="Bin Count") + 
-  theme_bw() + theme(legend.position="bottom",aspect.ratio=1) +
-  xlab("X") + ylab("Y")
+  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+                     panel.grid= element_blank())
+
+p2 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=subset(allbindat,BinSize=="4 X 4 Unit")) +
+  facet_grid(BinningType~BinSize)+
+  ggtitle(" ") +   xlab("") + ylab("") +
+  scale_fill_gradient(low="#56B1F7", high="#132B43",
+                      limits=c(0, 450),name="Bin Count") + 
+  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+                     panel.grid= element_blank())
+
+p3 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=subset(allbindat,BinSize=="5 X 5 Unit")) +
+  facet_grid(BinningType~BinSize)+
+  ggtitle(" ") +   xlab("") + ylab("") +
+  scale_fill_gradient(low="#56B1F7", high="#132B43",
+                      limits=c(0, 450),name="Bin Count") + 
+  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+                     panel.grid= element_blank())
+
+grid.arrange(p1,p2,p3, nrow=1)
+
 @
 
 
