@@ -1291,10 +1291,10 @@ Whether analytical or empirical, data is needed to demonstrate how loss is impac
 \begin{itemize}
 \item {\bf Scenario I:} $x \sim \text{Exp}_\lambda, y \sim \text{Exp}_\lambda$ with $\lambda = 11$
 \end{itemize}}
-Datasets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform.  These distributions were selected for their variety in terms of shape, center and spread. 100,000 observation pairs were simulated for each set of simulated data, and the $x$ and $y$ values were drawn independently from univariate distributions; Exponental(11), Normal(50,$11^2$) and Uniform(0,100), respectively.  The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. 
+Data sets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform.  These distributions were selected for their variety in terms of shape, center and spread. 100,000 observation pairs were simulated for each set of simulated data, and the $x$ and $y$ values were drawn independently from univariate distributions; Exponential(11), Normal(50,$11^2$) and Uniform(0,100), respectively.  The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. 
 
 
-<<SimDataScatterplots,echo=F,include=T,eval=T,fig.width=8, fig.height=6, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data.">>= 
+<<SimDataScatterplots,echo=F,include=T,eval=T,fig.width=8, fig.height=5.5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data.">>= 
 ### Try 2d binning with MVN data
 n=100000
 set.seed(31415)
@@ -1337,7 +1337,7 @@ qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1)) +
 @
 
 
-These simulated datasets are from continous distributions, and thus the values are recorded to many decimal places. Real data is recorded to only the number of digits that the measurements allow; in many cases rounded to the nearest whole dollar or five minutes or two miles. The data resolution can be described by increment between data values. To observe binning loss under more realistic conditions, we created three data sets by rounding the values from the originally simulated data sets to the nearest even number, thus a data resolution of 2 units. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution to which data is recorded. 
+These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places. Real data is recorded to only the number of digits that the measurements allow; in many cases rounded to the nearest whole dollar or five minutes or two miles. The data resolution can be described by increment between data values. To observe binning loss under more realistic conditions, we created three data sets by rounding the values from the originally simulated data sets to the nearest even number, thus a data resolution of 2 units. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution to which data is recorded. 
 
 %-----------------------------------------------------------------------------
 
@@ -1347,7 +1347,7 @@ For rectangular binning there are many specification options; including type of 
 
 Figure~\ref{fig:SpatialLossCompare} displays the net spatial loss from binning each set of simulated data with standard and random binning algorithms using square bins with a sizes ranging from 2 units$^2$ to 20 units$^2$. It is easily apparent that  the spatial loss for random binning is always higher than for standard binning and the loss grows as bin width increases. The net spatial loss from random binning increases with bin width at a faster rate than from standard binning, as indicated by the widening gap between the lines and the steeper slopes.  
 
-<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=3.5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss over a range of bin sizes for standard and random binning of the fine version of the simulated data from each bivariate distribution.">>= 
+<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss over a range of bin sizes for standard and random binning of the fine version of the simulated data from each bivariate distribution.">>= 
 spatlossdat <- read.csv("SpatialLossData.csv",header=TRUE)
 # use all the square bins to plot bin width against proportion of max spataial loss
 spatlossdatSquareBins <- spatlossdat[spatlossdat$widthx==spatlossdat$widthy,]
@@ -1359,9 +1359,9 @@ qplot(widthx,totalSpatialLoss,geom="path",colour=bintype, linetype=bintype,
 
 All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a non-negligible consideration in settings with truly massive data.
 
-While bin widths can be set to any positive real value, the selection should be restricted to an integer multiple of the resolution of the data to avoid undesirable visual attributes in the binned scatterplot. If the bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of bins throughout the binned scatterplot.  These white-space gaps are undesireable because they create artificial discontinuity that interfers with interpretation of bivariate density. If bin dimensions are not integer multiples of the bivariate data resolution there is also a distruptive visual consequence of ``stripping'', where bins have systematically different numbers of possible data values that can cause artifical density stripes to appear in the binned scatterplot.  
+While bin widths can be set to any positive real value, the selection should be restricted to an integer multiple of the resolution of the data to avoid undesirable visual attributes in the binned scatterplot. If the bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of bins throughout the binned scatterplot.  These white-space gaps are undesirable because they create artificial discontinuity that interferes with interpretation of bivariate density. If bin dimensions are not integer multiples of the bivariate data resolution there is also a disruptive visual consequence of ``stripping'', where bins have systematically different numbers of possible data values that can cause artificial density stripes to appear in the binned scatterplot.  
 
-To demonstrate the importance of properly selecting binwidths consider the coarse version of the simulated uniform data which is recorded to a resolution of 2 units. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with 1 X 1 unit bins, stripes with 5 X 5 unit bins and the correct even spread density with 4X4 unit bins.  Note that here the random binning is effective at eliminating the misleading visual effects when non-integer multiples of the data resolution are selected.
+To demonstrate the importance of properly selecting binwidths consider the coarse version of the simulated uniform data which is recorded to a resolution of 2 units. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with 1 X 1 unit bins, vertical and horizontal stripes with 5 X 5 unit bins and the appropriate view of an evenly spread density with 4X4 unit bins.  Note that random binning is effective at smoothing out the stripped patterns when non-integer multiples of the data resolution are selected.
 
 <<UniformStripes, echo=F,include=T,eval=T,fig.width=8, fig.height=5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots of coarse uniform data with square bins of size 1, 4 and 5">>= 
 # Commented out code for data generation: run once then recomment
@@ -1414,15 +1414,37 @@ grid.arrange(p1,p2,p3, nrow=1)
 
 @
 
+The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density in outermost bins.  Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of 10 by 10 unit bins for the fine exponential data with two different origin choices at (0,0) and (-9,-9). The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are empty in the negative regions. The binning origin at (0,0) is also superior in terms of the net spatial loss, which is about 7\% lower than for the (-9,-9) origin. For data with very fine resolution, it is a good idea to set the origin at the minimum value for each dimension. 
+
+<<ExponentialOriginPlots, echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots for the fine exponential data using standard binning with 10 by 10 unit bins with origins at (0,0) and (-9,-9). These binnings have net spatial losses of 391067 units and 420458 units, respectively">>= 
+
+#create binned data for fine exponential with 10X10 bins at good and bad origin
+binoutExp5 <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,0,0,10,10,type="standard")
+binoutExp5offset <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,-9,-9,10,10,type="standard")
+
+p1 <- qplot(binxs, binys, geom="tile", fill=log(binfreq), data=binoutExp5[[1]]) +  
+  ggtitle("Origin at (0,0)") +
+  scale_fill_gradient(low="#56B1F7", high="#132B43") + 
+  theme_bw() + theme(legend.position="none",
+                     aspect.ratio=1, panel.grid= element_blank()) +
+  xlab("") + ylab("")
+p2 <- qplot(binxs, binys, geom="tile", fill=log(binfreq), data=binoutExp5offset[[1]]) +  
+  ggtitle("Origin at (-9,-9)") + 
+  scale_fill_gradient(low="#56B1F7", high="#132B43") + 
+  theme_bw() + theme(legend.position="none",
+                     aspect.ratio=1, panel.grid= element_blank()) +
+  xlab("") + ylab("")
+
+grid.arrange(p1,p2,nrow=1)
+
+## loss comparison calculation for paragraph above:  7% lower
+# binoutExp5[[2]][5]/binoutExp5offset[[2]][5]
+
+@
 
 \ktm{
 \begin{itemize}
 \item Binning Algorithm: total and net spatial losses are always larger for random binning than standard (analytic proof)
-\item Origin: 
-  \begin{itemize}
-    \item Doesn't much matter for fine resolution data but it does for coarse data.
-    \item If recorded to resolution $\alpha$, origin at $x_{(1)} - \alpha/2$ is optimal (analytically proof then demo) Proof in Appendix~\ref{proof:offset}.
-  \end{itemize} 
 \item Bin width: 
   \begin{itemize}
     \item generally smaller $\omega \rightarrow$ smaller $L^s$. 
@@ -1431,6 +1453,12 @@ grid.arrange(p1,p2,p3, nrow=1)
     \item for coarse data bin widths should be scalar multiple of $\alpha$ (show plot with strips)
     \item Does the distribution type matter? 
   \end{itemize}
+\item Origin: 
+  \begin{itemize}
+    \item Doesn't much matter for fine resolution data but it does for coarse data.
+    \item If recorded to resolution $\alpha$, origin at $x_{(1)} - \alpha/2$ is optimal (analytically proof then demo) Proof in Appendix~\ref{proof:offset}.
+  \end{itemize} 
+
 \end{itemize}
 }
 
@@ -1742,7 +1770,7 @@ The following is proof that when univariate data is uniformly distributed at res
 
 \noindent Suppose then that we bin the data using standard rectangular binning with origin, $\beta = x_1 - \theta$, and binwidth $\omega$; where $\theta$ is the \textit{origin offset} from the data. Thus $b(x_j) = \beta + \omega/2 = (x_1 - \theta) + (k\alpha/2)$\\
 
-\noindent Spatial Loss, $L^S = \sum_{i=1}^{k} ||x_i-b_(x_i)|| $ is definitional minimized when $b_(x_i)$ is the \textit{geometric median}. The geometric median for $x_1, \dots, x_k = Q_x(.5) = (x_{\lceil\frac{k+1}{2}\rceil}+x_{\lfloor \frac{k+1}{2}\rfloor})/2$ , where $Q_x(\cdot)$ is the empirical quantile function. \\
+\noindent Spatial Loss, $L^S = \sum_{i=1}^{k} ||x_i-b_(x_i)|| $ is definitionally minimized when $b_(x_i)$ is the \textit{geometric median}. The geometric median for $x_1, \dots, x_k = Q_x(.5) = (x_{\lceil\frac{k+1}{2}\rceil}+x_{\lfloor \frac{k+1}{2}\rfloor})/2$ , where $Q_x(\cdot)$ is the empirical quantile function. \\
 
 \noindent Thus the optimal offset is the $\theta$ such that\\
 
@@ -1756,7 +1784,7 @@ $ \Rightarrow \theta = \alpha/2 $ \\
 
 Thus the optimal offset for reducing spatial loss in this scenario is $\theta = \alpha/2$.  This result holds for data that is symmetrically distributed within the bin since the median will not change.  It extends to multiple contiguous bins with resolution $\alpha$ data that has symmetrically distributed data withing each bin. \\
 
-If the same conditions are extended to the two dimensional case, then the origin for minimal spatial loss is at $(x_{(1)}-\alpha_x/2, y_{(1)}-\alpha_y/2)$ where $\alpha_x$ and $\alpha_y$  are the data resolution for each dimesion, respectively. 
+If the same conditions are extended to the two dimensional case, then the origin for minimal spatial loss is at $(x_{(1)}-\alpha_x/2, y_{(1)}-\alpha_y/2)$ where $\alpha_x$ and $\alpha_y$  are the data resolution for each dimension, respectively. 
 
 } %end ktm color
 %----------------------------------------------------------------------------
