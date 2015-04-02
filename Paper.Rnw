@@ -1445,7 +1445,7 @@ grid.arrange(p1,p2,nrow=1)
 
 For data with a coarse resolution the location of the origin is also important because the origin controls the proximity of possible data values to bin centers. It can be shown analytically that for data with a resolution of $\alpha$ units that is spread symmetrically within bins, the origin that minimizes net spatial loss is located $\alpha/2$ units below the minimum value (see proof in Appendix~\ref{proof:offset}).
 
-In practice the $\alpha/2$ origin offset is found to be a reasonable choice for minimizing spatial loss for symmetric bivariate data at resolution $\alpha$ while using bin dimesions that are integer multiples of $\alpha$. Figure~\ref{fig:OriginOffsetSimulations} shows how the net spatial loss changes as the origin is slide from the minimum value to half the binwidth below the minimum value using the coarse simulated data with a resolution of 2 units. For the two symmetrically distributed data sets, normal and uniform, the origin offset of 1 unit below the minimum data value was found to minimize the net spatial loss for each considered binsize (2, 4, 6, 8, and 10). For the bivariately skewed exponential data, the 1 unit origin offset minimized net loss for the smaller intervals but was not optimal for the larger intervals.
+In practice the $\alpha/2$ origin offset is found to be a reasonable choice for minimizing spatial loss for symmetric bivariate data at resolution $\alpha$ while using bin dimensions that are integer multiples of $\alpha$. Figure~\ref{fig:OriginOffsetSimulations} shows how the net spatial loss changes as the origin is slide from the minimum value to half the binwidth below the minimum value using the coarse simulated data with a resolution of 2 units. For the two symmetrically distributed data sets, normal and uniform, the origin offset of 1 unit below the minimum data value was found to minimize the net spatial loss for each considered bin size (2, 4, 6, 8, and 10 units). For the bivariately skewed exponential data, the 1 unit origin offset minimized net loss for the smaller intervals but was not optimal for the larger intervals.
 
 <<OriginOffsetSimulations, echo=F,include=T,eval=T,fig.width=8, fig.height=5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Net spatial loss for coarse simulated data at a resolution of 2 units at various sized (2,4,6,8,10) square bins over the range of possible origin offsets. The vertical gray line in each facet indicates where the origin is offset 1 unit below the minimum data value.">>= 
 
@@ -1510,21 +1510,23 @@ qplot(originx,totalSpatialLoss,geom="path",group=distrib, colour=distrib,
 
 %-----------------------------------------------------------------------------
 
-\subsection{Frequency binning choices}
+\subsection{Frequency Binning Specifications and Frequency Loss}
+
+The loss of frequency information in frequency binning is highly subject to the selection of a discrete color mapping. 
 
 \ktm{
-\begin{itemize}
-\item Freq Binning Type
-  \begin{itemize}
-    \item Comparison of standard, log and quantile binning
-  \end{itemize}
-\end{itemize}
-
 \begin{itemize}
 \item Number of Colors:
   \begin{itemize}
     \item Perception driven limitation to 7 or less color bins
-    \item As number colors increases, freq loss goes up?
+    \item As number colors increases, freq loss goes down
+  \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+\item Freq Binning Type
+  \begin{itemize}
+    \item Comparison of standard, log and quantile binning
   \end{itemize}
 \end{itemize}
 }
