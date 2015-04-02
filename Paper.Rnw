@@ -1416,6 +1416,8 @@ grid.arrange(p1,p2,p3, nrow=1)
 
 The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density in outermost bins.  Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of 10 by 10 unit bins for the fine exponential data with two different origin choices at (0,0) and (-9,-9). The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are empty in the negative regions. The binning origin at (0,0) is also superior in terms of the net spatial loss, which is about 7\% lower than for the (-9,-9) origin. For data with very fine resolution, it is a good idea to set the origin at the minimum value for each dimension. 
 
+For data with a coarse resolution the location of the origin is also important because the origin controls the proximity of possible data values to bin centers. It can be shown analytically that for data with a resolution of $\alpha$ units that is spread symmetrically within bins, the origin that minimizes net spatial loss is located $\alpha/2$ units below the minimum values (see proof in Appendix~\ref{proof:offset}).
+
 <<ExponentialOriginPlots, echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots for the fine exponential data using standard binning with 10 by 10 unit bins with origins at (0,0) and (-9,-9). These binnings have net spatial losses of 391067 units and 420458 units, respectively">>= 
 
 #create binned data for fine exponential with 10X10 bins at good and bad origin
@@ -1761,7 +1763,8 @@ We have presented two algorithms for binning; the standard algorithm, which has 
 \section{Mathematical Considerations}
 
 %----------------------------------------------------------------------------
-\subsection{Optimal Offset for Uniform Data Recorded to Resolution $\alpha$}\label{proof:offset}
+\subsection{Optimal Offset for Uniform Data Recorded to Resolution $\alpha$}
+\label{proof:offset}
 
 \ktm{
 The following is proof that when univariate data is uniformly distributed at resolution $\alpha$ and standard rectangular binning is used with binwidths that are a scalar multiple of the data resolution (i.e. $\omega = k\alpha$ for some $k \in \{1,2,\dots\})$, then spatial loss is minimized by setting the binning origin to $\alpha/2$ units below the minimum data value; set $\beta = x_{(1)} - \alpha/2$.\\
