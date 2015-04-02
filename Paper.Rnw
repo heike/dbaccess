@@ -1416,8 +1416,6 @@ grid.arrange(p1,p2,p3, nrow=1)
 
 The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density in outermost bins.  Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of 10 by 10 unit bins for the fine exponential data with two different origin choices at (0,0) and (-9,-9). The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are empty in the negative regions. The binning origin at (0,0) is also superior in terms of the net spatial loss, which is about 7\% lower than for the (-9,-9) origin. For data with very fine resolution, it is a good idea to set the origin at the minimum value for each dimension. 
 
-For data with a coarse resolution the location of the origin is also important because the origin controls the proximity of possible data values to bin centers. It can be shown analytically that for data with a resolution of $\alpha$ units that is spread symmetrically within bins, the origin that minimizes net spatial loss is located $\alpha/2$ units below the minimum values (see proof in Appendix~\ref{proof:offset}).
-
 <<ExponentialOriginPlots, echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots for the fine exponential data using standard binning with 10 by 10 unit bins with origins at (0,0) and (-9,-9). These binnings have net spatial losses of 391067 units and 420458 units, respectively">>= 
 
 #create binned data for fine exponential with 10X10 bins at good and bad origin
@@ -1443,6 +1441,49 @@ grid.arrange(p1,p2,nrow=1)
 # binoutExp5[[2]][5]/binoutExp5offset[[2]][5]
 
 @
+
+For data with a coarse resolution the location of the origin is also important because the origin controls the proximity of possible data values to bin centers. It can be shown analytically that for data with a resolution of $\alpha$ units that is spread symmetrically within bins, the origin that minimizes net spatial loss is located $\alpha/2$ units below the minimum values (see proof in Appendix~\ref{proof:offset}).
+
+<<OriginOffsetSimulations, echo=F,include=T,eval=T,fig.width=8, fig.height=5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Net spatial loss for coarse simulated data at a resolution of 2 units at various sized (2,4,6,8,10) square bins over the range of possible origin offsets.">>= 
+
+##  Check out the spatial loss for the data that is recorded to resolution = alpha at various origin offsets
+# standard and random binning with bin sizes that are scalar multiples of the data resolution
+# save spatial loss information
+# spatlossdatRound <- data.frame(NULL)
+# index=0
+# distindex = 0
+# distrib <- c("unif", "norm", "exp")
+# widths <- seq(alpha,5*alpha,by=alpha)
+# for (dat in 1:3){
+#   distindex <- distindex + 1
+#   for (width in widths){
+#     for (origin in seq(-width/2,0, by=width/60)){
+#       index <- index+1
+#       binout <- RectBin2d(datlist[[dat]]$roundx,datlist[[dat]]$roundy,origin,origin,width,width,type="standard")
+#       binout[[2]]$bintype <- "standard"
+#       binout[[2]]$distrib <- distrib[distindex]
+#       spatlossdatRound <- rbind(spatlossdatRound, binout[[2]])
+#       index <- index+1
+#       binout <- RectBin2d(datlist[[dat]]$roundx,datlist[[dat]]$roundy,origin,origin,width,width,type="random")
+#       binout[[2]]$bintype <- "random"
+#       binout[[2]]$distrib <- distrib[distindex]
+#       spatlossdatRound <- rbind(spatlossdatRound, binout[[2]])
+#       print(c(distrib[distindex],width,origin))
+#     }
+#   }
+# }
+# write.csv(spatlossdatRound,"LossesByOriginBinwidth.csv", row.names=FALSE)
+lossOrigin <- read.csv("LossesByOriginBinwidth.csv",header=TRUE)
+
+qplot(originx,totalSpatialLoss,geom="path",group=distrib, colour=distrib,
+      data=subset(lossOrigin,bintype=="standard"), size=I(1))+ 
+  facet_grid(distrib~widthx) + theme_bw() + 
+  theme(panel.grid= element_blank())+
+  geom_vline(xintercept = -1, colour=I("darkgray")) +
+  ylab("Net Spatial Loss") + xlab("Origin Offset")
+
+@
+
 
 \ktm{
 \begin{itemize}
