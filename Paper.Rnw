@@ -13,7 +13,6 @@
 \newcommand{\hh}[1]{{\color{blue} #1}} %blue comments: Heike
 \newcommand{\svp}[1]{{\color{yellow}#1}} %yellow: Susan (It's more fun that way - comment roulette)
 
-
 %opening
 \title{Binning Strategies and Related Loss for Large Data}
 \author{Karsten Maurer$^1$, Susan VanderPlas$^1$, Heike Hofmann$^{1,2}$\\$^1$Department of Statistics, $^2$Human Computer Interaction\\Iowa State University}
@@ -1281,17 +1280,19 @@ By additionally increasing the bin width, we  provide increasingly higher-level 
 
 \section{Exploring Properties of Loss}
 
-Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm as well as a choice of parameters associated with the  binning algorithm.  This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of scenarios.  \ktm{Some results are derived \hh{XXX check the sentence} optimal choices through analytical proofs while others are recommendation based on numerical from empirical exploration of loss from binning.  }
+Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm as well as a choice of parameters associated with the  binning algorithm.  This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of scenarios. Some choices may be proven optimal through analytical properties, while other are data dependent and require empirical exploration of loss from binning.  Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices.
 
+Data sets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform.  These distributions were selected for their variety in terms of shape, center and spread. 100,000 observation pairs were simulated for each data set from the following distributions: 
 
-
-Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices.
-
-\hh{Just list the three different scenarios:
 \begin{itemize}
-\item {\bf Scenario I:} $x \sim \text{Exp}_\lambda, y \sim \text{Exp}_\lambda$ with $\lambda = 11$
-\end{itemize}}
-Data sets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform.  These distributions were selected for their variety in terms of shape, center and spread. 100,000 observation pairs were simulated for each set of simulated data, and the $x$ and $y$ values were drawn independently from univariate distributions; Exponential(11), Normal(50,$11^2$) and Uniform(0,100), respectively.  The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. 
+\item Set I: $x_i \sim \text{iid Exp}(\lambda), y_i \sim \text{iid Exp}(\lambda)$ with $\lambda = 11$
+
+\item Set II: $x_i \sim \text{iid Normal}(\mu,\sigma^2), y_i \sim \text{iid Normal}(\mu,\sigma^2)$ with $\mu = 50$ and $\sigma=11$
+
+\item Set III: $x_i \sim \text{iid Uniform}(a,b), y_i \sim \text{iid Uniform}(a,b)$ with $a =0$ and $b=100$
+\end{itemize}
+%
+The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. 
 
 
 <<SimDataScatterplots,echo=F,include=T,eval=T,fig.width=8, fig.height=5.5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data.">>= 
@@ -1486,26 +1487,26 @@ qplot(originx,totalSpatialLoss,geom="path",group=distrib, colour=distrib,
 
 @
 
-
-\ktm{
-\begin{itemize}
-\item Binning Algorithm: total and net spatial losses are always larger for random binning than standard (analytic proof)
-\item Bin width: 
-  \begin{itemize}
-    \item generally smaller $\omega \rightarrow$ smaller $L^s$. 
-    \item for fine data any bin width is fine
-    \item for coarse data need bin widths $\omega \ge \alpha$ (show plot with white space gaps)
-    \item for coarse data bin widths should be scalar multiple of $\alpha$ (show plot with strips)
-    \item Does the distribution type matter? 
-  \end{itemize}
-\item Origin: 
-  \begin{itemize}
-    \item Doesn't much matter for fine resolution data but it does for coarse data.
-    \item If recorded to resolution $\alpha$, origin at $x_{(1)} - \alpha/2$ is optimal (analytically proof then demo) Proof in Appendix~\ref{proof:offset}.
-  \end{itemize} 
-
-\end{itemize}
-}
+% 
+% \ktm{
+% \begin{itemize}
+% \item Binning Algorithm: total and net spatial losses are always larger for random binning than standard (analytic proof)
+% \item Bin width: 
+%   \begin{itemize}
+%     \item generally smaller $\omega \rightarrow$ smaller $L^s$. 
+%     \item for fine data any bin width is fine
+%     \item for coarse data need bin widths $\omega \ge \alpha$ (show plot with white space gaps)
+%     \item for coarse data bin widths should be scalar multiple of $\alpha$ (show plot with strips)
+%     \item Does the distribution type matter? 
+%   \end{itemize}
+% \item Origin: 
+%   \begin{itemize}
+%     \item Doesn't much matter for fine resolution data but it does for coarse data.
+%     \item If recorded to resolution $\alpha$, origin at $x_{(1)} - \alpha/2$ is optimal (analytically proof then demo) Proof in Appendix~\ref{proof:offset}.
+%   \end{itemize} 
+% 
+% \end{itemize}
+% }
 
 %-----------------------------------------------------------------------------
 
