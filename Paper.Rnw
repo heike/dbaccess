@@ -1356,7 +1356,7 @@ spatlossdatSquareBins <- spatlossdat[spatlossdat$widthx==spatlossdat$widthy,]
 qplot(widthx,totalSpatialLoss,geom="path",colour=bintype, linetype=bintype,
       data=spatlossdatSquareBins,group=bintype, facets=.~distrib, size=I(1)) +
   theme_bw() + ylab("Net Spatial Loss") +
-  xlab("Width/Height of Square Bins")
+  xlab("Width/Height of Square Bins") + ylim(c(0, 1100000))
 @
 
 All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a non-negligible consideration in settings with truly massive data.
