@@ -1421,7 +1421,7 @@ grid.arrange(p1,p2,p3, nrow=1)
 
 The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density in outermost bins.  Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of 10 by 10 unit bins for the fine exponential data with two different origin choices at (0,0) and (-9,-9). The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are largely empty due to the negative regions. The binning origin at (0,0) is also superior in terms of the net spatial loss, which is about 7\% lower than for the (-9,-9) origin. For data with very fine resolution, it is a good idea to set the origin at the minimum value for each dimension. 
 
-<<ExponentialOriginPlots, echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots for the fine exponential data using standard binning with 10 by 10 unit bins with origins at (0,0) and (-9,-9). These binnings have net spatial losses of 391067 units and 420458 units, respectively">>= 
+<<ExponentialOriginPlots, echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.9\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots for the fine exponential data using standard binning with 10 by 10 unit bins with origins at (0,0) and (-9,-9). These binnings have net spatial losses of 391067 units and 420458 units, respectively">>= 
 
 #create binned data for fine exponential with 10X10 bins at good and bad origin
 binoutExp5 <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,0,0,10,10,type="standard")
@@ -1517,6 +1517,50 @@ qplot(originx,totalSpatialLoss,geom="path",group=distrib, colour=distrib,
 \subsection{Frequency Binning Specifications and Frequency Loss}
 
 The loss of frequency information in frequency binning is highly subject to the selection of a discrete color mapping. 
+
+<<FreqLossCompare,echo=F,include=T,eval=T,fig.width=10, fig.height=4, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss from standard and quantile frequency binning of reduced binned data from each bivariate distribution. Spatial binning to produce the reduced binned data done with standard rectangular binning with 5 X 5 unit bins and origin at (0,0).">>= 
+### Loop over ncolors 1 to 7 and also over data distribution
+# find freq loss from standard, quantile, logCount
+freqLossSimDat <- NULL
+distrib <- c("Uniform", "Normal", "Exponential")
+for (distidx in 1:3){
+  binout1 <- RectBin2d(datlist[[distidx]]$x,datlist[[distidx]]$y,0,0,5,5,type="standard")
+  for (ncol in 1:7){
+    binoutFreq <- rbind(freqBin(binout1, binType="standard", ncolor=ncol, logCount=FALSE)[[2]],
+                        freqBin(binout1, binType="quantile", ncolor=ncol, logCount=FALSE)[[2]], 
+                        freqBin(binout1, binType="standard", ncolor=ncol, logCount=TRUE)[[2]])
+    binoutFreq$FreqBinType <- c("Standard", "Quantile", "Log Count")
+    binoutFreq$DistType <- distrib[distidx]
+    binoutFreq$ncolor <- ncol 
+    freqLossSimDat <- rbind(freqLossSimDat,binoutFreq)
+  }
+}
+
+freqLossSimDat$FreqBinType <- factor(freqLossSimDat$FreqBinType , levels=c("Standard", "Quantile", "Log Count"))
+plotdat <- freqLossSimDat[(freqLossSimDat$FreqBinType!="Log Count" & freqLossSimDat$DistType=="Exponential"),]
+p1 <- qplot(ncolor, totalFreqLoss, geom="path",linetype=FreqBinType,
+      data=plotdat , color = FreqBinType, size=I(1)) +
+  facet_grid(.~DistType, scales="free_y") +  theme_bw() +
+  scale_x_continuous(breaks=c(1,3,5,7)) + ylim(0,max(plotdat$totalFreqLoss)) +
+  xlab("Freq Bins") + ylab("Total Freq Loss") + 
+  theme(legend.position="bottom")
+plotdat <- freqLossSimDat[(freqLossSimDat$FreqBinType!="Log Count" & freqLossSimDat$DistType=="Normal"),]
+p2 <-  qplot(ncolor, totalFreqLoss, geom="path",linetype=FreqBinType,
+      data=plotdat , color = FreqBinType, size=I(1)) +
+  facet_grid(.~DistType, scales="free_y") +  theme_bw() +
+  scale_x_continuous(breaks=c(1,3,5,7)) + ylim(0,max(plotdat$totalFreqLoss)) +
+  xlab("Freq Bins") + ylab("Total Freq Loss") + 
+  theme(legend.position="bottom")
+plotdat <- freqLossSimDat[(freqLossSimDat$FreqBinType!="Log Count" & freqLossSimDat$DistType=="Uniform"),]
+p3 <-qplot(ncolor, totalFreqLoss, geom="path",linetype=FreqBinType,
+      data=plotdat , color = FreqBinType, size=I(1)) +
+  facet_grid(.~DistType, scales="free_y") +  theme_bw() +
+  scale_x_continuous(breaks=c(1,3,5,7)) + ylim(0,max(plotdat$totalFreqLoss)) +
+  xlab("Freq Bins") + ylab("Total Freq Loss") + 
+  theme(legend.position="bottom")
+
+grid.arrange(p1,p2,p3, nrow=1)
+@
 
 \ktm{
 \begin{itemize}
