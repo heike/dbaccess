@@ -425,13 +425,9 @@ ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
 
 \subsection{Binned Data Reduction}
 
-The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c).
-The reduced binned data is sufficient for constructing the binned scatterplot. %, as only bin centers and frequencies are necessary.  
-Binning greatly reduces the storage size for the information and the computation time needed to construct the plot.
-\hh{XXX this is not always true - when the bins have only 1s the binned data set is actually bigger than the original. }
+The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c). The reduced binned data is sufficient for constructing the binned scatterplot. In cases of large data, binning greatly reduces the storage size for the information and the computation time needed to construct the plot.
 
-Data reduction comes at the expense of spatial information of any of the individual points.
-After aggregation the original spatial locations cannot be recovered. The loss of information incurred from binning will be explored in following sections. 
+Data reduction comes at the expense of spatial information of any of the individual points. After aggregation the original spatial locations cannot be recovered. The loss of information incurred from binning will be explored in following sections. 
 
 % recover some of the numerical information lost due to binning by storing the numerical center $(\bar{x},\bar{y})$ instead of the visual center $(x^\ast,y^\ast)$ for use in subsequent calculations. Storing the binned data as the arithmetic mean rather than the visual center reduces the total loss, and the visual center can be recovered from the bin width and  bin center $(O_X, O_Y)$, see table \ref{RecoveryComparison} for a numeric example for this. 
 
@@ -719,7 +715,7 @@ L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ \left(x_i-b_X(x_i)\right)^2 +
 %
 where $L_i^S$ is the loss in the  $i$th observation. 
 %
-Figure~\ref{fig:spatlossdemo2} \hh{XXX in the figure, make the tiles at the bottom squares, so they match with the scatter plot above. This is a neat picture! XXX} visually displays the spatial loss for the data from  Table~\ref{DataReductionExample} as a result of standard rectangular binning. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
+Figure~\ref{fig:spatlossdemo2} visually displays the spatial loss for the data from  Table~\ref{DataReductionExample} as a result of standard rectangular binning. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all segments represents the total spatial loss, $L^S$.  
 
 <<spatlossdemo2,echo=F,include=T,eval=T,fig.width=12, fig.height=6, out.width='1\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Visualization of spatial loss for same data using standard, random and post-processed random binning algorithms.  Note that the total spatial loss for the standard algorithm is smaller than by random binning. The net spatial loss for the original random binned data is the total spatial loss of the post-processed assignment." >>= 
 n=12
@@ -745,7 +741,8 @@ p1 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
       theme_bw() + xlab("") + ylab("") +
       ggtitle("Standard Binning") +
       theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
-            legend.position="none",plot.margin = unit(c(0,1,0, 1),"cm"))
+            legend.position="none",plot.margin = unit(c(0,1,0, 1),"cm"),
+            aspect.ratio=1)
 
 # random bin centers
 set.seed(14)
@@ -763,7 +760,8 @@ p2 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
   theme_bw() + xlab("") + ylab("") +
   ggtitle("Random Binning") +
   theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
-        legend.position="none",plot.margin = unit(c(0,1,0, 1),"cm"))
+        legend.position="none",plot.margin = unit(c(0,1,0, 1),"cm"),
+            aspect.ratio=1)
 
 # post process random bin centers to visually 
 # equivalent allocation with minimum spatial loss
@@ -785,7 +783,8 @@ p3 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
   theme_bw() + xlab("") + ylab("") +
   ggtitle("Post-Processed Random Binning") +
   theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
-        legend.position="none",plot.margin = unit(c(0,1,0, 1),"cm"))
+        legend.position="none",plot.margin = unit(c(0,1,0, 1),"cm"),
+            aspect.ratio=1)
 
 allbin <- data.frame(type=rep(c("Standard","Random","Post-Processed Random"),each=n),
                      binxs = c(xcent,rxcent,rxcentpost), 
@@ -798,7 +797,8 @@ p4 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend") + 
   theme_bw() + xlab("") + ylab("")  +
   theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
-        plot.margin = unit(c(0,1,0, 1),"cm"),legend.position="bottom")+
+        plot.margin = unit(c(0,1,0, 1),"cm"),legend.position="bottom",
+            aspect.ratio=1)+
   geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) 
 
 p5 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
@@ -806,7 +806,8 @@ p5 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend") + 
   theme_bw() + xlab("") + ylab("") +
   theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
-        plot.margin = unit(c(0,1,0, 1),"cm"),legend.position="bottom")+
+        plot.margin = unit(c(0,1,0, 1),"cm"),legend.position="bottom",
+            aspect.ratio=1)+
   geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) 
 
 p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
@@ -814,15 +815,16 @@ p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend") + 
   theme_bw() + xlab("") + ylab("") +
   theme(panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
-        plot.margin = unit(c(0,1,0, 1),"cm"),legend.position="bottom")+
+        plot.margin = unit(c(0,1,0, 1),"cm"),legend.position="bottom",
+            aspect.ratio=1)+
   geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) 
 
 grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
 @
 
-\ktm{ For random assignment the total spatial loss can be calculated by simply replacing  \hh{call these guys by name} $b_X(x_i)$ with $b^r_X(x_i)$ in Equation~\ref{totspatloss}.}  The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be paid to the two points highlighted in red in the panel for random binning: in standard binning these points are in neighboring bins but have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are re-allocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  
+For random assignment the total spatial loss can be calculated by simply replacing the standard binning function with the random binning function in Equation~\ref{totspatloss}. The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be paid to the two points highlighted in red in the panel for random binning: in standard binning these points are in neighboring bins but have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are re-allocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  
 
- The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}, $L^S_{net}$.  The net spatial loss for standard binned data is always  equivalent to the total spatial loss due to the deterministic bin allocations.  For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then finding the total spatial loss from this processed binned data. 
+The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}, $L^S_{net}$. The net spatial loss for standard binned data is always  equivalent to the total spatial loss due to the deterministic bin allocations. For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then finding the total spatial loss from this processed binned data. 
 
 % The net spatial loss is a euclidean distance, but requires a reference scale on which the magnitude may be interpretable. We  use the spatial loss from a ``worst-case'' binning scenario as a reference value. The largest displacement of points  occurs if we place all points into a single bin.  While the total spatial loss for single bin could be made arbitrarily large if the bin center is placed far away from the data values, we will consider a reasonable specification of a bin with boundaries that span only the range of the data in each dimension centered at  $( (x_{(1)}-x_{(n)})/2$ , $(y_{(1)}-y_{(n)})/2 )$.  The total spatial loss for this ``worst-case'' bin will be referred to as the \textit{potential spatial loss}, $L^S_p$, which is defined as 
 % \begin{eqnarray}\label{potspatloss}
@@ -890,8 +892,8 @@ qplot(xcent, ycent, geom="point", size=I(4), shape=I(2)) +
 \label{FreqLoss}
 
 Bin counts can be displayed using a continuous shading scale in HSV color space (reference needed) and thus theoretically have no frequency loss. While the tiles of the binned scatterplot would be rendered precisely, the ability of a human with average vision to extract that information using a plot index for the frequency key for the plot is largely imprecise.  Color perception of shade is extremely context sensitive allowing an inaccurate mapping of tile shade to the corresponding shade on the frequency key.
-\hh{It is therefore not realistic, to expect readers to be able to map colors to a continuous color scheme, even though theoretically we certainly can distinguish enough different colors (see e.g.\ the discussion in \url{http://hypertextbook.com/facts/2006/JenniferLeong.shtml}). Figure~\ref{fig:context} shows an example of the context sensitivity of colors. Even though there is a lot of spread between the colors in this example, most onlookers have trouble answering the question about the relative relationship of the shading of the darkest/lightest points in each of the points clouds.
-}
+It is therefore not realistic, to expect readers to be able to map colors to a continuous color scheme, even though theoretically we can distinguish enough different colors (see e.g.\ the discussion in \url{http://hypertextbook.com/facts/2006/JenniferLeong.shtml}). Figure~\ref{fig:context} shows an example of the context sensitivity of colors. Even though there is a lot of spread between the colors in this example, most onlookers have trouble answering the question about the relative relationship of the shading of the darkest/lightest points in each of the points clouds.
+
 
 \begin{figure}[ht]
 \centering
@@ -1338,8 +1340,9 @@ qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1)) +
 @
 
 
-These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places \hh{XXX how many exactly? . Real data is recorded to only the number of digits that the measurements allow, \hh{and} in many cases rounded \hh{even further. }% to the nearest whole dollar or five minutes or two miles.
-\hh{XXX this is a definition of data resolution, make that clear.} The data resolution can be described by increment between data values. To observe \hh{loss from} binning  under more realistic conditions, we create three data sets by rounding the values from the originally simulated data sets to the nearest even number, thus a data resolution of 2 units. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution to which data is recorded. 
+These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places; 6 decimal places in our simulate data. Real data is recorded to only the number of digits that the measurements allow, and in many cases rounded even further.
+
+The \textit{data resolution} is defined as the increment between data values. To observe loss from binning under more realistic conditions, we create three data sets by rounding the values from the originally simulated data sets to the nearest even number, thus a data resolution of 2 units. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution to which data is recorded. 
 
 %-----------------------------------------------------------------------------
 
