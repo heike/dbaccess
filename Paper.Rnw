@@ -1517,7 +1517,7 @@ qplot(originx,totalSpatialLoss,geom="path",group=distrib, colour=distrib,
 \ktm{
 The reduced binned data from spatial binning contains the center and count information for all bins.  The bin frequencies may themselves be binned in order to discretize the color scale for the binned scatterplot. The loss of frequency information in frequency binning is dependent on the selection of a discrete color mapping, where the binning algorithm and number of frequency bins must be specified. To explore frequency loss characteristics using the simulated bivariate data sets, each of the three fine resolution sets were first spatially binned using standard rectangular binning to produce three sets of reduced binned data; then standard, quantile and log frequency binning algorithms were applied with various numbers of frequency bins. As discussed in Section~\ref{FreqLoss}, we will limit the considered options to using between one and seven frequency bins due to the upper limits of human perceptual abilities \citep{colorperception}.  
 
-Figure~\ref{fig:FreqLossCompare} displays the frequency loss from using standard and quantile frequency binning algorithms, with between one and seven frequency bins, from each set of simulated data. We first notice that large difference in the magnitude of frequency losses based on the bivariate distribution; frequency losses are highest for the exponential data, lower for the normal data and lowest for the uniform data. We also note that the frequency loss is a decreasing function of the number of frequency bins for both binning algorithms, thus we should consider using the maximum number of bin shades that human perception is able to simultaneously discern.  Lastly, the frequency loss with the standard frequency binning may be higher than for the quantile-based algorithm when a minimal number of bins are used; but in all three simulated data sets, this is reversed when seven frequency bins are used. Thus we recommend using the standard algorithm over the quantile-based algorithm for frequency binning because it had smaller frequency loss at the recommended seven bins, and additionally carries the benefit that equally dividing the bin count range into equally spaced bins creates a simpler shading interpretion than dividing by quantiles.
+Figure~\ref{fig:FreqLossCompare} displays the frequency loss from using standard and quantile frequency binning algorithms, with between one and seven frequency bins, from each set of simulated data. We first notice that large difference in the magnitude of frequency losses based on the bivariate distribution; frequency losses are highest for the exponential data, lower for the normal data and lowest for the uniform data. We also note that the frequency loss is a decreasing function of the number of frequency bins for both binning algorithms, thus we should consider using the maximum number of bin shades that human perception is able to simultaneously discern.  Lastly, the frequency loss with the standard frequency binning may be higher than for the quantile-based algorithm when a minimal number of bins are used; but in all three simulated data sets, this is reversed when seven frequency bins are used. Thus we recommend using the standard algorithm over the quantile-based algorithm for frequency binning because it had smaller frequency loss at the recommended seven bins, and additionally carries the benefit that equally dividing the bin count range into equally spaced bins creates a simpler shading interpretation than dividing by quantiles.
 
 Due to the difference in scales between counts and log counts, the frequency loss and log frequency loss can not be directly compared. Frequency binning using the log counts did however behave very similarly, where log frequency loss decreased as the number of frequency bins increased.  Thus the same advise to use seven frequency bins holds for shading based on log counts as well. 
 }
@@ -1650,28 +1650,21 @@ p3 <-qplot(ncolor, totalFreqLoss, geom="path",linetype=FreqBinType,
 grid.arrange(p1,p2,p3, nrow=1)
 @
 
-
-\ktm{
-\begin{itemize}
-\item Number of Colors:
-  \begin{itemize}
-    \item Perception driven limitation to 7 or less color bins
-    \item As number colors increases, freq loss goes down
-  \end{itemize}
-\end{itemize}
-
-\begin{itemize}
-\item Freq Binning Type
-  \begin{itemize}
-    \item Comparison of standard, log and quantile binning
-  \end{itemize}
-\end{itemize}
-}
-
 %-----------------------------------------------------------------------------
 
 \section{Discussion and Examples}
-\subsection{Comparison of Loss in Binning Algorithms}
+
+\ktm{
+The exploration of loss of spatial and frequency information in the process of creating a binned scatterplot yielded a number of important properties and practical recommendations for their construction. Spatially binning with smaller bin dimensions will lead to lower spatial losses; however, finer binning requires more processing (Would like to use an O(n)-type argument, but I don't rightly understand this comp. sci. notation) and does not highlight large scale density structure. Ideally we would like to strike the optimal trade-off between bin size and spatial loss, but unfortunately the simulated data from the three bivariate distributions indicated that this relationship between them was nearly linear. Thus it is left to the plot designer to decide if they wish to highlight high level density structure with higher spatial loss or finer density structure with lower spatial loss.
+
+For spatial binning, the random binning algorithm displayed strong advantage of avoiding the visual ``stripes'' problem that occurred when data recorded to a coarse resolution was binned using a bin width that was a non-integer multiple of the resolution, $\alpha$. However, standard binning algorithm is superior due to lower spatial loss, and data with coarse resolution is not problematic so long as a binwidth that is an integer multiple of $\alpha$ is selected.  It was also shown that in this scenario, we should use an origin that is offset to $\alpha / 2$ units below the minimum data value leads to minimize spatial loss. 
+
+If we elect to use frequency binning to aid the perceptual mapping tile shades to the plot key for frequency, it is recommended to use seven distinct shades.  This is done to minimize the frequency loss within the bounds of human perceptual ability to distinguish multiple shades simultaneously. Standard frequency binning is recommended over the quantile frequency binning because it displayed lower frequency loss for all three simulated binned data sets while using seven frequency bins.  Log frequency binning is an alternative if the bin counts are heavily right skewed and it is desired to differentiate bins with low density.  
+
+These recommendations for binned scatterplot construction and loss properties will be demonstrated in the following examples using real bivariate data. First we will further explore the baseball pitching data.  Additionally we will investigate the relationship between scheduled and actual departure times for a full year of American commercial airline data. 
+}
+
+\subsection{Comparison of Loss in Binning Algorithms (old section - rework/remove soon)}
 <<LossTableGraphs,echo=F,results="hide",cache=TRUE, eval=TRUE>>=
 # bins <- rbind(c(1,1), c(2,2), c(2,5), c(5, 2), c(4,4), c(3, 5), c(5, 3), c(5, 5), c(5, 25), c(25, 5), c(2, 50), c(50, 2), c(5, 50))
 computeLoss <- function(binning, data){
