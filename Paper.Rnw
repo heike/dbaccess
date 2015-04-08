@@ -1341,7 +1341,7 @@ qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1)) +
 
 These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places; 6 decimal places in our simulate data. Real data is recorded to only the number of digits that the measurements allow, and in many cases rounded even further.
 
-The \textit{data resolution} is defined as the increment between data values. To observe loss from binning under more realistic conditions, we create three data sets by rounding the values from the originally simulated data sets to the nearest even number, thus a data resolution of 2 units. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution to which data is recorded. 
+The \textit{data resolution} is defined as the \hh{smallest} increment between \hh{successive} data values. To observe loss from binning under more realistic conditions, we create three data sets by rounding the values from the originally simulated data sets to the nearest even number, thus a data resolution of 2 units. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution to which data is recorded. 
 
 %-----------------------------------------------------------------------------
 
@@ -1474,7 +1474,7 @@ p2 <- qplot(binxs, binys, geom="tile", fill=log(binfreq), data=binoutExp5offset[
   xlab("") + ylab("")
 
 grid.arrange(p1,p2,nrow=1)
-
+ 
 ## loss comparison calculation for paragraph above:  7% lower
 # binoutExp5[[2]][5]/binoutExp5offset[[2]][5]
 
