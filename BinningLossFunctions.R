@@ -102,18 +102,12 @@ RectBin2d <- function(xs,ys, originx, originy, widthx, widthy, type="standard"){
     tempdat$binxs[!(tempdat$index %in% swapindex)] <- tempdat$randbinxs[!(tempdat$index %in% swapindex)]
     tempdat$binys[!(tempdat$index %in% swapindex)] <- tempdat$randbinys[!(tempdat$index %in% swapindex)]
   }
-  
-  
   outdat <- ddply(tempdat, .(binxs,binys), summarise,
                   binfreq = length(xs),
                   binspatialloss = sum(sqrt((xs-binxs)^2+(ys-binys)^2)) )
-  centerofdata <- c((max(xs)-min(xs))/2,(max(ys)-min(ys))/2)
-  #centerofdata <- c(mean(xs),mean(ys))
   summarydata <- data.frame( originx = originx, originy = originy, 
                              widthx = widthx, widthy = widthy,
-                             totalSpatialLoss = sum(outdat$binspatialloss) ,
-                             maxSpatialLoss = sum(sqrt((xs-centerofdata[1])^2+(ys-centerofdata[2])^2)),
-                             propSpatialLoss = sum(outdat$binspatialloss) / sum(sqrt((xs-centerofdata[1])^2+(ys-centerofdata[2])^2)))
+                             totalSpatialLoss = sum(outdat$binspatialloss))
   templist <- list(bindat = outdat[,1:3],
                    summarydata)
   return(templist)
@@ -150,9 +144,9 @@ freqBin <- function(binout, binType="standard", ncolor, logCount=FALSE){
   # Total Freq Loss
   binout[[2]]$totalFreqLoss <- sum((cs - binout[[1]]$freqgroup)^2)
   # Max Freq Loss based on shading at data average
-  binout[[2]]$maxFreqLoss <- sum((cs - mean(cs))^2)
+#  binout[[2]]$maxFreqLoss <- sum((cs - mean(cs))^2)
   # Proportion of Max Freq Loss
-  binout[[2]]$propFreqLoss <- sum((cs - binout[[1]]$freqgroup)^2) /  sum((cs - mean(cs))^2)
+#  binout[[2]]$propFreqLoss <- sum((cs - binout[[1]]$freqgroup)^2) /  sum((cs - mean(cs))^2)
   return(binout)
 }
 
@@ -232,4 +226,26 @@ freqBin <- function(binout, binType="standard", ncolor, logCount=FALSE){
 
 
 
+
+### Create binning function that does not calculate loss
+# to be used to track computation time for binning
+
+## 2d Rectangular Binning (for either Standard or Random)
+# standard is straight forward extension of 1d binning
+# random binning needs post processing to calculate minimum spatial loss
+RectBin2dNoLoss <- function(xs,ys, originx, originy, widthx, widthy, type="standard"){
+  if(type=="standard"){
+  tempdat <- data.frame(xs = xs, ys=ys,
+                        binxs = StandRectBin1d(xs,originx,widthx),
+                        binys = StandRectBin1d(ys,originy,widthy))
+  }
+  if(type=="random"){
+    tempdat<- data.frame(xs = xs, ys=ys,
+                          binxs =  RandRectBin1d(xs,originx,widthx),
+                          binys =  RandRectBin1d(ys,originy,widthy))
+  }
+  outdat <- ddply(tempdat, .(binxs,binys), summarise,
+                  binfreq = length(xs))
+  return(outdat[,1:3])
+}
 

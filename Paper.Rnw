@@ -1351,17 +1351,51 @@ For rectangular binning there are many specification options; including type of 
 
 Figure~\ref{fig:SpatialLossCompare} displays the net spatial loss from binning each set of simulated data with standard and random binning algorithms using square bins with a sizes ranging from 2 units$^2$ to 20 units$^2$. It is  apparent that  the spatial loss for random binning is always higher than for standard binning and the loss grows as bin width increases. The net spatial loss from random binning increases with bin width at a faster rate than from standard binning, as indicated by the widening gap between the lines and the steeper slopes.  
 
-<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss over a range of bin sizes for standard and random binning of the fine version of the simulated data from each bivariate distribution.">>= 
-spatlossdat <- read.csv("SpatialLossData.csv",header=TRUE)
-# use all the square bins to plot bin width against proportion of max spataial loss
-spatlossdatSquareBins <- spatlossdat[spatlossdat$widthx==spatlossdat$widthy,]
-qplot(widthx,totalSpatialLoss,geom="path",colour=bintype, linetype=bintype,
+<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=6, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss and computation times over a range of bin sizes for standard and random binning of the fine version of the simulated data from each bivariate distribution.">>= 
+## create binned data for standard and random using variety of bin sizes (from 2 to 20, by 2)
+##save spatial loss information
+# spatlossdat <- data.frame(NULL)
+# index=0
+# distindex = 0
+# distrib <- c("Uniform", "Normal", "Exponential")
+# for (dat in 1:3){
+#   distindex <- distindex + 1
+#   for (width in seq(2,20,by=2)){
+#       index <- index+1
+#       timeStart <- Sys.time()
+#       binout <- RectBin2d(datlist[[dat]]$x,datlist[[dat]]$y,0,0,width,width,type="standard")
+#       binout[[2]]$binTime <- Sys.time() - timeStart
+#       binout[[2]]$bintype <- "standard"
+#       binout[[2]]$distrib <- distrib[distindex]
+#       spatlossdat <- rbind(spatlossdat, binout[[2]])
+#       index <- index+1
+#       timeStart <- Sys.time()
+#       binout <- RectBin2d(datlist[[dat]]$x,datlist[[dat]]$y,0,0,width,width,type="random")
+#       binout[[2]]$binTime <- Sys.time() - timeStart
+#       binout[[2]]$bintype <- "random"
+#       binout[[2]]$distrib <- distrib[distindex]
+#       spatlossdat <- rbind(spatlossdat, binout[[2]])
+#       print(c(distrib[distindex],width))
+#   }
+# }
+# # write.csv(spatlossdat,"SpatialLossData.csv", row.names=FALSE)
+spatlossdatSquareBins <- read.csv("SpatialLossData.csv",header=TRUE)
+spatlossdatSquareBins$bintype <- factor(spatlossdatSquareBins$bintype, levels=c("standard","random"))
+p1 <- qplot(widthx,totalSpatialLoss,geom="path",colour=bintype, linetype=bintype,
       data=spatlossdatSquareBins,group=bintype, facets=.~distrib, size=I(1)) +
   theme_bw() + ylab("Net Spatial Loss") +
   xlab("Width/Height of Square Bins") + ylim(c(0, 1100000))
+
+p2 <- qplot(widthx,as.numeric(binTime),geom="path",colour=bintype, linetype=bintype,
+      data=spatlossdatSquareBins,group=bintype, facets=.~distrib, size=I(1)) +
+  theme_bw() + ylab("Binning Time (sec)") +
+  xlab("Width/Height of Square Bins")
+
+grid.arrange(p1,p2, nrow=2)
 @
 
-All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a non-negligible consideration in settings with truly massive data.
+All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a potentially non-negligible consideration in settings with truly massive data. 
+\ktm{ Figure~\ref{fig:SpatialLossCompare} also shows that the computation time needed to bin the simulated data sets is a decreasing function of the bin size and that random binning is marginally slower than standard binning across all bin sizes. Computation times for binning were collected using a commercial Asus laptop with an Intel Core i7 processor running at 2.80 GHz. Another pertinent arguement for using larger bins is that it will smooth over larger larger regions if visualizing the large scale density structure is of primary interest.}
 
 While bin widths can be set to any positive real value, the selection should be restricted to an integer multiple of the resolution of the data to avoid undesirable visual attributes in the binned scatterplot. If the bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of bins throughout the binned scatterplot.  These white-space gaps are undesirable because they create artificial discontinuity that interferes with interpretation of bivariate density. If bin dimensions are not integer multiples of the bivariate data resolution there is also a disruptive visual consequence of ``stripping'', where bins have systematically different numbers of possible data values that can cause artificial density stripes to appear in the binned scatterplot.  
 
