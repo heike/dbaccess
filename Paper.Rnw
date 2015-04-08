@@ -1522,7 +1522,7 @@ Figure~\ref{fig:FreqLossCompare} displays the frequency loss from using standard
 Due to the difference in scales between counts and log counts, the frequency loss and log frequency loss can not be directly compared. Frequency binning using the log counts did however behave very similarly, where log frequency loss decreased as the number of frequency bins increased.  Thus the same advise to use seven frequency bins holds for shading based on log counts as well. 
 }
 
-<<FreqLossDisplay,echo=F,include=F,eval=T,fig.width=15, fig.height=5, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="I am not sure that this figure is needed to demonstrate frequency binning. If so, do the colors between freq bins need to be made more distinguishable? i.e. in the quantile binning the bins starting at 1, 8 and 36.5 are hard to differentiate because the shade is determined by the breaks. ">>= 
+<<FreqLossDisplay,echo=F,include=T,eval=T,fig.width=15, fig.height=5, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="I am not sure that this figure is needed to demonstrate frequency binning. If so, do the colors between freq bins need to be made more distinguishable? i.e. in the quantile binning the bins starting at 1, 8 and 36.5 are hard to differentiate because the shade is determined by the breaks. ">>= 
 binout1 <- RectBin2d(datlist[[2]]$x,datlist[[2]]$y,0,0,5,5,type="standard")
 binoutFreqGroups <- freqBin(binout1, binType="standard", ncolor=5, logCount=FALSE)
 binoutQuantFreqGroups <- freqBin(binout1, binType="quantile", ncolor=5, logCount=FALSE)
@@ -1664,7 +1664,7 @@ If we elect to use frequency binning to aid the perceptual mapping tile shades t
 These recommendations for binned scatterplot construction and loss properties will be demonstrated in the following examples using real bivariate data. First we will further explore the baseball pitching data.  Additionally we will investigate the relationship between scheduled and actual departure times for a full year of American commercial airline data. 
 }
 
-\subsection{Comparison of Loss in Binning Algorithms (old section - rework/remove soon)}
+% \subsection{Comparison of Loss in Binning Algorithms (old section - rework/remove soon)}
 <<LossTableGraphs,echo=F,results="hide",cache=TRUE, eval=TRUE>>=
 # bins <- rbind(c(1,1), c(2,2), c(2,5), c(5, 2), c(4,4), c(3, 5), c(5, 3), c(5, 5), c(5, 25), c(25, 5), c(2, 50), c(50, 2), c(5, 50))
 computeLoss <- function(binning, data){
@@ -1691,17 +1691,17 @@ names(LossTable) <- c("binX", "binY", "Function", "Numerical Loss G", "Numerical
 tab <- xtable(LossTable, digits=c(0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8))
 @
 
-In order to quantify the advantages of each algorithm, we first compare the three sources of loss at different bin widths. The numerical and visual losses inherent in creating a binned scatterplot are a result of our desire to reduce and summarize the data until it is more manageable in size, and hence is a factor in our decision to bin the data in the first place.
-%Figure~\ref{fig:binning-comparison} shows clearly that the standard algorithm can produce misleading graphical summaries. 
- The random algorithm has higher numeric and visual loss than the standard algorithm, but in many cases the binned scatterplots are visually indistinguishable. 
- 
- The numerical loss is a function of the distribution and bin width, and once the bin width is chosen, it is entirely fixed. The random binning algorithm will inherently have a larger numerical loss than the standard algorithm because it allows for random assignment of points to numeric bin centers further from the original data than does the standard algorithm.  
- 
- As the visual loss is the difference between the numerical center and visual center of the bin, it is a function of the distribution and bin width (and the specific random assignment, in the case of the random algorithm). We expect a larger visual loss under the random binning algorithms than in the standard binning because the numerical bin centers are allowed to be drawn further away from the visual center under the random binning algorithm.  
-
-Frequency loss is arguably the most important source of loss, as it is perceivable in the variability of the shading of bins which has a large effect on the utility of the graphical data summary. The standard and random algorithms are very similar when we compare frequency loss. The random algorithm has more variability in allocating observed values to bin centers, but the impact of this variability on the loss frequency information is much less noticeable than the increase seen in numerical loss. %~\ref{fig:LossComparison}  
-
-Investigation of the loss sources we might be tempted to conclude that the standard binning algorithm is superior due to lower loss, however the random binning algorithm displays strong advantages when encountering problematic data structure issues. Random binning is especially advantageous when discrete data values are recorded at a consistent increments but we bin our data using a bin width that is a non-integer multiple of the incremental widths. In this scenario, we see that the non-synchronous data increments and bin widths will cause bins to contain inconstant numbers of possible data value. Assuming that data values are spread uniformly over the discrete values we want a visualization that displays uniform frequency. Using the standard binning algorithm the misalignment of data increment and bin widths will lead to and artificial frequency discrepancy that manifests in a striped pattern in the visualization. The random binning algorithm is expected to display the intended uniform frequency pattern because the randomization of data values to bin centers mitigates the problematic bin width selection. 
+% In order to quantify the advantages of each algorithm, we first compare the three sources of loss at different bin widths. The numerical and visual losses inherent in creating a binned scatterplot are a result of our desire to reduce and summarize the data until it is more manageable in size, and hence is a factor in our decision to bin the data in the first place.
+% %Figure~\ref{fig:binning-comparison} shows clearly that the standard algorithm can produce misleading graphical summaries. 
+%  The random algorithm has higher numeric and visual loss than the standard algorithm, but in many cases the binned scatterplots are visually indistinguishable. 
+%  
+%  The numerical loss is a function of the distribution and bin width, and once the bin width is chosen, it is entirely fixed. The random binning algorithm will inherently have a larger numerical loss than the standard algorithm because it allows for random assignment of points to numeric bin centers further from the original data than does the standard algorithm.  
+%  
+%  As the visual loss is the difference between the numerical center and visual center of the bin, it is a function of the distribution and bin width (and the specific random assignment, in the case of the random algorithm). We expect a larger visual loss under the random binning algorithms than in the standard binning because the numerical bin centers are allowed to be drawn further away from the visual center under the random binning algorithm.  
+% 
+% Frequency loss is arguably the most important source of loss, as it is perceivable in the variability of the shading of bins which has a large effect on the utility of the graphical data summary. The standard and random algorithms are very similar when we compare frequency loss. The random algorithm has more variability in allocating observed values to bin centers, but the impact of this variability on the loss frequency information is much less noticeable than the increase seen in numerical loss. %~\ref{fig:LossComparison}  
+% 
+% Investigation of the loss sources we might be tempted to conclude that the standard binning algorithm is superior due to lower loss, however the random binning algorithm displays strong advantages when encountering problematic data structure issues. Random binning is especially advantageous when discrete data values are recorded at a consistent increments but we bin our data using a bin width that is a non-integer multiple of the incremental widths. In this scenario, we see that the non-synchronous data increments and bin widths will cause bins to contain inconstant numbers of possible data value. Assuming that data values are spread uniformly over the discrete values we want a visualization that displays uniform frequency. Using the standard binning algorithm the misalignment of data increment and bin widths will lead to and artificial frequency discrepancy that manifests in a striped pattern in the visualization. The random binning algorithm is expected to display the intended uniform frequency pattern because the randomization of data values to bin centers mitigates the problematic bin width selection. 
 
 %A similar situation can arise when discrete data values are recorded at consistant increments and binwidths are chosen that are a odd integer multiple of the data incremental widths. This causes the situation where every other bin will have a data value located on the upper bound.  Since the standard binning algorithm always bins data values on the boundary between bins to the lower bin center we will have an additional possible data value contributing to the frequency of every other bin, causing a striped pattern in our visualization. Again, the random binning algorithm mitigates this problem because it will allocate points on bin boundaries to adjacent bin centers with probability 0.5, leading to a more accurate display of frequency information.
 
@@ -1712,53 +1712,53 @@ For this data example we will revisit the baseball data used earlier in this pap
 Another thing to note about Figure ~\ref{fig:LossComparison1} is that under the standard binning algorithm the numerical loss is a monotone increasing function of the bin width, but visual loss is not a strictly increasing function of bin width.  This is apparent in the order of colored lines based on the Strike Out binning size.  This is because the numerical loss function sums loss over all observations, which means the distance from the points to the numerical center of bins can only increase as bin width increases. Whereas the visual loss function sums loss over bin, thus as the bin width increases the number of bins decreases which leads to the potential that the overall visual loss may decrease even though the distance from numerical centers to visual centers may increase for individual bins. 
 
 
-\begin{figure}[hbtp]
-\centering
-<<LossComparison1, echo=FALSE, eval=T, fig.width=6.5, fig.height=8>>=
-
-# connect <- dbConnect(dbDriver("MySQL"), user="2009Expo", 
-#                      password="R R0cks", port=3306, dbname="baseball", 
-#                      host="headnode.stat.iastate.edu")
-# pitch <- new("dataDB", co=connect, table="Pitching")
-# d1 <- dbData(pitch, vars=c( "G", "SO"))
-# bins <- expand.grid(x=c(1:10, 15, 20), y=c(1:5, seq(10, 100, 10)))
-# 
-# library(multicore)
-# lossesRdm <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="random")))
-# lossesStd <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="standard")))
-# 
-# lossesRdm <- cbind(bins, lossesRdm)
-# lossesStd <- cbind(bins, lossesStd)
-# 
-# losses <- rbind(cbind(Algorithm="Random", lossesRdm), cbind(Algorithm="Standard", lossesStd))
-# write.csv(losses, "../dbData/data/losses.csv", row.names=FALSE)
-
-losses <- read.csv("./data/losses.csv", stringsAsFactors=FALSE)
-lossmelt <- melt(losses[,c(1:4,6,10)],id=c("Algorithm","x","y"))
-lossmelt <- lossmelt[which(lossmelt$y == 1 | lossmelt$y == 10 | lossmelt$y == 50),]
-lossmelt$y <- as.factor(lossmelt$y)
-levels(lossmelt$variable) <- c("Numerical Loss","Visual Loss", "Log Frequency Loss")
-qplot(x=x, y=value,
-      group=interaction(y, Algorithm),
-      data=lossmelt, geom="line",
-      colour=y, size=I(1),
-      xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
-        theme_bw() + theme(legend.position="bottom") + 
-        guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
-        facet_grid(variable ~ Algorithm, scales = "free") 
-
-# qplot(x=x, y=value,
-#       group=interaction(y, Algorithm),
-#       data=lossmelt, geom="line",
-#       colour=y, size=I(1), linetype=Algorithm,
-#       xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
-#         theme_bw() + theme(legend.position="bottom") + 
-#         guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
-#         facet_grid(. ~ variable, scales = "free") 
-
-@
-\caption{\label{fig:LossComparison1} Loss for Baseball Data under Standard and Random Binning for different bin widths in the number of strike-outs and games.}
-\end{figure}
+% \begin{figure}[hbtp]
+% \centering
+% <<LossComparison1, echo=FALSE, eval=T, fig.width=6.5, fig.height=8>>=
+% 
+% # connect <- dbConnect(dbDriver("MySQL"), user="2009Expo", 
+% #                      password="R R0cks", port=3306, dbname="baseball", 
+% #                      host="headnode.stat.iastate.edu")
+% # pitch <- new("dataDB", co=connect, table="Pitching")
+% # d1 <- dbData(pitch, vars=c( "G", "SO"))
+% # bins <- expand.grid(x=c(1:10, 15, 20), y=c(1:5, seq(10, 100, 10)))
+% # 
+% # library(multicore)
+% # lossesRdm <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="random")))
+% # lossesStd <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="standard")))
+% # 
+% # lossesRdm <- cbind(bins, lossesRdm)
+% # lossesStd <- cbind(bins, lossesStd)
+% # 
+% # losses <- rbind(cbind(Algorithm="Random", lossesRdm), cbind(Algorithm="Standard", lossesStd))
+% # write.csv(losses, "../dbData/data/losses.csv", row.names=FALSE)
+% 
+% losses <- read.csv("./data/losses.csv", stringsAsFactors=FALSE)
+% lossmelt <- melt(losses[,c(1:4,6,10)],id=c("Algorithm","x","y"))
+% lossmelt <- lossmelt[which(lossmelt$y == 1 | lossmelt$y == 10 | lossmelt$y == 50),]
+% lossmelt$y <- as.factor(lossmelt$y)
+% levels(lossmelt$variable) <- c("Numerical Loss","Visual Loss", "Log Frequency Loss")
+% qplot(x=x, y=value,
+%       group=interaction(y, Algorithm),
+%       data=lossmelt, geom="line",
+%       colour=y, size=I(1),
+%       xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
+%         theme_bw() + theme(legend.position="bottom") + 
+%         guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
+%         facet_grid(variable ~ Algorithm, scales = "free") 
+% 
+% # qplot(x=x, y=value,
+% #       group=interaction(y, Algorithm),
+% #       data=lossmelt, geom="line",
+% #       colour=y, size=I(1), linetype=Algorithm,
+% #       xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
+% #         theme_bw() + theme(legend.position="bottom") + 
+% #         guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
+% #         facet_grid(. ~ variable, scales = "free") 
+% 
+% @
+% \caption{\label{fig:LossComparison1} Loss for Baseball Data under Standard and Random Binning for different bin widths in the number of strike-outs and games.}
+% \end{figure}
 
 
 %\textbf{Loss table for baseball example moved from beginning, this should not be its final resting place}
@@ -1942,7 +1942,6 @@ We have presented two algorithms for binning; the standard algorithm, which has 
 \subsection{Optimal Offset for Uniform Data Recorded to Resolution $\alpha$}
 \label{proof:offset}
 
-\ktm{
 The following is proof that when univariate data is uniformly distributed at resolution $\alpha$ and standard rectangular binning is used with binwidths that are a scalar multiple of the data resolution (i.e. $\omega = k\alpha$ for some $k \in \{1,2,\dots\})$, then spatial loss is minimized by setting the binning origin to $\alpha/2$ units below the minimum data value; set $\beta = x_{(1)} - \alpha/2$.\\
 
 \noindent Let $x_1, x_2, \dots, x_k \in \mathbb{R}$ represent the values in a single bin such that $x_{i+1} = x_i + \alpha$ for some constant $\alpha \in \mathbb{R}$. Thus $x_j = x_1 + (j-1)\alpha$.\\ 
@@ -1965,35 +1964,34 @@ Thus the optimal offset for reducing spatial loss in this scenario is $\theta = 
 
 If the same conditions are extended to the two dimensional case, then the origin for minimal spatial loss is at $(x_{(1)}-\alpha_x/2, y_{(1)}-\alpha_y/2)$ where $\alpha_x$ and $\alpha_y$  are the data resolution for each dimension, respectively. 
 
-} %end ktm color
 %----------------------------------------------------------------------------
-
-\subsection{Partition of Spatial Loss}\label{proof:partition}
-We want to show that spatial loss can be written as a partition of the form 
-\[L_s(x) = 1/S^2_{\emptyset}\sum_i S^2_i = 1/S^2_{\emptyset}\left[\sum_i L^N_i + \sum_i L^V_i\right]\] 
-
-For that let us consider the values $\{x_{i}: b(x_i) = x^\ast\}$ in a single bin with center $x^\ast$.
-The numerical center of these points is given as  $1/n \sum x_i = \overline x$.
-Then the total loss for each element $x_i$ in this bin is:
-
-\begin{align*}
-S_i^2 = \sum (x_i - x_i^\ast)^2 & = \sum (x_i - \overline x + \overline x - x_i^\ast)^2\\
-& = \sum(x_i-\overline x)^2 + 2\sum (x_i-\overline x)(\overline x-x_i^\ast) + \sum(\overline x-x_i^\ast)^2\\
-& = \sum(x_i - \overline x)^2 + 2\sum(0)(\overline x-x_i^\ast) + \sum(\overline x-x_i^\ast)^2\\
-& = \sum(x_i - \overline x)^2 + \sum(\overline x-x_i^\ast)^2\\
-& = L^N_i + L^V_i
-\end{align*}
-Adding over all elements in the bin and all bins gives the formula above.
-
-\subsection{Constancy of Loss under Binary Splits}\label{proof:constantloss}
-We want to show that under random binning the loss due to doubling of bin width is deterministic.
-
-Let us consider the contribution $L_i$ of a single point $x_i$ to the loss when starting with the minimal bin width, i.e. each unique point is in a separate bin:
-doubling the bin width leads to two  scenarios: 
-a point is either at  the bin center or directly between two bins.
-In the case that the point is at the bin center, its contribution to the total overall loss is zero,  $L_i = 0$, and the associated probability $p_i = 1$. 
-
-Alternately, when the point is exactly half-way between two bin centers, the point is attributed with probability $p_i = \frac{1}{2}$ to either bin, leading to a loss of $L_i = \frac{1}{2} c_i$ regardless of which bin is assigned. Hence, in this case, loss is also entirely independent of which bin is assigned.
+% 
+% \subsection{Partition of Spatial Loss}\label{proof:partition}
+% We want to show that spatial loss can be written as a partition of the form 
+% \[L_s(x) = 1/S^2_{\emptyset}\sum_i S^2_i = 1/S^2_{\emptyset}\left[\sum_i L^N_i + \sum_i L^V_i\right]\] 
+% 
+% For that let us consider the values $\{x_{i}: b(x_i) = x^\ast\}$ in a single bin with center $x^\ast$.
+% The numerical center of these points is given as  $1/n \sum x_i = \overline x$.
+% Then the total loss for each element $x_i$ in this bin is:
+% 
+% \begin{align*}
+% S_i^2 = \sum (x_i - x_i^\ast)^2 & = \sum (x_i - \overline x + \overline x - x_i^\ast)^2\\
+% & = \sum(x_i-\overline x)^2 + 2\sum (x_i-\overline x)(\overline x-x_i^\ast) + \sum(\overline x-x_i^\ast)^2\\
+% & = \sum(x_i - \overline x)^2 + 2\sum(0)(\overline x-x_i^\ast) + \sum(\overline x-x_i^\ast)^2\\
+% & = \sum(x_i - \overline x)^2 + \sum(\overline x-x_i^\ast)^2\\
+% & = L^N_i + L^V_i
+% \end{align*}
+% Adding over all elements in the bin and all bins gives the formula above.
+% 
+% \subsection{Constancy of Loss under Binary Splits}\label{proof:constantloss}
+% We want to show that under random binning the loss due to doubling of bin width is deterministic.
+% 
+% Let us consider the contribution $L_i$ of a single point $x_i$ to the loss when starting with the minimal bin width, i.e. each unique point is in a separate bin:
+% doubling the bin width leads to two  scenarios: 
+% a point is either at  the bin center or directly between two bins.
+% In the case that the point is at the bin center, its contribution to the total overall loss is zero,  $L_i = 0$, and the associated probability $p_i = 1$. 
+% 
+% Alternately, when the point is exactly half-way between two bin centers, the point is attributed with probability $p_i = \frac{1}{2}$ to either bin, leading to a loss of $L_i = \frac{1}{2} c_i$ regardless of which bin is assigned. Hence, in this case, loss is also entirely independent of which bin is assigned.
 \end{appendix}
 \bibliographystyle{asa}
 \bibliography{references}
