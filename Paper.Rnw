@@ -1568,25 +1568,30 @@ p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binoutFreqGroups[[1]],
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
                      panel.grid= element_blank())
 # Plot with Binned Frequencies
-
+labels = paste(unique(binoutFreqGroups[[1]]$freqlabel), "\n(", unique(binoutFreqGroups[[1]]$freqgroup), ")", sep="")
 p2 <- qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutFreqGroups[[1]],
             main="Standard Freq Binning") +
     xlab("") + ylab("")+
-  scale_fill_gradient(low="#56B1F7", high="#132B43", 
+  scale_fill_gradient("Frequencies", low="#56B1F7", high="#132B43", 
                       guide = guide_legend(label.position="bottom", label.hjust=0.5),
                       breaks=unique(binoutFreqGroups[[1]]$freqgroup),
-                      labels=unique(binoutFreqGroups[[1]]$freqlabel)) + 
+                      labels=labels) + 
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
                      legend.key.width = unit(2, "cm"),
                      panel.grid= element_blank()) 
   
 # Plot with Quantile Binned Frequencies
-p3 <- qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutQuantFreqGroups[[1]],
+labels = paste(unique(binoutQuantFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantFreqGroups[[1]]$freqgroup), ")", sep="")
+cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
+p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutQuantFreqGroups[[1]],
             main="Quantile Freq Binning") +
     xlab("") + ylab("")+
-  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend", breaks=unique(binoutQuantFreqGroups[[1]]$freqgroup)) + 
+  scale_fill_manual("Frequencies", values=cols, 
+                      guide = guide_legend(label.position="bottom", label.hjust=0.5),
+                      labels=labels) + 
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-                     panel.grid= element_blank())
+                     legend.key.width = unit(2, "cm"),
+                     panel.grid= element_blank()) 
 # Plot with LogCount Binned Frequencies
 p4 <- qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutLogFreqGroups[[1]],
             main="Log Freq Binning") +

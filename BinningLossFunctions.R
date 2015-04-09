@@ -136,10 +136,7 @@ freqBin <- function(binout, binType="standard", ncolor, logCount=FALSE){
     binout[[1]]$freqgroup <- round(QuantBin1d(cs, ncolor),2)
     quantbounds <- unique(quantile(cs, (0:ncolor)/ncolor))
     if (length(quantbounds)-1 < ncolor) warning("two or more quantiles of the data have same value due to many bins with equivalent frequencies, color will be rendered equivalently for bins with matching quantiles")
-    binout[[1]]$freqlabel <- paste("[",round(quantbounds[1],2),",",round(quantbounds[2],2),"]",sep="")
-    for (i in 2:(length(quantbounds)-1)){
-      binout[[1]]$freqlabel <- paste("(",round(quantbounds[i],2),",",round(quantbounds[i+1],2),"]",sep="")
-    }
+    binout[[1]]$freqlabel <- cut(binout[[1]]$binfreq, breaks=quantbounds, include.lowest=TRUE)
   }
   # Total Freq Loss
   binout[[2]]$totalFreqLoss <- sum((cs - binout[[1]]$freqgroup)^2)
