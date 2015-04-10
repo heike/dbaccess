@@ -62,6 +62,7 @@ library(xtable)
 library(RColorBrewer)
 library(hexbin)
 library(MASS)
+library(scales)
 #source in binning functions
 source("BinningLossFunctions.R")
 
@@ -118,7 +119,6 @@ Technological advances have  facilitated collection and dissemination of large d
 This ``Data Deluge" of the Big Data Age (NY Times, Feb 2012) poses exciting challenges to data scientists everywhere: 
 \begin{quote}``It’s a revolution ... The march of quantification, made possible by enormous new sources of data, will sweep through academia, business and government. There is no area that is going to be untouched"\end{quote} (Gary King, Harvard Institute).  
 
-% which challenges?
 Data sets with millions of records and thousands of variables are not uncommon. 
 Such data sets are often too large to fit into a single computer's working memory, and  single-user machines cannot easily deal with them. We can employ database tools to extract relevant variables, thereby vertically subsetting the data. 
 However, with millions of records, it can be very difficult to work with data even at that level. 
@@ -126,7 +126,6 @@ However, with millions of records, it can be very difficult to work with data ev
 \citet{Friedman97} proposed in his paper on data mining and statistics that ``Every time the amount of data increases by a factor of ten, we should totally rethink how we analyze it". The same holds for visualizations.  
 With a 100-1000 fold increase in the amount of data, the utility of some of our most used graphical tools, such as scatterplots, deteriorates quickly \citep{gold}. 
 
-% binning as a way out
 Area plots, such as histograms, do not tend to be as affected by increases in the amount of data as plots that utilize raw data. 
 By using binning strategies and the principles for displaying information in area plots, scatterplots can again become useful instruments for large data settings \citep{gold}.
 
@@ -138,8 +137,7 @@ In this paper we describe first the problem scatterplots are exposed to in large
 \section{Scatterplots for Large Data Sets}
 \label{Scatter}
 
-In the case of modestly sized data, scatterplots are great tools for showing relationships in two dimensions. With large data, scatterplots suffer from over-plotting of points, %-- i.e.\ a number of observations drawn in such close proximity that their points overla
-which masks relevant structure. Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 139 seasons (from the years of 1871 -- 2009) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database (\url{http://www.seanlahman.com/baseball-archive/}).  The number of games played in a season is plotted versus number of strikeouts a pitcher threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(d1.ext)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data. 
+In the case of modestly sized data, scatterplots are great tools for showing relationships in two dimensions. With large data, scatterplots suffer from over-plotting of points, which masks relevant structure. Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 139 seasons (from the years of 1871 -- 2009) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database (\url{http://www.seanlahman.com/baseball-archive/}).  The number of games played in a season is plotted versus number of strikeouts a pitcher threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(d1.ext)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data. 
 
 Figure~\ref{fig:scatter-alpha}a shows a traditional scatterplot with each observation is drawn with a filled circle. A triangular structure is apparent with some outliers at a medium number of games and high number of strikeouts; however the density within the triangular mass of points is indistinguishable. \citet{tukey} suggested the use of open circles (see Figure~\ref{fig:scatter-alpha}b) to mitigate the problem of over-plotting. Open circles make points that are close together more visually distinct; thus allowing for the perception of more density information than with filled points.  A modern alternative to open circles is alpha blending (see Figure~\ref{fig:scatter-alpha}c). Alpha blending provides more frequency information, allowing a distinction of higher-resolution density. 
 
@@ -165,26 +163,11 @@ Another approach is to reduce the graphical complexity by plotting binned aggreg
 
 Methods commonly used to display binned variables include sunflower plots \citep{sunflowerplots}, kernel density smoothing of tonal variation and modified scatterplots \citep{martin-gold}.  Sunflower plots are scatterplots of binned data, where the symbol used for the bin increases in complexity in proportion to the number of points in that bin. Sunflower plots are particularly useful when the number of points in each bin remains reasonably small. Kernel density smoothing can be used to vary $\alpha$ or color according to a smoothed density, providing features similar to binned scatterplots or alpha blended scatterplots in a more smooth, continuous fashion. However, these estimates require careful parameter tuning, as over-smoothing may hide gaps in the data while simultaneously de-emphasizes outlying points.
 
-%Histograms are an example of plots which use binned variables. \hh{XXX No, histograms don't use binned variables in their standard definition, histograms bin variables to render the information. Weighted histograms (again, \citet{gold}) make use of binned data, because we can think of the tabular information as the sufficient statistics for histograms.} 
 Histograms are a simple example of a plot that can be built using binned aggregations of the data; in their case the bin locations and bin counts act as a set of sufficient statistics necessary to reconstruct the plot.  A natural extensions of histograms to higher dimensions is to form a tessellated grid on a two dimensional Cartesian plane using some other attribute, \hh{such as color or size (or 3D renderings, which we do not want to recommend at this point)} to provide joint density information within each grid cell, known as a tile.  A {\it binned scatterplot} uses shading to provide frequency information, with tiles (rather than bars in a histogram) at the bin center, similar to a two-dimensional histogram viewed from above. A \textit{bubble plot} is a binned data plot that scales the size of a filled circle in proportion to frequency.  Bubble plots were first used by William Playfair \citep{playfair, playfair2}. 
 
 Figure~\ref{fig:scatter-alpha} contains examples of a hexagonally binned scatterplot with frequency encoded as color (\ref{fig:scatter-alpha}d) and a bubble plot with frequency encoded as point size (\ref{fig:scatter-alpha}e). The hexagonal tiles and the modified scatterplot are more effective at displaying the shape of the joint density and preserving outliers than any of the scatterplots shown in Figure~\ref{fig:scatter-alpha} (a-c). The bubble plot is prone to suffer from the Hermann-grid illusion \citep{hermann:1870} especially for data binned on a grid; whereas the binned scatterplot will not on a tessellated grid. 
 
-% \begin{figure}[hbtp]
-% <<conclusions, out.width='\\textwidth', fig.width=5, fig.height=3>>=
-% library(dbData)
-% connect <- dbConnect(dbDriver("MySQL"), user="2009Expo",
-% password="R R0cks", port=3306, dbname="baseball",
-% host="headnode.stat.iastate.edu")
-% pitch <- new("dataDB", co=connect, table="Pitching")
-% pitch.stats <- dbData(vars=list("G", "SO", "yearID"), pitch)
-% qplot(yearID, SO/G, alpha=I(0.2), weight=Freq, data=pitch.stats, colour=G) + xlab("season")
-% @
-% \caption{\caption{strikeout-rate}Scatterplot of rate of strikeouts per game over time. Each dot corresponds to a pitcher's seasonal average. Coloring indicates number of games played, alpha-blending is used additionally to emphasize high-density regions. There's clear break points in the strikeout rates over time. In 1902 XXXX}
-% \end{figure}
 Only in the binned scatterplot and the bubble plot the inner structure of the data becomes apparent: the joint density consists two distinct ridges following two lines with very different slopes. The lower slope corresponds to the modern average strike out rate of pitchers of just under one strike-out per game. The other line has a slope of about four times that rate. This high rate is also associated with fewer games played. Closer investigation of other, related variables reveals that this high strike-out rate corresponds mainly to historic pitchers with much shorter seasons (in 1876 only 70 games were played in a season, as opposed to 162 in 2009), and qualitatively different balls and  bats.
-
-% two centers - almost figure~\ref{strikeout-rate} is numerically loss-free (binning is to integers, reduces the data by 16\%)
 
 %\hh{... This is the place to put some background literature: include the discussion of use of binning in the literature: Martin Theus's chapter in the GOLD book, Dan Carr's hexagonal binning, sunflower plots, ... }  
 
@@ -1546,27 +1529,32 @@ qplot(originx,totalSpatialLoss,geom="path",group=distrib, colour=distrib,
 %-----------------------------------------------------------------------------
 
 \subsection{Frequency Binning Specifications and Frequency Loss}
-\ktm{
-The reduced binned data from spatial binning contains the center and count information for all bins.  The bin frequencies may themselves be binned in order to discretize the color scale for the binned scatterplot. The loss of frequency information in frequency binning is dependent on the selection of a discrete color mapping, where the binning algorithm and number of frequency bins must be specified. To explore frequency loss characteristics using the simulated bivariate data sets, each of the three fine resolution sets were first spatially binned with standard rectangular binning with 5 X 5 unit bins and origin at (0,0). Then standard and quantile frequency binning algorithms were applied to either the bin counts or log bin counts.  As discussed in Section~\ref{FreqLoss}, the average person is able to distinguish about seven colors simultaneously, so we will limit the considered options to using between one and ten frequency bins, near the upper limit of human perceptual abilities\citep{colorperception}.  
+
+The reduced binned data from spatial binning contains the center and count information for all bins.  The bin frequencies may themselves be binned in order to discretize the color scale for the binned scatterplot. The loss of frequency information in frequency binning is dependent on the selection of a discrete color mapping, where the binning algorithm and number of frequency bins must be specified. To explore frequency loss characteristics using the simulated bivariate data sets, each of the three fine resolution sets were first spatially binned with standard rectangular binning with 5 X 5 unit bins and origin at (0,0). Then standard and quantile frequency binning algorithms were applied to either the bin counts or log bin counts. \ktm{ Figure~\ref{freqbinning} shows the binned scatterplots resulting from each type of frequency using five frequency bins.} As discussed in Section~\ref{FreqLoss}, the average person is able to distinguish about seven colors simultaneously, so we will limit the considered options to using between one and ten frequency bins, near the upper limit of human perceptual abilities\citep{colorperception}.  
 
 The top row in Figure~\ref{fig:FreqLossCompare} displays the frequency loss from using standard and quantile frequency binning algorithms, with between one and ten frequency bins, from each set of simulated data. We first notice that large difference in the magnitude of frequency losses based on the bivariate distribution; frequency losses are highest for the exponential data, lower for the normal data and lowest for the uniform data. We also note that the frequency loss is a decreasing function of the number of frequency bins for both binning algorithms. This relationship largely flattens out after four frequency bin, each subsequent bin reducing the frequency loss less than the previous. Thus we should consider using between four and seven bin shades in order to reduce loss while also allowing for easy perception of frequency groups in the binned scatterplot. Lastly, the frequency loss with the standard frequency binning is be higher than for the quantile-based algorithm when a minimal number of bins are used. But in all three simulated data sets, the losses drop to comparable levels for each algorithm when four or more frequency bins are used.
 
 Due to the difference in scales between counts and log counts, the frequency loss and log frequency loss can not be directly compared. The bottom row of Figure~\ref{fig:FreqLossCompare} displays the log frequency loss from using standard and quantile algorithms for binning the \textit{log} bin counts from the same sets of simulated data. Frequency binning using the log counts behaved very similarly, where log frequency loss decreased as the number of frequency bins increased. The primary difference uniform simulated data with bin counts that have low variability, are rendered virtually indistinguishable after a log transformation; thus changing the number of frequency bins does little to impact the log frequency loss. The same advise to use between four and seven frequency bins also holds for shading a binned scatterplot based on log counts.  
-}
 
-<<FreqLossDisplay,echo=F,include=T,eval=T,fig.width=15, fig.height=5, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="I am not sure that this figure is needed to demonstrate frequency binning. If so, do the colors between freq bins need to be made more distinguishable? i.e. in the quantile binning the bins starting at 1, 8 and 36.5 are hard to differentiate because the shade is determined by the breaks. ">>= 
+\begin{figure}[hbtp]
+  \begin{minipage}{.3\linewidth}
+<<noFreqBin, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=4>>=
 binout1 <- RectBin2d(datlist[[2]]$x,datlist[[2]]$y,0,0,5,5,type="standard")
-binoutFreqGroups <- freqBin(binout1, binType="standard", ncolor=5, logCount=FALSE)
-binoutQuantFreqGroups <- freqBin(binout1, binType="quantile", ncolor=5, logCount=FALSE)
-binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=5, logCount=TRUE)
-
-# Plot with Orginal Frequencies
-p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binoutFreqGroups[[1]],
+qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
             main="No Freq Binning") +
   xlab("") + ylab("")+
   scale_fill_gradient(low="#56B1F7", high="#132B43") + 
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
                      panel.grid= element_blank())
+@
+  \end{minipage}
+\hfil\begin{minipage}{.695\linewidth}
+<<FreqBinPlots, echo=FALSE, out.width='\\linewidth',fig.width=10, fig.height=10>>=
+binoutFreqGroups <- freqBin(binout1, binType="standard", ncolor=5, logCount=FALSE)
+binoutQuantFreqGroups <- freqBin(binout1, binType="quantile", ncolor=5, logCount=FALSE)
+binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=5, logCount=TRUE)
+binoutQuantLogFreqGroups <- freqBin(binout1, binType="quantile", ncolor=5, logCount=TRUE)
+
 # Plot with Binned Frequencies
 labels = paste(unique(binoutFreqGroups[[1]]$freqlabel), "\n(", unique(binoutFreqGroups[[1]]$freqgroup), ")", sep="")
 p2 <- qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutFreqGroups[[1]],
@@ -1594,17 +1582,41 @@ p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutQuantF
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
                      legend.key.width = unit(1, "cm"),
                      panel.grid= element_blank()) 
-# Plot with LogCount Binned Frequencies
+# Plot with standard binned Log Frequencies
+labels = paste(unique(binoutLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutLogFreqGroups[[1]]$freqgroup), ")", sep="")
+cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
 p4 <- qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutLogFreqGroups[[1]],
-            main="Log Freq Binning") +
+            main="Standard Log Freq Binning") +
     xlab("") + ylab("")+
-  scale_fill_gradient("Log Frequency", low="#56B1F7", high="#132B43", guide = guide_legend(label.position="bottom", label.hjust=0.5,  title.position = "top"), breaks=unique(binoutLogFreqGroups[[1]]$freqgroup)) + 
+  scale_fill_gradient("Log Frequencies", low="#56B1F7", high="#132B43", 
+                      guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+                                           title.position = "top"),
+                      breaks=unique(binoutLogFreqGroups[[1]]$freqgroup),
+                      labels=labels) + 
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
                      legend.key.width = unit(1, "cm"),
                      panel.grid= element_blank()) 
 
-grid.arrange(p1,p2,p3,p4, nrow=1)
+# Plot with quantile binned Log Frequencies
+labels = paste(unique(binoutQuantLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantLogFreqGroups[[1]]$freqgroup), ")", sep="")
+p5 <- qplot(binxs, binys, geom="tile", fill=freqgroup,
+            data=binoutQuantLogFreqGroups[[1]],
+            main="Quantile Log Freq Binning") +
+    xlab("") + ylab("")+
+  scale_fill_gradient("Log Frequencies", low="#56B1F7", high="#132B43", 
+                      guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+                                           title.position = "top"),
+                      breaks=unique(binoutQuantLogFreqGroups[[1]]$freqgroup),
+                      labels=labels) + 
+  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+                     legend.key.width = unit(1, "cm"),
+                     panel.grid= element_blank()) 
+ 
+grid.arrange(p2,p3,p4,p5, nrow=2)
 @
+\end{minipage}
+\caption{\label{freqbinning}Simulated bivariate normal data spatially binned using standard algorithm with 5X5 unit bins and origin at (0,0). Binned Scatterplot with raw frequencies (left) and binned scatterplots with five frequency bins (right)."}
+\end{figure}
 
 <<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=8, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively, using reduced binned data from each bivariate distribution. ">>= 
 ### Loop over ncolors 1 to 10 and also over data distribution

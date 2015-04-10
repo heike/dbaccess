@@ -123,8 +123,9 @@ freqBin <- function(binout, binType="standard", ncolor, logCount=FALSE){
   # binning depends on type / log counts
   if (logCount)  cs <- log(binout[[1]]$binfreq+1)
   if(binType=="standard"){
-      width <- ceiling((max(cs)-min(cs))/ncolor)
-      binout[[1]]$freqgroup <- round(StandRectBin1d(cs, min(cs) , width),2)
+      #width <- ceiling((max(cs)-min(cs))/ncolor)
+      width <- (max(cs)-min(cs))/ncolor 
+      binout[[1]]$freqgroup <- round(StandRectBin1d(cs, min(cs) , width),1)
       binout[[1]]$freqlabel <- paste("(",round(binout[[1]]$freqgroup - width/2,2),
                                      ",",round(binout[[1]]$freqgroup + width/2,2),"]",sep="")
       #close interval for smallest counts
@@ -133,10 +134,10 @@ freqBin <- function(binout, binType="standard", ncolor, logCount=FALSE){
                                      ",",round(min(binout[[1]]$freqgroup) + width/2,2),"]",sep="")
   } 
   if(binType=="quantile"){
-    binout[[1]]$freqgroup <- round(QuantBin1d(cs, ncolor),2)
+    binout[[1]]$freqgroup <- as.numeric(round(QuantBin1d(cs, ncolor),2))
     quantbounds <- unique(quantile(cs, (0:ncolor)/ncolor))
     if (length(quantbounds)-1 < ncolor) warning("two or more quantiles of the data have same value due to many bins with equivalent frequencies, color will be rendered equivalently for bins with matching quantiles")
-    binout[[1]]$freqlabel <- cut(binout[[1]]$binfreq, breaks=quantbounds, include.lowest=TRUE)
+    binout[[1]]$freqlabel <- cut(cs, breaks=quantbounds, include.lowest=TRUE)
   }
   # Total Freq Loss
   binout[[2]]$totalFreqLoss <- sum((cs - binout[[1]]$freqgroup)^2)
