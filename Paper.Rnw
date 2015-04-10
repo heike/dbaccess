@@ -8,6 +8,7 @@
 \usepackage{color}
 \usepackage{natbib}
 \usepackage{hyperref}
+\usepackage{mathrsfs}
 
 \newcommand{\ktm}[1]{{\color{red} #1}} %red comments: Karsten
 \newcommand{\hh}[1]{{\color{blue} #1}} %blue comments: Heike
@@ -243,7 +244,7 @@ The deterministic standard binning algorithm is an example of a ``direct" binnin
 \subsection{Extension to Two Dimensional Binning}
 \label{TwoDimBin}
 
-The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_k^\ast)$, with $j \in \{1,\dots,J\}$ and $k \in \{1,\dots,K\}$, where $J$ and $K$ are the number of bins in the X and Y dimensions, respectively. The two ($j$,$k$) pairs that index the bin centers can be linearized to a single index such that $\ell = j + J(k-1)$; thus making $j$ the fast running index and $k$ the slow running index.  With this linearized index for all bins we now have a set of bin centers of the form $(x_\ell^\ast,y_\ell^\ast)$, with $\ell \in \{1,\dots,L\}$, where $L=J\cdot K$.
+The standard and random binning algorithms are easily extendable to higher dimension. For the purposes of creating binned scatterplots we will specify extension to rectangular binning in two dimensions. In this case we wish to assign data pairs $(x_i, y_i)$ to bin centers of the form $(x_j^\ast,y_k^\ast)$, with $j \in \{1,\dots,J\}$ and $k \in \{1,\dots,K\}$, where $J$ and $K$ are the number of bins in the X and Y dimensions, respectively. The two ($j$,$k$) pairs that index the bin centers can be linearized to a single index such that $\ell = j + J(k-1)$; thus making $j$ the fast running index and $k$ the slow running index.  With this linearized index for all bins we now have a set of bin centers of the form $(x_\ell^\ast,y_\ell^\ast)$, with $\ell \in \{1,\dots,\mathscr{L}\}$, where $\mathscr{L}=J\cdot K$.
 
 The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_\ell,y^\ast_\ell)$ is defined as 
 %
@@ -680,7 +681,7 @@ In the first set of binned data, the bins and the points on the scatterplot are 
 
 Loss of information occurs during the binning and rendering process. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent frequencies.  We distinguish two sources of loss in the construction of a binned scatterplot:
 \begin{itemize}
-\item {\it Spatial Loss}, $L^\text{S}$, occurs when points $(x_i, y_i)$ for observations $i \in \{1,\dots,n\}$ in the data set are reduced to a single points at the bin centers $(x_\ell^\ast, y_\ell^\ast)$ for bins $\ell \in \{1,\dots,L\}$. By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
+\item {\it Spatial Loss}, $L^\text{S}$, occurs when points $(x_i, y_i)$ for observations $i \in \{1,\dots,n\}$ in the data set are reduced to a single points at the bin centers $(x_\ell^\ast, y_\ell^\ast)$ for bins $\ell \in \{1,\dots,\mathscr{L}\}$. By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
 
 \item {\it Frequency Loss}, $L^\text{F}$, occurs when frequency information is not rendered, such as in standard scatterplots,  or not rendered accurately, e.g.\ when a discrete color scale is used to display bin counts, the entire ranges of counts is mapped to the same color; thus losing precision in the display of frequencies.
 \end{itemize}
@@ -898,7 +899,7 @@ qplot(x, y, colour=Shade, size=I(5),shape=Shape) + theme_bw() +
 
 Research suggests that even under optimal conditions, we can effectively compare only about seven colors \citep{colorperception}, which provides a physical upper limit on the amount of frequency variation we can perceive. As a result, a binning width which produces seven of fewer frequency categories is preferable.%, while minimizing numerical loss within that constraint. 
 
- Whenever the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. We can model this as a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, L \}$ are placed into frequency bins using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}.  Figure~\ref{fig:FreqLossDemo} provides a visual example of a discrete color palette resulting from frequency binning.  
+ Whenever the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. We can model this as a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, \mathscr{L} \}$ are placed into frequency bins using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}.  Figure~\ref{fig:FreqLossDemo} provides a visual example of a discrete color palette resulting from frequency binning.  
 
 <<FreqLossDemo,echo=F,include=T,eval=T,fig.width=6, fig.height=3, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Continuous and discrete color scales for counts in the range 0 to 1000. Frequency binning done using standard rectangular binning with origin $\\beta_0 = 0$ and binwidth $\\omega_X = 200$. ">>= 
 #J= 1
@@ -941,7 +942,7 @@ grid.arrange(p1,p2,nrow=2)
 The goal of binning the frequencies and using a ordinally shaded color palette is to provide more distinctive perceivable breaks to aid the information extraction; however it does so at the cost of using shade to display binned frequencies, $b_c(c_\ell)$ instead of the true frequencies, $c_\ell$. The \textit{total frequency loss}, $L^F$, is defined as
 %
 \begin{eqnarray}\label{totfreqloss}
-L^F = \sum_{\ell=1}^{L} L_\ell^F = \sum_{\ell=1}^{L} (c_\ell-b_c(c_\ell))^2
+L^F = \sum_{\ell=1}^{\mathscr{L}} L_\ell^F = \sum_{\ell=1}^{\mathscr{L}} (c_\ell-b_c(c_\ell))^2
 \end{eqnarray}  
 %
 where $L_\ell^F$ is the frequency loss for the $\ell^{th}$ bin. Note that this is effectively a sum of squared error from binning frequencies.
@@ -953,10 +954,10 @@ Frequency data consists of counts, which most commonly exhibit skew densities, i
 Another alternative is to use a log transformation which produces a more symmetric distribution of frequency information, increasing perceptual resolution. This is consistent with the Weber-Fechner law which suggests that increased stimulus intensity is perceptually mapped on the log scale \citep{sp}. Using a logarithmic mapping of frequency to the color or size aesthetic provides a more natural perceptual experience and simultaneously increases the perceptual resolution of the graph. The \textit{log frequency loss}, $L^{\log F}$, is defined as
 %
 \begin{eqnarray}\label{logfrequency}
-L^{\log F} = \sum_{\ell=1}^{L} L_\ell^{\log F} = \sum_{\ell=1}^{L} (\log(c_\ell+1) - \log(b_c(c_\ell+1)))^2
+L^{\log F} = \sum_{\ell \in \mathscr{L}^\ast} L_\ell^{\log F} = \sum_{\ell \in \mathscr{L}^\ast} (\log(c_\ell) - \log(b_c(c_\ell)))^2
 \end{eqnarray}
 %
-Note that we have added one count to every cell before taking the logarithm to avoid problems with empty cells. 
+where $\mathscr{L}^\ast$ is the index set for all non-empty bins, which is done to avoid asymptotic problems from log transforming bin counts of zero. 
 
 %  Similar to spatial binning, \hh{we define} a worst-case scenario for frequency binning that provides context to the magnitude of the total frequency loss.  If we use a single frequency bin then all tiles of the binned scatterplot are rendered with the same shade; thus the shade  represents the average bin density \hh{XXX this is different from the spatial loss - visually the shade would be half way between lowest and highest frequency, wouldn't it?}, $\bar{c} =  (\sum_{\ell=1}^{L} c_\ell) /L$.  We define the total frequency loss in the single shade scenario as the \textit{potential frequency loss}, $L^F_p$,  where
 % %
@@ -1554,17 +1555,19 @@ qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
   \end{minipage}
 \hfil\begin{minipage}{.685\linewidth}
 <<FreqBinPlots, echo=FALSE, out.width='\\linewidth',fig.width=10, fig.height=10>>=
-binoutFreqGroups <- freqBin(binout1, binType="standard", ncolor=5, logCount=FALSE)
-binoutQuantFreqGroups <- freqBin(binout1, binType="quantile", ncolor=5, logCount=FALSE)
-binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=5, logCount=TRUE)
-binoutQuantLogFreqGroups <- freqBin(binout1, binType="quantile", ncolor=5, logCount=TRUE)
-
+freqgrps = 5
+binoutFreqGroups <- freqBin(binout1, binType="standard", ncolor=freqgrps, logCount=FALSE)
+binoutQuantFreqGroups <- freqBin(binout1, binType="quantile", ncolor=freqgrps, logCount=FALSE)
+binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=freqgrps, logCount=TRUE)
+binoutQuantLogFreqGroups <- freqBin(binout1, binType="quantile", ncolor=freqgrps, logCount=TRUE)
+cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:freqgrps)/freqgrps)
+ 
 # Plot with Binned Frequencies
 labels = paste(unique(binoutFreqGroups[[1]]$freqlabel), "\n(", unique(binoutFreqGroups[[1]]$freqgroup), ")", sep="")
-p2 <- qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutFreqGroups[[1]],
+p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutFreqGroups[[1]],
             main="Standard Freq Binning") +
     xlab("") + ylab("")+
-  scale_fill_gradient("Frequencies", low="#56B1F7", high="#132B43", 
+  scale_fill_manual("Frequencies", values=cols, 
                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
                                            title.position = "top"),
                       breaks=unique(binoutFreqGroups[[1]]$freqgroup),
@@ -1574,10 +1577,9 @@ p2 <- qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutFreqGroups[[1]
                      panel.grid= element_blank(),
                      plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
                      legend.text=element_text(size=12) )
-  
+
 # Plot with Quantile Binned Frequencies
 labels = paste(unique(binoutQuantFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantFreqGroups[[1]]$freqgroup), ")", sep="")
-cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
 p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutQuantFreqGroups[[1]],
             main="Quantile Freq Binning") +
     xlab("") + ylab("")+
@@ -1592,11 +1594,10 @@ p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutQuantF
                      legend.text=element_text(size=12) ) 
 # Plot with standard binned Log Frequencies
 labels = paste(unique(binoutLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutLogFreqGroups[[1]]$freqgroup), ")", sep="")
-cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
-p4 <- qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutLogFreqGroups[[1]],
+p4 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutLogFreqGroups[[1]],
             main="Standard Log Freq Binning") +
     xlab("") + ylab("")+
-  scale_fill_gradient("Log Frequencies", low="#56B1F7", high="#132B43", 
+  scale_fill_manual("Log Frequencies", values=cols, 
                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
                                            title.position = "top"),
                       breaks=unique(binoutLogFreqGroups[[1]]$freqgroup),
@@ -1609,11 +1610,11 @@ p4 <- qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutLogFreqGroups[
 
 # Plot with quantile binned Log Frequencies
 labels = paste(unique(binoutQuantLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantLogFreqGroups[[1]]$freqgroup), ")", sep="")
-p5 <- qplot(binxs, binys, geom="tile", fill=freqgroup,
+p5 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup),
             data=binoutQuantLogFreqGroups[[1]],
             main="Quantile Log Freq Binning") +
     xlab("") + ylab("")+
-  scale_fill_gradient("Log Frequencies", low="#56B1F7", high="#132B43", 
+  scale_fill_manual("Log Frequencies", values=cols, 
                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
                                            title.position = "top"),
                       breaks=unique(binoutQuantLogFreqGroups[[1]]$freqgroup),
