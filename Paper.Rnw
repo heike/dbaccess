@@ -85,6 +85,7 @@ xtd.data <- function(x) {
 	return(res)
 }
 d1.ext <- xtd.data(d1)
+dbDisconnect(connect)
 @
 
 <<scatterplots, echo=F,include=F>>=
@@ -1759,107 +1760,193 @@ tab <- xtable(LossTable, digits=c(0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8))
 
 \subsection{Binning Loss in Baseball Data: Strikeout and Game Counts}
 
-For this data example we will revisit the baseball data used earlier in this paper.  The characteristics of loss described in the discussion above are exemplified by viewing the loss for the baseball data in Figure ~\ref{fig:LossComparison1}. We find that the visual and numerical loss are in fact higher while using the random binning algorithm, but that the two binning algorithms are almost indistinguishable in terms of frequency loss.  
+<<BaseballBinningExamplePrep, echo=FALSE, eval=TRUE, include=FALSE, cache=TRUE>>=
+connect <- dbConnect(dbDriver("MySQL"), host="mysql2.stat.iastate.edu", 
+                     port=3306, user="dbaccess", dbname="baseball")
+pitchdat <- dbGetQuery(connect,  sprintf("select G, SO from Pitching"))
+dbDisconnect(connect)
 
-Another thing to note about Figure ~\ref{fig:LossComparison1} is that under the standard binning algorithm the numerical loss is a monotone increasing function of the bin width, but visual loss is not a strictly increasing function of bin width.  This is apparent in the order of colored lines based on the Strike Out binning size.  This is because the numerical loss function sums loss over all observations, which means the distance from the points to the numerical center of bins can only increase as bin width increases. Whereas the visual loss function sums loss over bin, thus as the bin width increases the number of bins decreases which leads to the potential that the overall visual loss may decrease even though the distance from numerical centers to visual centers may increase for individual bins. 
+# Standard binning ~ 50 in each direction
+# so range(x)/50 = 100/50 = 2 , range(y)/50 = 500/50 = 10 
+# origin at (min(pitchdat$G)-0.5, min(pitchdat$SO)-0.5) = (0.5, -0.5)
+binout1 <- RectBin2d(pitchdat$G,pitchdat$SO,.5,-.5,2,10,type="standard")
+binout1[[2]]$totalSpatialLoss / nrow(pitchdat)
+# spatial loss per observation ~ 2.598362 (units?)
 
+# how much better is loss under origin at recommended offset?
+# compare loss on standardize scale with equivalent binning on standardized variables
+standG <- (pitchdat$G - mean(pitchdat$G))/sd(pitchdat$G)
+standSO <- (pitchdat$SO - mean(pitchdat$SO))/sd(pitchdat$SO)
+binoutSimpOrigin <- RectBin2d(standG,standSO,min(standG),min(standSO),2/mean(pitchdat$G),10/mean(pitchdat$SO),type="standard")
+binoutRecOrigin <- RectBin2d(standG,standSO,min(standG)-.5/mean(pitchdat$G),min(standSO)-.5/mean(pitchdat$SO),2/mean(pitchdat$G),10/mean(pitchdat$SO),type="standard")
+binoutRecOrigin[[2]]$totalSpatialLoss / binoutSimpOrigin[[2]]$totalSpatialLoss
+# spatial loss down 3% 
+standBaseballLoss2X10 <- binoutRecOrigin[[2]]$totalSpatialLoss
+standBaseballLoss2X10PerObs <- binoutRecOrigin[[2]]$totalSpatialLoss / nrow(pitchdat)
+@
 
+\ktm{For this data example we will revisit the baseball data used earlier in this paper. To construct the binned scatterplot to display the relationship between strikeouts and game counts, we begin by specifying the bin dimensions and origin for standard rectangular binning. Since the data are counts, each variable is recorded to an integer resolution so integer bin widths in each dimension of spatial bins will be used to avoid artificial density stripes. The data has only only 42583 observations, so we can bin finely without taking an inordinate amount of computation time. We elect to use approximately 50 bins in each dimension; the data range from 1 to 106 games and 0 to 513 strike-outs, thus we use bins that are 2 games X 10 strikeouts. The origin will be set to a half unit below the minimum value in each dimension, at ($0.5$,$-0.5$). }
+ 
+\ktm{The leftmost plot in Figure~\ref{fig:BaseballBinnedScatters2X10} displays the binned scatterplot that with a continuous shading of the raw bin densities. We quickly realize that there is a large number of pitchers that played very few games and had very few strikeouts, however this renders it nearly impossible to differentiate the density structure across the majority of bins which are filled with higher quality pitchers who played many games and earned many strikeouts. In this case there are two frequency binning options that we can employ to deal with this skewness of the distribution of bin counts. Quantile frequency binning using four shade groups (center plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) allows us to visualizes the quartiles of the bin densities. Alternatively, standard log frequency binning using four shade groups (rightmost plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) uses the log transformation to diminish the visual impact of high density bins then visualizes density on the log scale. Each frequency binning approach adds a layer of complexity to the interpretation of the shade, however they both effectively emphasize the two ridges in the density structure. }
+
+<<BaseballBinnedScatters2X10,echo=F,include=T,eval=T,fig.width=12, fig.height=4, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively, using reduced binned data from each bivariate distribution. ">>=  
+ # raw frequencies plot
+p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
+      main="Standard Freq Binning") +
+  xlab("") + ylab("")+
+  scale_fill_gradient("Frequencies", low="#56B1F7", high="#132B43") + 
+  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+                     legend.key.width = unit(1, "cm"),
+                     panel.grid= element_blank(),
+                     plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+                     legend.text=element_text(size=12) )
+# # bin frequencies distribution hugely skewed
+# qplot(binfreq, geom="density", data= binout1[[1]], color=I("blue")) + theme_bw()
+# qplot(log(binfreq), geom="density", data= binout1[[1]], color=I("blue")) + theme_bw()
+
+## quantile freq binning
+binoutQuantFreqGroups <- freqBin(binout1, binType="quantile", ncolor=4, logCount=FALSE)
+labels = sort(unique(binoutQuantFreqGroups[[1]]$freqlabel))
+cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
+p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutQuantFreqGroups[[1]],
+            main="Quantile Freq Binning") +
+  xlab("") + ylab("")+
+  scale_fill_manual("Frequencies", values=cols, 
+                    guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+                                         title.position = "top"),
+                    labels=labels) + 
+  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+                     legend.key.width = unit(1, "cm"),
+                     panel.grid= element_blank(),
+                     plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+                     legend.text=element_text(size=12) ) 
+
+## standard log freq binning
+binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=4, logCount=TRUE)
+binoutLogFreqGroups[[1]]$freqlabel <- factor(binoutLogFreqGroups[[1]]$freqlabel, 
+                                             levels = unique(binoutLogFreqGroups[[1]]$freqlabel)[c(3,5,2,4,1)])
+labels = levels(binoutLogFreqGroups[[1]]$freqlabel)
+cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
+
+p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutLogFreqGroups[[1]],
+      main="Standard Log Freq Binning") +
+  xlab("") + ylab("")+
+  scale_fill_manual("Log Frequencies", values=cols, 
+                    guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+                                         title.position = "top"),
+                    labels=labels) + 
+  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+                     legend.key.width = unit(1, "cm"),
+                     panel.grid= element_blank(),
+                     plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+                     legend.text=element_text(size=12) ) 
+
+# plot three binned scatterplots (raw, standard log freq, quantile freq)
+grid.arrange(p1,p2,p3, nrow=1)
+
+@
+
+\ktm{The interpretability of the net spatial loss in this scenario suffers because the units and scales of the two variables differ. To remedy this, the two variables can be standardized then binned equivalently by rescaling the bin dimension, where the net spatial loss is interpreted as a distance in units of standard deviations. The net spatial loss for the standardized data is \Sexpr{round(standBaseballLoss2X10,4)} standard deviations, an average of \Sexpr{round(standBaseballLoss2X10PerObs,4)} standard deviation per data point. We also find that we had approximately 3\% lower net spatial loss, on the standardized scale, for our binning specification than had we naively set the binning origin at the minimum data values, ($1$,$0$).  }
+
+% Another thing to note about Figure ~\ref{fig:LossComparison1} is that under the standard binning algorithm the numerical loss is a monotone increasing function of the bin width, but visual loss is not a strictly increasing function of bin width.  This is apparent in the order of colored lines based on the Strike Out binning size.  This is because the numerical loss function sums loss over all observations, which means the distance from the points to the numerical center of bins can only increase as bin width increases. Whereas the visual loss function sums loss over bin, thus as the bin width increases the number of bins decreases which leads to the potential that the overall visual loss may decrease even though the distance from numerical centers to visual centers may increase for individual bins. 
+% 
+% 
+% % \begin{figure}[hbtp]
+% % \centering
+% % <<LossComparison1, echo=FALSE, eval=T, fig.width=6.5, fig.height=8>>=
+% % 
+% % # connect <- dbConnect(dbDriver("MySQL"), user="2009Expo", 
+% % #                      password="R R0cks", port=3306, dbname="baseball", 
+% % #                      host="headnode.stat.iastate.edu")
+% % # pitch <- new("dataDB", co=connect, table="Pitching")
+% % # d1 <- dbData(pitch, vars=c( "G", "SO"))
+% % # bins <- expand.grid(x=c(1:10, 15, 20), y=c(1:5, seq(10, 100, 10)))
+% % # 
+% % # library(multicore)
+% % # lossesRdm <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="random")))
+% % # lossesStd <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="standard")))
+% % # 
+% % # lossesRdm <- cbind(bins, lossesRdm)
+% % # lossesStd <- cbind(bins, lossesStd)
+% % # 
+% % # losses <- rbind(cbind(Algorithm="Random", lossesRdm), cbind(Algorithm="Standard", lossesStd))
+% % # write.csv(losses, "../dbData/data/losses.csv", row.names=FALSE)
+% % 
+% % losses <- read.csv("./data/losses.csv", stringsAsFactors=FALSE)
+% % lossmelt <- melt(losses[,c(1:4,6,10)],id=c("Algorithm","x","y"))
+% % lossmelt <- lossmelt[which(lossmelt$y == 1 | lossmelt$y == 10 | lossmelt$y == 50),]
+% % lossmelt$y <- as.factor(lossmelt$y)
+% % levels(lossmelt$variable) <- c("Numerical Loss","Visual Loss", "Log Frequency Loss")
+% % qplot(x=x, y=value,
+% %       group=interaction(y, Algorithm),
+% %       data=lossmelt, geom="line",
+% %       colour=y, size=I(1),
+% %       xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
+% %         theme_bw() + theme(legend.position="bottom") + 
+% %         guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
+% %         facet_grid(variable ~ Algorithm, scales = "free") 
+% % 
+% % # qplot(x=x, y=value,
+% % #       group=interaction(y, Algorithm),
+% % #       data=lossmelt, geom="line",
+% % #       colour=y, size=I(1), linetype=Algorithm,
+% % #       xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
+% % #         theme_bw() + theme(legend.position="bottom") + 
+% % #         guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
+% % #         facet_grid(. ~ variable, scales = "free") 
+% % 
+% % @
+% % \caption{\label{fig:LossComparison1} Loss for Baseball Data under Standard and Random Binning for different bin widths in the number of strike-outs and games.}
+% % \end{figure}
+% 
+% 
+% %\textbf{Loss table for baseball example moved from beginning, this should not be its final resting place}
+% %\noindent
+% %Table \ref{tablelossexample} gives an overview of the size of all different sources of loss for the examples in figure~\ref{binning}.
+% 
+% \hh{the  code following this comment in the Rnw file is, I think, broken beyond repair - but we should include a table like the one it produced in the paper.  - we will have different losses to report, though}
+% 
+% % 
+% % <<tablelossexample, echo=FALSE, eval=FALSE, results='asis',cache=FALSE>>=
+% % loss0.1 <- lossCalc(data=X[,c(1:2)], binning=c(.1, .1), type="standard", newData=TRUE)
+% % loss0.25 <- lossCalc(data=X[,c(1:2)], binning=c(.25, .25), type="standard", newData=TRUE)
+% % loss0.5 <- lossCalc(data=X[,c(1:2)], binning=c(.5, .5), type="standard", newData=TRUE)
+% % loss1 <- lossCalc(data=X[,c(1:2)], binning=c(1, 1), type="standard",newData=TRUE)
+% % 
+% % loss0.1 <- data.frame(with(loss0.1, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
+% % loss0.25 <- data.frame(with(loss0.25, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
+% % loss0.5 <- data.frame(with(loss0.5, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
+% % loss1 <- data.frame(with(loss1, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
+% % 
+% % table.loss <- data.frame(rbind(c(binwidth=0, TotalLoss.x=0, TotalLoss.y=0, TotalLoss.LogFreq=0, rows=200), 
+% %                                c(binwidth=.1, loss0.1[5:7]*100, loss0.1[8]), 
+% %                                c(binwidth=.25, loss0.25[5:7]*100, loss0.25[8]), 
+% %                                c(binwidth=.5, loss0.5[5:7]*100, loss0.5[8]), 
+% %                                c(binwidth=1, loss1[5:7]*100, loss1[8])))
+% % names(table.loss) <- c("Bin Width", "% Loss in X", "% Loss in Y", "% Loss in log(Freq)", "Size of Data")
+% % print(xtable(table.loss, digits=c(0, 2, 4, 4, 4, 0), caption="Loss due to binning for all examples in figure 4.", label="tablelossexample"), include.rownames=FALSE, table.placement="hbtp")
+% % @
+% 
+% 
+% We may also use this example to highlight the advantages of random binning. The two binned scatterplots at the top of Figure~\ref{fig:binning-comparison} show bins of the same width, but clear differences between the binning results are evident. The standard binning algorithm has rounding artifacts that are clearly visible in the vertical strips. These vertical stripes are from the computational rounding issues encountered if we use the standard binning when we have the data values were recorded on an evenly spaces discrete scale (in our case, integers) and the bin widths are integer multiples of the data increments.  This reinforces the argument that in practice the random algorithm can produce a graph that better represents the true shape of the data than the standard algorithm even if the numerical and visual loss is higher.
+% 
+% 
+% \textbf{Are we sure that this is because of an odd bin widths and not just that the bins were not centered on an integer?} In contrast, when the bin widths are odd, the two binning algorithms yield nearly indistinguishable binned scatterplots, as shown in the bottom row of Figure~\ref{fig:binning-comparison}.\textbf{I think that strips disappearing in (5,25) bins is because of where we START the binning not that the bin widths are even}
+% 
+% \hh{This is a valid concern, but we have to fix the notation at the beginning first, before we can address it.}
+% 
 % \begin{figure}[hbtp]
 % \centering
-% <<LossComparison1, echo=FALSE, eval=T, fig.width=6.5, fig.height=8>>=
-% 
-% # connect <- dbConnect(dbDriver("MySQL"), user="2009Expo", 
-% #                      password="R R0cks", port=3306, dbname="baseball", 
-% #                      host="headnode.stat.iastate.edu")
-% # pitch <- new("dataDB", co=connect, table="Pitching")
-% # d1 <- dbData(pitch, vars=c( "G", "SO"))
-% # bins <- expand.grid(x=c(1:10, 15, 20), y=c(1:5, seq(10, 100, 10)))
-% # 
-% # library(multicore)
-% # lossesRdm <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="random")))
-% # lossesStd <- do.call("rbind", mclapply(1:nrow(bins), function(i) lossCalc(data=d1, binning=c(bins[i,1], bins[i,2]), type="standard")))
-% # 
-% # lossesRdm <- cbind(bins, lossesRdm)
-% # lossesStd <- cbind(bins, lossesStd)
-% # 
-% # losses <- rbind(cbind(Algorithm="Random", lossesRdm), cbind(Algorithm="Standard", lossesStd))
-% # write.csv(losses, "../dbData/data/losses.csv", row.names=FALSE)
-% 
-% losses <- read.csv("./data/losses.csv", stringsAsFactors=FALSE)
-% lossmelt <- melt(losses[,c(1:4,6,10)],id=c("Algorithm","x","y"))
-% lossmelt <- lossmelt[which(lossmelt$y == 1 | lossmelt$y == 10 | lossmelt$y == 50),]
-% lossmelt$y <- as.factor(lossmelt$y)
-% levels(lossmelt$variable) <- c("Numerical Loss","Visual Loss", "Log Frequency Loss")
-% qplot(x=x, y=value,
-%       group=interaction(y, Algorithm),
-%       data=lossmelt, geom="line",
-%       colour=y, size=I(1),
-%       xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
-%         theme_bw() + theme(legend.position="bottom") + 
-%         guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
-%         facet_grid(variable ~ Algorithm, scales = "free") 
-% 
-% # qplot(x=x, y=value,
-% #       group=interaction(y, Algorithm),
-% #       data=lossmelt, geom="line",
-% #       colour=y, size=I(1), linetype=Algorithm,
-% #       xlab="Bin  Width  (Games)", ylab="Proportion Loss")+   
-% #         theme_bw() + theme(legend.position="bottom") + 
-% #         guides(colour = guide_legend(title="Bin Width (Strike Outs)", override.aes = list(size = 2))) +
-% #         facet_grid(. ~ variable, scales = "free") 
-% 
-% @
-% \caption{\label{fig:LossComparison1} Loss for Baseball Data under Standard and Random Binning for different bin widths in the number of strike-outs and games.}
+% \subfloat[(2, 2) tiling of G, SO data]{
+% \includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd22.pdf}
+% }\\
+% \subfloat[(5, 25) tiling of G, SO data]{
+% \includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd525.pdf}
+% }
+% \caption{\label{fig:binning-comparison} Comparison of random and standard binning: standard binning introduces artificial striping when the chosen bin width is not a multiple of the data resolution.}
 % \end{figure}
-
-
-%\textbf{Loss table for baseball example moved from beginning, this should not be its final resting place}
-%\noindent
-%Table \ref{tablelossexample} gives an overview of the size of all different sources of loss for the examples in figure~\ref{binning}.
-
-\hh{the  code following this comment in the Rnw file is, I think, broken beyond repair - but we should include a table like the one it produced in the paper.  - we will have different losses to report, though}
-
 % 
-% <<tablelossexample, echo=FALSE, eval=FALSE, results='asis',cache=FALSE>>=
-% loss0.1 <- lossCalc(data=X[,c(1:2)], binning=c(.1, .1), type="standard", newData=TRUE)
-% loss0.25 <- lossCalc(data=X[,c(1:2)], binning=c(.25, .25), type="standard", newData=TRUE)
-% loss0.5 <- lossCalc(data=X[,c(1:2)], binning=c(.5, .5), type="standard", newData=TRUE)
-% loss1 <- lossCalc(data=X[,c(1:2)], binning=c(1, 1), type="standard",newData=TRUE)
 % 
-% loss0.1 <- data.frame(with(loss0.1, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
-% loss0.25 <- data.frame(with(loss0.25, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
-% loss0.5 <- data.frame(with(loss0.5, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
-% loss1 <- data.frame(with(loss1, c(Loss, rows=nrow(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))), cols=ncol(ddply(NewData, .(x,y), summarise, Freq=sum(Freq))))))
-% 
-% table.loss <- data.frame(rbind(c(binwidth=0, TotalLoss.x=0, TotalLoss.y=0, TotalLoss.LogFreq=0, rows=200), 
-%                                c(binwidth=.1, loss0.1[5:7]*100, loss0.1[8]), 
-%                                c(binwidth=.25, loss0.25[5:7]*100, loss0.25[8]), 
-%                                c(binwidth=.5, loss0.5[5:7]*100, loss0.5[8]), 
-%                                c(binwidth=1, loss1[5:7]*100, loss1[8])))
-% names(table.loss) <- c("Bin Width", "% Loss in X", "% Loss in Y", "% Loss in log(Freq)", "Size of Data")
-% print(xtable(table.loss, digits=c(0, 2, 4, 4, 4, 0), caption="Loss due to binning for all examples in figure 4.", label="tablelossexample"), include.rownames=FALSE, table.placement="hbtp")
-% @
-
-
-We may also use this example to highlight the advantages of random binning. The two binned scatterplots at the top of Figure~\ref{fig:binning-comparison} show bins of the same width, but clear differences between the binning results are evident. The standard binning algorithm has rounding artifacts that are clearly visible in the vertical strips. These vertical stripes are from the computational rounding issues encountered if we use the standard binning when we have the data values were recorded on an evenly spaces discrete scale (in our case, integers) and the bin widths are integer multiples of the data increments.  This reinforces the argument that in practice the random algorithm can produce a graph that better represents the true shape of the data than the standard algorithm even if the numerical and visual loss is higher.
-
-
-\textbf{Are we sure that this is because of an odd bin widths and not just that the bins were not centered on an integer?} In contrast, when the bin widths are odd, the two binning algorithms yield nearly indistinguishable binned scatterplots, as shown in the bottom row of Figure~\ref{fig:binning-comparison}.\textbf{I think that strips disappearing in (5,25) bins is because of where we START the binning not that the bin widths are even}
-
-\hh{This is a valid concern, but we have to fix the notation at the beginning first, before we can address it.}
-
-\begin{figure}[hbtp]
-\centering
-\subfloat[(2, 2) tiling of G, SO data]{
-\includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd22.pdf}
-}\\
-\subfloat[(5, 25) tiling of G, SO data]{
-\includegraphics[keepaspectratio=true, width=.9\textwidth]{images/RandomStd525.pdf}
-}
-\caption{\label{fig:binning-comparison} Comparison of random and standard binning: standard binning introduces artificial striping when the chosen bin width is not a multiple of the data resolution.}
-\end{figure}
-
-
 
 
 \subsection{Big Data: Airline Departure Times}
@@ -1872,7 +1959,8 @@ Figure~\ref{airline-scatter} shows examples of two scatterplots of scheduled ver
 Scheduled departure times past 6 am in the morning are much more common than earlier flights. It is much more likely for a  flight to be delayed than to leave early,
 leading to the wash-out effect above the line, that is getting thinner with increasing delays. The range of delays on usual days starts at about one hour at 6 am and increases during the day to about 2 hours. The few number of flights before 6 am are also visible in both plots.
 The triangle of observations on the bottom right visible in both plots is nothing but an artifact of the data collection consisting of flights that are scheduled before midnight, but are delayed to departures past midnight. The cloud of outliers halfway between the two main structures is potentially interesting, since no immediate explanation comes to mind, and would be worthy of a follow-up investigation.
- What is not apparent in the plot on the left, is some fine-level structure that the plot based on all of the data shows. A close inspection of the plot on the right hand side reveals  darker colored vertical lines at 30 minute intervals. It is obvious that more flights are scheduled with departures on the hour and at 30 minutes past the hour. 
+
+What is not apparent in the plot on the left, is some fine-level structure that the plot based on all of the data shows. \ktm{Note that because we have bin widths equal to the resolution to which the data is recorded in each dimension, we know that the spatial binning algorithm will not lead to artificial density stripes.} A close inspection of the plot on the right hand side reveals darker colored vertical lines at 30 minute intervals. It is obvious that more flights are scheduled with departures on the hour and at 30 minutes past the hour. 
 
 
 \begin{figure}[hbtp]\centering
