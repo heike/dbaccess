@@ -680,9 +680,9 @@ In the first set of binned data, the bins and the points on the scatterplot are 
 
 Loss of information occurs during the binning and rendering process. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent frequencies.  We distinguish two sources of loss in the construction of a binned scatterplot:
 \begin{itemize}
-\item {\it Spatial Loss}, $L^\text{S}$, occurs when points $(x_i, y_i)$ for observations $i \in \{1,\dots,n\}$ in the data set are reduced to a single points at the bin centers $(x_\ell^\ast, y_\ell^\ast)$ for bins $\ell \in \{1,\dots,\mathscr{L}\}$. By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
+\item {\it Spatial Loss}, $L^\text{S}$, occurs when points $(x_i, y_i)$ for observations $i \in \{1,\dots,n\}$ in the data set are reduced to a set of tiles centered at $(x_\ell^\ast, y_\ell^\ast)$ for bins $\ell \in \{1,\dots,\mathscr{L}\}$. By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
 
-\item {\it Frequency Loss}, $L^\text{F}$, occurs when frequency information is not rendered, such as in standard scatterplots,  or not rendered accurately, e.g.\ when a discrete color scale is used to display bin counts, the entire ranges of counts is mapped to the same color; thus losing precision in the display of frequencies.
+\item {\it Frequency Loss}, $L^\text{F}$, occurs when bin counts, $c_\ell \in \{1,\dots,\mathscr{L}\}$ are not rendered precisely. A discrete color scale may be used to aid the ability to read a binned scatterplot, however this is effectively a second stage of binning where shade displays binned frequencies, $b_C(c_\ell) \in \{1,\dots,\mathscr{L}\}$, thus losing precision in the display of the true frequencies. This is analogous to the fundimental problem for overplotted standard scatterplots where frequency is masked by other points. 
 \end{itemize}
 
 Note that even though these losses may turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where information is masked in large data situations due to over-plotting of points. 
