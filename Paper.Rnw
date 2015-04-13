@@ -1957,10 +1957,6 @@ Every day there are about 16,000 flights across the United States adding up to a
 
 \ktm{Figure~\ref{airline-scatter} shows two plots of the relationship between scheduled versus actual departure times. The plot on the left shows the scatterplot from a sample of one million of those records. Even while using alpha blending this results in a severely over-plotted graph. On the right is a binned scatterplot of the reduced data from standard binning at 1-minute intervals. If the origin is offset by a half minute for both departures and arrivals, this binning does not have any spatial loss, as all observations will be centered within bins. The 1-minute standard binning also reduces the data to 176,384 individual records, less than 3\% of the original data. }
 
-Both plots show the same large scale distributional patterns: scheduled and actual arrival times are highly correlated, recognizable from the conglomeration of points along the line of identity. Scheduled departure times past 6 am in the morning are much more common than earlier flights. It is much more likely for a  flight to be delayed than to leave early, leading to the wash-out effect above the line, that is getting thinner with increasing delays. The range of delays on usual days starts at about one hour at 6 am and increases during the day to about 2 hours. The few number of flights before 6 am are also visible in both plots. The triangle of observations on the bottom right visible in both plots is nothing but an artifact of the data collection consisting of flights that are scheduled before midnight, but are delayed to departures past midnight. The cloud of outliers halfway between the two main structures is potentially interesting, since no immediate explanation comes to mind, and would be worthy of a follow-up investigation.
-
-What is not apparent in the alpha blended scatterplot, is some fine-level structure that the plot based on all of the data shows. \ktm{Note that because we have bin widths equal to the resolution to which the data is recorded in each dimension, we know that the spatial binning algorithm will not cause any artificial density stripes.} A close inspection of the plot on the right hand side reveals darker colored vertical lines at 30 minute intervals. It is obvious that more flights are scheduled with departures on the hour and at 30 minutes past the hour. 
-
 \begin{figure}[hbtp]\centering
 \subfloat[Million-point sample of Airline Data]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/MillionSample.pdf}}\hfill
 %   Swap Back at later date (shrinks size of pdf to managable)
@@ -1969,12 +1965,17 @@ What is not apparent in the alpha blended scatterplot, is some fine-level struct
 \caption{\label{airline-scatter}Scheduled and actual departure times of  flights across the United States in 2011. The plot on the left is based on a sample of the data, the plot on the right shows all flights. The large scale distributional patterns are visible in both plots, but the plot on the left misses some of the finer level details in scheduling that is visible in the plot on the right.}
 \end{figure}
 
+Both plots show the same large scale distributional patterns: scheduled and actual arrival times are highly correlated, recognizable from the conglomeration of points along the line of identity. Scheduled departure times past 6 am in the morning are much more common than earlier flights. It is much more likely for a  flight to be delayed than to leave early, leading to the wash-out effect above the line, that is getting thinner with increasing delays. The range of delays on usual days starts at about one hour at 6 am and increases during the day to about 2 hours. The few number of flights before 6 am are also visible in both plots. The triangle of observations on the bottom right visible in both plots is nothing but an artifact of the data collection consisting of flights that are scheduled before midnight, but are delayed to departures past midnight. The cloud of outliers halfway between the two main structures is potentially interesting, since no immediate explanation comes to mind, and would be worthy of a follow-up investigation.
+
+What is not apparent in the alpha blended scatterplot, is some fine-level structure that the plot based on all of the data shows. \ktm{Note that because we have bin widths equal to the resolution to which the data is recorded in each dimension, we know that the spatial binning algorithm will not cause any artificial density stripes.} A close inspection of the plot on the right hand side reveals darker colored vertical lines at 30 minute intervals. It is obvious that more flights are scheduled with departures on the hour and at 30 minutes past the hour. 
+
 \begin{figure}[hbtp]\centering
-\includegraphics[keepaspectratio=true, height=.43\textheight]{images/AirlineStdBinning5mins.pdf}
-\includegraphics[keepaspectratio=true, height=.43\textheight]{images/AirlineStdBinning15mins.pdf}
+\includegraphics[width=.49\linewidth,keepaspectratio=true]{images/AirlineStdBinning5mins.pdf}
+\includegraphics[width=.49\linewidth,keepaspectratio=true]{images/AirlineStdBinning15mins.pdf}
 \caption{5-minute bins produce a higher-level summary of the data than shown in Figure~\ref{airline-scatter}b. 15-minute bins produce an even more coarse summary of the data.}\label{airline5mins-binning}
 \end{figure}
-Binning data by five-minute intervals produces a more high-level summary of the relationship between actual and scheduled departure time, though it necessarily obscures some of the finer details. In addition, binning data by five minute intervals reduces the size of the data set to a much more manageable 19,787 observations  which can be easily manipulated on probably any modern computer. Binning by 15-minute intervals reduces the data set to a nearly-trivial 3,575 observations, but the graphical summary becomes granular and less appealing at that resolution.
+
+Figure~\ref{airline5mins-binning} displays the binned scatterplots for the flight departure data with larger bins. Binning data by five-minute intervals produces a more high-level summary of the relationship between actual and scheduled departure time, though it necessarily obscures some of the finer details. In addition, binning data by five minute intervals reduces the size of the data set to a much more manageable 19,787 observations  which can be easily manipulated on probably any modern computer. Binning by 15-minute intervals reduces the data set to a nearly-trivial 3,575 observations, but the graphical summary becomes granular and less appealing at that resolution.
 
 <<airlinesetup,echo=FALSE, eval=FALSE>>=
 setwd("./data/")
@@ -2058,16 +2059,14 @@ ggsave("AirlineStdBinning15mins.pdf", binned, width=6, height=6, dpi=576)
 # binnedRdm <- qplot(data=air.binned2.rdm, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (15 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
 # ggsave("AirlineRdmBinning15mins.png", binnedRdm, width=8, height=8, dpi=600)
 @
-\section{Conclusion}
-Large Data sets of continuous variables are very difficult to visualize in raw form, due to over-plotting of points. Binning allows for the visualization and manipulation of large data sets, and easily translates into binned scatterplots which are more appropriate for the human visual system. The loss due to binning is the cost of reducing the data set to a more manageable size, but some of that loss can be recovered with additional computational investment.
 
-We have presented two algorithms for binning; the standard algorithm, which has rounding artifacts but generally lower loss, and the random algorithm, which is a fast version of linear binning and is somewhat more computationally efficient. The choice of algorithm is a trade-off between speed and accuracy, and may be highly data set dependent. It is possible that there are computational modifications which could improve the accuracy of the random algorithm, but these modifications are likely to require additional computational operations.
+%--------------------------------------------------------------------------------------
 
-% \begin{subsection}{Numerical Comparison of Binning Algorithms}
-<<PrintTable,echo=F,include=FALSE, dependson='LossTableGraphs'>>=
-  print(tab, include.rownames=FALSE)
-@
-% \end{subsection}
+\section{Conclusions and Future Work}
+
+Large Data sets of continuous variables are very difficult to visualize in raw form, due to over-plotting of points. Binning allows for the visualization and manipulation of large data sets, and easily translates into binned scatterplots which are more appropriate for the human visual system. Reducing the data for binned scatterplots has distinct computational and visual advantages, however the aggregation comes at the cost of losing precision in the spatial and frequency information.
+
+We have presented two algorithms for spatially binning data points; the standard algorithm, which has rounding artifacts but generally lower loss, and the random algorithm, which is a fast version of linear binning and is somewhat more computationally efficient. The standard algorithm is superior in terms of net spatial loss, but requires more care in selecting binning parameters than random binning to avoid problematic visual features such as binning caused stripping. In setting binning parameters for each spatial dimension, binwidth should be an integer multiple of the data resolution and the origin should be offset half the data resolution below the lowest observed value. 
 
 %----------------------------------------------------------------------------
 
