@@ -1544,6 +1544,10 @@ qplot(originx,totalSpatialLoss/1000,geom="path",group=distrib, colour=distrib,
 % }
 
 %-----------------------------------------------------------------------------
+\subsection{Choice of bin width}
+
+
+%-----------------------------------------------------------------------------
 
 \subsection{Frequency Binning Specifications and Frequency Loss}
 
