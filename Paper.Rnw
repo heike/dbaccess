@@ -12,7 +12,6 @@
 
 \newcommand{\ktm}[1]{{\color{red} #1}} %red comments: Karsten
 \newcommand{\hh}[1]{{\color{blue} #1}} %blue comments: Heike
-\newcommand{\svp}[1]{{\color{yellow}#1}} %yellow: Susan (It's more fun that way - comment roulette)
 
 %opening
 \title{Binning Strategies and Related Loss for Large Data}
@@ -28,6 +27,7 @@ Dealing with the data deluge of the Big Data Age is both exciting and challengin
 
 \section{Introduction}
 \label{Intro}
+\hh{General: write out any positive integer less than or equal to ten out in words, even if there is the word `unit' behind it. So it's one unit, and not 1 unit.}
 
 \hh{
 \begin{itemize}
@@ -1378,7 +1378,9 @@ grid.arrange(p1,p2, nrow=2)
 @
 
 All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a potentially non-negligible consideration in settings with truly massive data. 
-\ktm{ Figure~\ref{fig:SpatialLossCompare} also shows that the computation time needed to bin the simulated data sets is a decreasing function of the bin size and that random binning is marginally slower than standard binning across all bin sizes. Computation times for binning were collected using a commercial Asus laptop with an Intel Core i7 processor running at 2.80 GHz. Another pertinent argument for using larger bins is that it will smooth over larger larger regions if visualizing the large scale density structure is of primary interest.}
+ Figure~\ref{fig:SpatialLossCompare} also shows that the computation time needed to bin the simulated data sets is a decreasing function of the bin size and that random binning is marginally slower than standard binning across all bin sizes. Computation times for binning were collected using a commercial Asus laptop with an Intel Core i7 processor running at 2.80 GHz. 
+ \ktm{Another pertinent argument for using larger bins is that it will smooth over  larger regions if visualizing the large scale density structure is of primary interest.}
+\hh{This is an argument along the lines of the bias vs variability tradeoff. Extend on it, don't put it here as a throwaway sentence. }
 
 While bin widths can be set to any positive real value, the selection should be restricted to an integer multiple of the resolution of the data to avoid undesirable visual attributes in the binned scatterplot. If the bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of bins throughout the binned scatterplot.  These white-space gaps are undesirable because they create artificial discontinuity that interferes with interpretation of bivariate density. If bin dimensions are not integer multiples of the bivariate data resolution there is also a disruptive visual consequence of ``stripping'', where bins have systematically different numbers of possible data values that can cause artificial density stripes to appear in the binned scatterplot.  
 
@@ -1404,6 +1406,7 @@ To demonstrate the importance of properly selecting binwidths consider the coars
 # allbindat <- rbind(binoutcoarse1,binoutcoarse4,binoutcoarse5,
 #                    binoutcoarse1Rand,binoutcoarse4Rand,binoutcoarse5Rand)
 # write.csv(allbindat,"StripeBinData.csv", row.names=FALSE)
+
 allbindat <- read.csv("StripeBinData.csv",header=TRUE)
 allbindat$BinningType <- factor(allbindat$BinningType, levels=c("Standard","Random"))
 
@@ -1463,9 +1466,19 @@ grid.arrange(p1,p2,nrow=1)
 
 @
 
-For data with a coarse resolution the location of the origin is also important because the origin controls the proximity of possible data values to bin centers. It can be shown analytically that for data with a resolution of $\alpha$ units that is spread symmetrically within bins, the origin that minimizes net spatial loss is located $\alpha/2$ units below the minimum value (see proof in Appendix~\ref{proof:offset}).
 
-In practice the $\alpha/2$ origin offset is found to be a reasonable choice for minimizing spatial loss for symmetric bivariate data at resolution $\alpha$ while using bin dimensions that are integer multiples of $\alpha$. Figure~\ref{fig:OriginOffsetSimulations} shows how the net spatial loss changes as the origin is slide from the minimum value to one binwidth below the minimum value using the coarse simulated data with a resolution of 2 units. For the two symmetrically distributed data sets, normal and uniform, the origin offset of 1 unit below the minimum data value was found to minimize the net spatial loss for each considered bin size (2, 4, 6, 8, and 10 units). For the bivariately skewed exponential data, the 1 unit origin offset minimized net loss for the smaller intervals but was not optimal for the largest intervals.
+For data with a coarse resolution the location of the origin is also important because the origin controls the proximity of possible data values to bin centers. It can be shown analytically that for data with a resolution of $\alpha$ units with a  symmetric distribution within each of the bins, the origin that minimizes net spatial loss is located $\alpha/2$ units below the minimum value (see proof in Appendix~\ref{proof:offset}).
+
+\hh{XXX which bin size are you talking about? add this, otherwise the statement is wrong XXX}
+
+\hh{`$\alpha/2$ origin offset' this an implicit naming. You have to make it either explicit or write this out. At the moment it is imprecise, because you mean this offset to be below the minimal value of the data. 
+XXX }
+
+In practice the $\alpha/2$ origin offset is found to be a reasonable choice for minimizing spatial loss for symmetric bivariate data at resolution $\alpha$ while using bin dimensions that are integer multiples of $\alpha$.
+\hh{In the next paragraph you are refering to the minimal value (as in minimal data value) and you are minimizing spatial loss. it's a bit confusing with the two minima floating around. It might be better to properly define the offset, and then refer to offset values rather than origins below the minimal value}
+Figure~\ref{fig:OriginOffsetSimulations} shows how the net spatial loss changes as the origin is slide from the minimum value to one binwidth below the minimum value using the coarse simulated data with a resolution of 2 units. 
+For the two symmetrically distributed data sets, normal and uniform, the origin offset of 1 unit below the minimum data value was found to minimize the net spatial loss for each considered bin size (2, 4, 6, 8, and 10 units). \hh{XXX - no! the value at -1 is close, but the dots are in the actual minimal values. This is only a single example - the expected minimum might still be in -1. }
+For the bivariately skewed exponential data, the 1 unit origin offset minimized net loss for the smaller intervals but was not optimal for the largest intervals.
 
 <<OriginOffsetSimulations, echo=F,include=T,eval=T,fig.width=8, fig.height=4, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Net spatial loss for coarse simulated data at a resolution of 2 units at various sized (2,4,6,8,10) square bins over the range of possible origin offsets. The vertical gray line in each facet indicates where the origin is offset 1 unit below the minimum data value.">>= 
 ##  Check out the spatial loss for the data that is recorded to resolution = alpha at various origin offsets
@@ -1496,12 +1509,17 @@ In practice the $\alpha/2$ origin offset is found to be a reasonable choice for 
 # }
 # write.csv(spatlossdatRound,"LossesByOriginBinwidth.csv", row.names=FALSE)
 lossOrigin <- read.csv("LossesByOriginBinwidth.csv",header=TRUE)
+mins <- ddply(lossOrigin, .(widthx, bintype, distrib), summarise,
+              minx = max(originx[which(totalSpatialLoss == min(totalSpatialLoss))]),
+              minloss = min(totalSpatialLoss))
 qplot(originx,totalSpatialLoss/1000,geom="path",group=distrib, colour=distrib,
       data=subset(lossOrigin,bintype=="standard"), size=I(1))+ 
-  facet_grid(distrib~widthx, scales="free_x") + theme_bw() + 
+  facet_grid(distrib~widthx, scales="free_x", space="free_x") + theme_bw() + 
   theme(panel.grid= element_blank(), legend.position="none")+
   geom_vline(xintercept = -1, colour=I("darkgray")) +
-  ylab("Net Spatial Loss (in thousands of units)") + xlab("Origin Offset")
+  geom_point(aes(x=minx, y=minloss/1000), data=subset(mins, bintype=="standard"), size=3.5) +
+  ylab("Net Spatial Loss (in thousands of units)") + xlab("Origin Offset") + 
+  scale_x_continuous(breaks = seq(-10, 0, by = 1))
 @
 
 % 
@@ -1529,9 +1547,9 @@ qplot(originx,totalSpatialLoss/1000,geom="path",group=distrib, colour=distrib,
 
 \subsection{Frequency Binning Specifications and Frequency Loss}
 
-The reduced binned data from spatial binning contains the center and count information for all bins.  The bin frequencies may themselves be binned in order to discretize the color scale for the binned scatterplot. The loss of frequency information in frequency binning is dependent on the selection of a discrete color mapping, where the binning algorithm and number of frequency bins must be specified. To explore frequency loss characteristics using the simulated bivariate data sets, each of the three fine resolution sets were first spatially binned with standard rectangular binning with 5 X 5 unit bins and origin at (0,0). Then standard and quantile frequency binning algorithms were applied to either the bin counts or log bin counts. As discussed in Section~\ref{FreqLoss}, the average person is able to distinguish about seven colors simultaneously, so we will limit the considered options to using between one and ten frequency bins, near the upper limit of human perceptual abilities\citep{colorperception}.
+The reduced binned data from spatial binning contains the center and count information for all bins.  The bin frequencies may themselves be binned in order to discretize the color scale for the binned scatterplot. The loss of frequency information in frequency binning is dependent on the selection of a discrete color mapping, where the binning algorithm and number of frequency bins must be specified. To explore frequency loss characteristics using the simulated bivariate data sets, each of the three fine resolution sets were first spatially binned with standard rectangular binning with 5 X 5 unit bins and origin at (0,0). Then standard and quantile frequency binning algorithms were applied to either the bin counts or log bin counts. As discussed in Section~\ref{FreqLoss}, the average person is able to distinguish about seven colors simultaneously, so we will limit the considered options to using between one and ten frequency bins, near the upper limit of human perceptual abilities \citep{colorperception}.
 
-\ktm{ Figure~\ref{freqbinning} shows the binned scatterplots resulting from standard and quantile frequency binning algorithms using five frequency bins. Note that for standard binning, the shade is to be interpreted as an ordinal indicator of the groups based on bin frequencies, whereas for quantile binning the shade denotes groups based on frequency quantiles.  This distinction explains why the shading of the binned scatterplot is invariant to the log transformation for quantile frequency binning but not for standard; because a monotone transformation will not alter groupings based on order, but will change groupings based on value magnitude.}
+\ktm{ Figure~\ref{freqbinning} shows binned scatterplots resulting from standard and quantile frequency binning algorithms using five frequency bins. Note that for standard binning, the shade is to be interpreted as an ordinal indicator of the groups based on bin frequencies, whereas for quantile binning the shade denotes groups based on frequency quantiles.  This distinction explains why the shading of the binned scatterplot is invariant to the log transformation for quantile frequency binning but not for standard; because a monotone transformation will not alter groupings based on order, but will change groupings based on value magnitude.}
 
 The top row in Figure~\ref{fig:FreqLossCompare} displays the frequency loss from using standard and quantile frequency binning algorithms, with between one and ten frequency bins, from each set of simulated data. We first notice that large difference in the magnitude of frequency losses based on the bivariate distribution; frequency losses are highest for the exponential data, lower for the normal data and lowest for the uniform data. We also note that the frequency loss is a decreasing function of the number of frequency bins for both binning algorithms. This relationship largely flattens out after four frequency bin, each subsequent bin reducing the frequency loss less than the previous. Thus we should consider using between four and seven bin shades in order to reduce loss while also allowing for easy perception of frequency groups in the binned scatterplot. Lastly, the frequency loss with the standard frequency binning is be higher than for the quantile-based algorithm when a minimal number of bins are used. But in all three simulated data sets, the losses drop to comparable levels for each algorithm when four or more frequency bins are used.
 
