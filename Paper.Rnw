@@ -692,7 +692,7 @@ Loss of information occurs during the binning and rendering process. For the rem
 \end{itemize}
 }
 
-Note that even though these losses may turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where information is masked in large data situations due to over-plotting of points. 
+Note that even though these losses may turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where information is masked in large data situations due to over-plotting of points. \ktm{The idea of loss from one-dimensional binning was explored by Scott using mean squared error as a loss function where the number of bins could be optimized for the construction of histograms \citep{scott1979}. He later extended this discussion to two-dimensional binning, where he compared the mean squared error loss for hexagonal, rectangular and triangular binning; finding that hexagonal and rectangular binning performed similarly, both far superior to triangular binning \citep{scott1992}. We will take a similar approach to quantifying loss resulting from the binning algorithms detailed in Section\ref{GenBinning} above. }
 
 \subsection{Spatial Loss}
 \label{SpatialLoss}
