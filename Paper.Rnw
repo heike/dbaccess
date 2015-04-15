@@ -27,30 +27,30 @@ Dealing with the data deluge of the Big Data Age is both exciting and challengin
 
 \section{Introduction}
 \label{Intro}
-\hh{General: write out any positive integer less than or equal to ten out in words, even if there is the word `unit' behind it. So it's one unit, and not 1 unit.}
-
-\hh{
-\begin{itemize}
-\item Additional literature: binning papers: standard binning, e.g.: Karl Pearson (1895) ``Contributions to the Mathematical Theory of Evolution. II. Skew Variation in Homogeneous Material"\\
-David W. Scott (1979). "On optimal and data-based histograms". Biometrika 66 (3): 605–610
-
-quantile binning: there's a lot of implementations (e.g. cut2 in package Hmisc, the rattle package, the package extracut. It would be interesting to check, if they do the same things (probably not) and mention that there is disagreement in the implementations).
-
-As a reference I would check in 
-Scott, D. W. 1992.
-Multivariate Density Estimation: Theory, Practice, and Visualization. New York: Wiley.
-
-\item make sure to verify that the binning algorithms agree with the literature (and check that the code is doing the same thing as described in the paper).
-You can include a bit of discussion on the problem that histograms are over-parameterized - it's a known problem, but I can't find any paper on it at the moment.
-
-\end{itemize}
-}
-
-\ktm{I have read through the sections of Pearson (1895), Scott (1979) and Scott (1992) that pertained to binning. I will work on integrating them into the lit review next.  Scott talked much about the optimal choice of bin width based on MSE but there was not much talk about what to do with points at the boundaries of bins (he effectively assumed infinite precision in the measurement process to avoid it). 
-
-I will need to search more to find papers about the binning algorithms and the boundaries they set.  The \texttt{cut} function allows for intervals that are closed on either the left or right and also allows the points on the outermost open bound to be included in the last bin.  
-
-The \texttt{cut2} function allows the same type of quantile binning as discussed in Scott (1992).}
+% \hh{General: write out any positive integer less than or equal to ten out in words, even if there is the word `unit' behind it. So it's one unit, and not 1 unit.}
+% 
+% \hh{
+% \begin{itemize}
+% \item Additional literature: binning papers: standard binning, e.g.: Karl Pearson (1895) ``Contributions to the Mathematical Theory of Evolution. II. Skew Variation in Homogeneous Material"\\
+% David W. Scott (1979). "On optimal and data-based histograms". Biometrika 66 (3): 605–610
+% 
+% quantile binning: there's a lot of implementations (e.g. cut2 in package Hmisc, the rattle package, the package extracut. It would be interesting to check, if they do the same things (probably not) and mention that there is disagreement in the implementations).
+% 
+% As a reference I would check in 
+% Scott, D. W. 1992.
+% Multivariate Density Estimation: Theory, Practice, and Visualization. New York: Wiley.
+% 
+% \item make sure to verify that the binning algorithms agree with the literature (and check that the code is doing the same thing as described in the paper).
+% You can include a bit of discussion on the problem that histograms are over-parameterized - it's a known problem, but I can't find any paper on it at the moment.
+% 
+% \end{itemize}
+% }
+% 
+% \ktm{I have read through the sections of Pearson (1895), Scott (1979) and Scott (1992) that pertained to binning. I will work on integrating them into the lit review next.  Scott talked much about the optimal choice of bin width based on MSE but there was not much talk about what to do with points at the boundaries of bins (he effectively assumed infinite precision in the measurement process to avoid it). 
+% 
+% I will need to search more to find papers about the binning algorithms and the boundaries they set.  The \texttt{cut} function allows for intervals that are closed on either the left or right and also allows the points on the outermost open bound to be included in the last bin.  
+% 
+% The \texttt{cut2} function allows the same type of quantile binning as discussed in Scott (1992).}
 
 <<setup,echo=F,include=F,eval=T>>=
 library(ggplot2)
@@ -1476,8 +1476,7 @@ XXX }
 
 In practice the $\alpha/2$ origin offset is found to be a reasonable choice for minimizing spatial loss for symmetric bivariate data at resolution $\alpha$ while using bin dimensions that are integer multiples of $\alpha$.
 \hh{In the next paragraph you are refering to the minimal value (as in minimal data value) and you are minimizing spatial loss. it's a bit confusing with the two minima floating around. It might be better to properly define the offset, and then refer to offset values rather than origins below the minimal value}
-Figure~\ref{fig:OriginOffsetSimulations} shows how the net spatial loss changes as the origin is slide from the minimum value to one binwidth below the minimum value using the coarse simulated data with a resolution of 2 units. 
-For the two symmetrically distributed data sets, normal and uniform, the origin offset of 1 unit below the minimum data value was found to minimize the net spatial loss for each considered bin size (2, 4, 6, 8, and 10 units). \hh{XXX - no! the value at -1 is close, but the dots are in the actual minimal values. This is only a single example - the expected minimum might still be in -1. }
+Figure~\ref{fig:OriginOffsetSimulations} shows how the net spatial loss changes as the origin is slide from the minimum value to one binwidth below the minimum value using the coarse simulated data with a resolution of 2 units. \ktm{The round glyphs indicade the origin offset where the net loss reached an absolute minimum. For the two symmetrically distributed data sets, normal and uniform, the origin offset of 1 unit was found to either minimize the net spatial loss or achieve a local minimum very near to the overall minimum (within 0.5\% of the magnitude of the minimum spatial loss) for each considered bin size.} %\hh{XXX - no! the value at -1 is close, but the dots are in the actual minimal values. This is only a single example - the expected minimum might still be in -1. }
 For the bivariately skewed exponential data, the 1 unit origin offset minimized net loss for the smaller intervals but was not optimal for the largest intervals.
 
 <<OriginOffsetSimulations, echo=F,include=T,eval=T,fig.width=8, fig.height=4, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Net spatial loss for coarse simulated data at a resolution of 2 units at various sized (2,4,6,8,10) square bins over the range of possible origin offsets. The vertical gray line in each facet indicates where the origin is offset 1 unit below the minimum data value.">>= 
