@@ -1715,7 +1715,7 @@ grid.arrange(p1,p2,p3,p4,p5,p6, nrow=2)
 
 \hh{XXX the rest of figure 12 should probably go into a figure 14 - to show that quantile binning and log frequency binning yield very similar results. We need to fix the legend. Right now they are atrocious (and I am aware that I am responsible for them, so I can say that :) )}
 
-\ktm{Log transforming the frequencies prior to binning and using quantile based binning on the raw frequencies are two methods of trying to fix the same problem: heavily right skewed bin counts. However, using both -- quantile log frequency binning -- is not a recommended approach. The frequency groups for quantile binning are invariant to the log transformation because a monotone one-to-one transformation will not alter groupings based on quantiles. In the common situation where bin frequencies are heavily skewed, the choice of frequency binning is between between quantile frequency binning and standard log frequency binning.}
+\ktm{Log transforming the frequencies prior to binning and using quantile based binning on the raw frequencies are two methods for dealing with the same problem for binned scatterplots: heavily right skewed bin counts where dense bins visually overshadow any structure in low density bins. However, using both -- quantile log frequency binning -- is not a recommended approach. The frequency groups for quantile binning are invariant to the log transformation because a monotone one-to-one transformation will not alter groupings based on quantiles. In the common situation where bin frequencies are heavily skewed, the choice is between quantile frequency binning and standard log frequency binning.}
 
 \ktm{Since the loss scales are not comparable, the choice is guided by desired interpretability. Figure~\ref{freqbinning} shows binned scatterplots for the simulated normal data with quantile frequency binning and standard log frequency binning. For standard log frequency binning, the shade is to be interpreted as an ordinal indicator of the groups based on equally spaced groupings of log bin frequencies, whereas for quantile frequency binning the shade denotes groups based on frequency quantiles. This is analogous to the difference in interpreting a histogram of log transformed data and a boxplot in univariate visualization.}
 
@@ -1747,21 +1747,21 @@ binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=freqgrps, log
 binoutQuantLogFreqGroups <- freqBin(binout1, binType="quantile", ncolor=freqgrps, logCount=TRUE)
 cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:freqgrps)/freqgrps)
  
-#Plot with Binned Frequencies
-labels = paste(unique(binoutFreqGroups[[1]]$freqlabel), "\n(", unique(binoutFreqGroups[[1]]$freqgroup), ")", sep="")
-p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutFreqGroups[[1]],
-            main="Standard Freq Binning") +
-    xlab("") + ylab("")+
-  scale_fill_manual("Frequencies", values=cols, 
-                      guide = guide_legend(label.position="bottom", label.hjust=0.5,  
-                                           title.position = "top"),
-                      breaks=unique(binoutFreqGroups[[1]]$freqgroup),
-                      labels=labels) + 
-  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-                     legend.key.width = unit(1, "cm"),
-                     panel.grid= element_blank(),
-                     plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
-                     legend.text=element_text(size=12) )
+# #Plot with Binned Frequencies
+# labels = paste(unique(binoutFreqGroups[[1]]$freqlabel), "\n(", unique(binoutFreqGroups[[1]]$freqgroup), ")", sep="")
+# p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutFreqGroups[[1]],
+#             main="Standard Freq Binning") +
+#     xlab("") + ylab("")+
+#   scale_fill_manual("Frequencies", values=cols, 
+#                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+#                                            title.position = "top"),
+#                       breaks=unique(binoutFreqGroups[[1]]$freqgroup),
+#                       labels=labels) + 
+#   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+#                      legend.key.width = unit(1, "cm"),
+#                      panel.grid= element_blank(),
+#                      plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+#                      legend.text=element_text(size=12) )
 
 # Plot with Quantile Binned Frequencies
 labels = paste(unique(binoutQuantFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantFreqGroups[[1]]$freqgroup), ")", sep="")
@@ -1793,22 +1793,22 @@ p4 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutLogFre
                      plot.margin = unit(c(0.5,.1,.1,.1),"cm") ,
                      legend.text=element_text(size=12)) 
 
-# Plot with quantile binned Log Frequencies
-labels = paste(unique(binoutQuantLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantLogFreqGroups[[1]]$freqgroup), ")", sep="")
-p5 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup),
-            data=binoutQuantLogFreqGroups[[1]],
-            main="Quantile Log Freq Binning") +
-    xlab("") + ylab("")+
-  scale_fill_manual("Log Frequencies", values=cols, 
-                      guide = guide_legend(label.position="bottom", label.hjust=0.5,  
-                                           title.position = "top"),
-                      breaks=unique(binoutQuantLogFreqGroups[[1]]$freqgroup),
-                      labels=labels) + 
-  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-                     legend.key.width = unit(1, "cm"),
-                     panel.grid= element_blank(),
-                     plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
-                     legend.text=element_text(size=12)) 
+# # Plot with quantile binned Log Frequencies
+# labels = paste(unique(binoutQuantLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantLogFreqGroups[[1]]$freqgroup), ")", sep="")
+# p5 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup),
+#             data=binoutQuantLogFreqGroups[[1]],
+#             main="Quantile Log Freq Binning") +
+#     xlab("") + ylab("")+
+#   scale_fill_manual("Log Frequencies", values=cols, 
+#                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+#                                            title.position = "top"),
+#                       breaks=unique(binoutQuantLogFreqGroups[[1]]$freqgroup),
+#                       labels=labels) + 
+#   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+#                      legend.key.width = unit(1, "cm"),
+#                      panel.grid= element_blank(),
+#                      plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+#                      legend.text=element_text(size=12)) 
  
 grid.arrange(p3,p4, nrow=1)
 @
