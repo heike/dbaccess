@@ -1320,8 +1320,9 @@ smallround <-cbind(data.frame(x=smallround$roundx,y=smallround$roundy),
                    smallround[,1:4])
 smallround$record <- "Coarse"
 alldat <- rbind(dat,smallround)
+alldat$type <- factor(alldat$type, levels=c("Exponential","Normal","Uniform"))
 
-qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1)) + 
+qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1))+
   theme_bw() + 
   #ggtitle("Scatterplots of Simulated Data") +
   xlab("X") + ylab("Y") + 
