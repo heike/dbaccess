@@ -689,7 +689,7 @@ Loss of information occurs during the binning and rendering process. For the rem
 \begin{itemize}
 \item {\it Spatial Loss}, $L^\text{S}$, occurs when points $(x_i, y_i)$ for observations $i \in \{1,\dots,n\}$ in the data set are reduced to a set of tiles centered at $(x_\ell^\ast, y_\ell^\ast)$ for bins $\ell \in \{1,\dots,\mathscr{L}\}$. By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
 
-\item {\it Frequency Loss}, $L^\text{F}$, occurs when bin counts, $c_\ell \in \{1,\dots,\mathscr{L}\}$ are not rendered precisely. A discrete color scale may be used to aid the ability to read a binned scatterplot, however this is effectively a second stage of binning where shade displays binned frequencies, $b_C(c_\ell) \in \{1,\dots,\mathscr{L}\}$, thus losing precision in the display of the true frequencies. This is analogous to the fundamental problem for over-plotted standard scatterplots where frequency is masked by other points. 
+\item {\it Frequency Loss}, $L^\text{F}$, occurs when bin counts, $c_\ell \in \{1,\dots,\mathscr{L}\}$ are not rendered precisely. A discrete color scale may be used to aid the ability to read a binned scatterplot, however this is effectively a second stage of binning where shade displays binned frequencies, $b_C(c_\ell)$ for bins $\ell \in \{1,\dots,\mathscr{L}\}$, thus losing precision in the display of the true frequencies. This is analogous to the fundamental problem for over-plotted standard scatterplots where frequency is masked by other points. 
 \end{itemize}
 }
 
@@ -964,7 +964,7 @@ Frequency data consists of counts, which most commonly exhibit skew densities, i
 Another alternative is to use a log transformation which produces a more symmetric distribution of frequency information, increasing perceptual resolution. This is consistent with the Weber-Fechner law which suggests that increased stimulus intensity is perceptually mapped on the log scale \citep{sp}. Using a logarithmic mapping of frequency to the color or size aesthetic provides a more natural perceptual experience and simultaneously increases the perceptual resolution of the graph. The \textit{log frequency loss}, $L^{\log F}$, is defined as
 %
 \begin{eqnarray}\label{logfrequency}
-L^{\log F} = \sum_{\ell \in \mathscr{L}^\ast} L_\ell^{\log F} = \sum_{\ell \in \mathscr{L}^\ast} (\log(c_\ell) - \log(b_c(c_\ell)))^2
+L^{\log F} = \sum_{\ell \in \mathscr{L}^\ast} L_\ell^{\log F} = \sum_{\ell \in \mathscr{L}^\ast} (\log(c_\ell) - b_c(\log(c_\ell)))^2
 \end{eqnarray}
 %
 where $\mathscr{L}^\ast$ is the index set for all non-empty bins, which is done to avoid asymptotic problems from log transforming bin counts of zero. 
@@ -1903,16 +1903,16 @@ standBaseballLoss2X10PerObs <- binoutRecOrigin[[2]]$totalSpatialLoss / nrow(pitc
  
 \ktm{The leftmost plot in Figure~\ref{fig:BaseballBinnedScatters2X10} displays the binned scatterplot that with a continuous shading of the raw bin densities. We quickly realize that there is a large number of pitchers that played very few games and had very few strikeouts, however this renders it nearly impossible to differentiate the density structure across the majority of bins which are filled with higher quality pitchers who played many games and earned many strikeouts. In this case there are two frequency binning options that we can employ to deal with this skewness of the distribution of bin counts. Quantile frequency binning using four shade groups (center plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) allows us to visualizes the quartiles of the bin densities. Alternatively, standard log frequency binning using four shade groups (rightmost plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) uses the log transformation to diminish the visual impact of high density bins then visualizes density on the log scale. Each frequency binning approach adds a layer of complexity to the interpretation of the shade, however they both effectively emphasize the two ridges in the density structure. }
 
-<<BaseballBinnedScatters2X10,echo=F,include=T,eval=T,fig.width=12, fig.height=4, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively, using reduced binned data from each bivariate distribution. ">>=  
+<<BaseballBinnedScatters2X10,echo=F,include=T,eval=T,fig.width=12, fig.height=4, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Binned Scatterplots for Games vs Strikeouts">>=  
  # raw frequencies plot
 p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
       main="Standard Freq Binning") +
-  xlab("") + ylab("")+
+  xlab("Games (count)") + ylab("Strike Outs (count)")+
   scale_fill_gradient("Frequencies", low="#56B1F7", high="#132B43") + 
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
                      legend.key.width = unit(1, "cm"),
                      panel.grid= element_blank(),
-                     plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+                     plot.margin = unit(c(0.5,-.5,.1,-.5),"cm"),
                      legend.text=element_text(size=12) )
 # # bin frequencies distribution hugely skewed
 # qplot(binfreq, geom="density", data= binout1[[1]], color=I("blue")) + theme_bw()
@@ -1924,7 +1924,7 @@ labels = sort(unique(binoutQuantFreqGroups[[1]]$freqlabel))
 cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
 p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutQuantFreqGroups[[1]],
             main="Quantile Freq Binning") +
-  xlab("") + ylab("")+
+  xlab("Games (count)") + ylab("Strike Outs (count)")+
   scale_fill_manual("Frequencies", values=cols, 
                     guide = guide_legend(label.position="bottom", label.hjust=0.5,  
                                          title.position = "top"),
@@ -1932,7 +1932,7 @@ p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutQuantF
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
                      legend.key.width = unit(1, "cm"),
                      panel.grid= element_blank(),
-                     plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+                     plot.margin = unit(c(0.5,-.5,.1,-.5),"cm"),
                      legend.text=element_text(size=12) ) 
 
 ## standard log freq binning
@@ -1944,7 +1944,7 @@ cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
 
 p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutLogFreqGroups[[1]],
       main="Standard Log Freq Binning") +
-  xlab("") + ylab("")+
+  xlab("Games (count)") + ylab("Strike Outs (count)")+
   scale_fill_manual("Log Frequencies", values=cols, 
                     guide = guide_legend(label.position="bottom", label.hjust=0.5,  
                                          title.position = "top"),
@@ -1952,7 +1952,7 @@ p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutLogFre
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
                      legend.key.width = unit(1, "cm"),
                      panel.grid= element_blank(),
-                     plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+                     plot.margin = unit(c(0.5,-.5,.1,-.5),"cm"),
                      legend.text=element_text(size=12) ) 
 
 # plot three binned scatterplots (raw, standard log freq, quantile freq)
