@@ -1910,7 +1910,7 @@ p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
   xlab("Games (count)") + ylab("Strike Outs (count)")+
   scale_fill_gradient("Frequencies", low="#56B1F7", high="#132B43",
                       guide=guide_colourbar( 
-                                        legend.key.width = unit(1, "cm"),
+                                        legend.key.width = unit(1.5, "cm"),
                                              legend.text=element_text(size=12),
                                             label.hjust=0.5,  
                                          title.position = "top")) + 
@@ -1925,36 +1925,43 @@ p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
 ## quantile freq binning
 binoutQuantFreqGroups <- freqBin(binout1, binType="quantile", ncolor=4, logCount=FALSE)
 labels = sort(unique(binoutQuantFreqGroups[[1]]$freqlabel))
+upper <- as.numeric(gsub(".*,([-+]?[0-9]*.?[0-9]+([eE][-+]?[0-9]+)?).*","\\1", as.character(labels) ))
 cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
 p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutQuantFreqGroups[[1]],
             main="Quantile Freq Binning") +
   xlab("Games (count)") + ylab("Strike Outs (count)")+
-  scale_fill_manual("Frequencies", values=cols, 
-                    guide = guide_legend(label.position="bottom", label.hjust=0.5,  
-                                         title.position = "top"),
-                    labels=labels) + 
+  scale_fill_manual("Frequencies (Quartiles)", values=cols, labels=upper,
+#                    guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+#                                         title.position = "top"),
+                    guide = guide_legend(label.position="bottom", label.hjust=1.1,  
+                                         title.position = "top")) + 
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-                     legend.key.width = unit(1, "cm"),
+                     legend.key.width = unit(1.5, "cm"),
                      panel.grid= element_blank(),
                      plot.margin = unit(c(0.5,-.5,.1,-.5),"cm"),
                      legend.text=element_text(size=12) ) 
+
+
+ 
+
 
 ## standard log freq binning
 binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=4, logCount=TRUE)
 binoutLogFreqGroups[[1]]$freqlabel <- factor(binoutLogFreqGroups[[1]]$freqlabel, 
                                              levels = unique(binoutLogFreqGroups[[1]]$freqlabel)[c(3,5,2,4,1)])
 labels = levels(binoutLogFreqGroups[[1]]$freqlabel)
+upper <- as.numeric(gsub(".*,([-+]?[0-9]*.?[0-9]+([eE][-+]?[0-9]+)?).*","\\1", as.character(labels) ))
 cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:5)/5)
 
 p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutLogFreqGroups[[1]],
       main="Standard Log Freq Binning") +
   xlab("Games (count)") + ylab("Strike Outs (count)")+
   scale_fill_manual("Log Frequencies", values=cols, 
-                    guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+                    guide = guide_legend(label.position="bottom", label.hjust=1.1,  
                                          title.position = "top"),
-                    labels=labels) + 
+                    labels=upper) + 
   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-                     legend.key.width = unit(1, "cm"),
+                     legend.key.width = unit(1.5, "cm"),
                      panel.grid= element_blank(),
                      plot.margin = unit(c(0.5,-.5,.1,-.5),"cm"),
                      legend.text=element_text(size=12) ) 
