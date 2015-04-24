@@ -118,24 +118,13 @@ qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq+1) +
 # ggplot(d1.hex2) + geom_subplot(aes(x=G, y=SO, group=id,  subplot=geom_star(aes(r=r, angle=theta, fill=log(Freq), colour=log(Freq)), r.zero=TRUE)))
 @
 
-Technological advances have  facilitated collection and dissemination of large data more and more as records are digitized and our lives are increasingly lived online. According to estimates published by the IDC in 2009 the worldwide digital content  doubles about every 18 months -- in 2011 the digital amount was estimated to be at 1.8 zeta bytes (1 ZB = $2^{70}$ bytes $\approx 10^{21}$ bytes).
-This ``Data Deluge" of the Big Data Age (NY Times, Feb 2012) poses exciting challenges to data scientists everywhere: 
-\begin{quote}``It’s a revolution ... The march of quantification, made possible by enormous new sources of data, will sweep through academia, business and government. There is no area that is going to be untouched"\end{quote} (Gary King, Harvard Institute).  
+\ktm{Technological advances have facilitated collection and dissemination of large data more and more as records are digitized and our lives are increasingly lived online. According to an EMC report in 2014 ``the digital universe is doubling in size every two years and will multiply 10-fold between 2013 and 2020 - from 4.4 trillion gigabytes to 44 trillion gigabytes" (\url{http://www.emc.com/about/news/press/2014/20140409-01.htm}). This ``Data Deluge" of the Big Data Age (NY Times, Feb 2012) poses exciting challenges to data scientists everywhere: ``It's a revolution $\dots$ The march of quantification, made possible by enormous new sources of data, will sweep through academia, business and government. There is no area that is going to be untouched"-- Gary King, Harvard Institute.  
+ 
+Data sets with millions of records and thousands of variables are not uncommon. \citet{Friedman97} proposed in his paper on data mining and statistics that ``Every time the amount of data increases by a factor of ten, we should totally rethink how we analyze it". \citet{jacobs2009} echoed the sentiment, stating that ``big data should be defined at any point in time as \textit{data whose size forces us to look beyond the tried-and-true methods that are prevalent at that time}". The same holds true for visualizations. With a 100-1000 fold increase in the amount of data, the utility of some of our most used graphical tools, such as scatterplots, deteriorates quickly \citep{gold}. 
 
-Data sets with millions of records and thousands of variables are not uncommon. 
-Such data sets are often too large to fit into a single computer's working memory, and  single-user machines cannot easily deal with them. We can employ database tools to extract relevant variables, thereby vertically subsetting the data. 
-However, with millions of records, it can be very difficult to work with data even at that level. 
+Area plots, such as histograms, do not tend to be as affected by increases in the amount of data as plots that utilize raw data. By using binning strategies and the principles for displaying information in area plots, scatterplots can again become useful instruments for large data settings \citep{gold}.
 
-\citet{Friedman97} proposed in his paper on data mining and statistics that ``Every time the amount of data increases by a factor of ten, we should totally rethink how we analyze it". The same holds for visualizations.  
-With a 100-1000 fold increase in the amount of data, the utility of some of our most used graphical tools, such as scatterplots, deteriorates quickly \citep{gold}. 
-
-Area plots, such as histograms, do not tend to be as affected by increases in the amount of data as plots that utilize raw data. 
-By using binning strategies and the principles for displaying information in area plots, scatterplots can again become useful instruments for large data settings \citep{gold}.
-
-In this paper we describe first the problem scatterplots are exposed to in large-data situations. We discuss two different binning methods and introduce the  {\it loss of information} inherent to binning. We conclude with a detailed example. 
-
-% It is important to be able to describe the contents of the database in a quick and easily comprehensible manner, similar to the use of the mean and standard deviation to describe univariate data, or the mean, and variance matrix to describe multivariate data. Graphical summaries of the data contained within the database are likely to more fully describe large, complex data sets which may not originate from a single multivariate distribution than a set of numerical summaries (i.e. the mean, median, mode, and range used in introductory statistics classes).
-
+In this paper we describe first the problem scatterplots are exposed to in large-data situations. We discuss different binning algorithms use the construct binned scatterplots and the  {\it loss of information} inherent to binning. We will then explore the binning properties through simulation and real-data case studies. We conclude with several practical suggestions for binning specifications for creating binned scatterplots that have desirable visual properties. }
 
 \section{Scatterplots for Large Data Sets}
 \label{Scatter}
@@ -2187,7 +2176,7 @@ ggsave("AirlineStdBinning15mins.pdf", binned, width=6, height=6, dpi=576)
 \ktm{Future implementations of software for constructing binned scatterplots would be well served to allow for choices in specification of binning algorithms. The findings of this research provide suggestions for reasonable default settings for binning parameters that maintain of spatial and frequency information and have desirable visual properties. }
 
 %----------------------------------------------------------------------------
-
+\newpage
 \begin{appendix}
 \section{Appendix}
 
