@@ -254,168 +254,164 @@ The standard rectangular binning function $b(.) : (x_i,y_i) \rightarrow (x^\ast_
 b(x_i,y_i) = (b_X(x_i),b_Y(y_i))
 \end{eqnarray}
 %
-where $b_X(x_i)$ and $b_Y(y_i)$ are the univariate standard binning algorithms for the X and Y dimensions respectively. The random rectangular binning function, $b^r(\cdot): (x_i,y_i) \rightarrow (x^\ast_\ell,y^\ast_\ell)$ can similarly be defined as
+where $b_X(x_i)$ and $b_Y(y_i)$ are the univariate standard binning algorithms for the X and Y dimensions respectively. The random rectangular binning function, $b^r(\cdot): (x_i,y_i) \rightarrow (x^\ast_\ell,y^\ast_\ell)$ is similarly be defined as
 %
 \begin{eqnarray}\label{randrecbin1}
 b^r(x_i,y_i) = (b^r_X(x_i),b^r_Y(y_i))
 \end{eqnarray}
 %
-where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for each dimension. Figure~\ref{fig:BinningTutorial} provides an illustration of each binning process extended to a two dimensional situation.
+where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for each dimension. Figure~\ref{fig:spatlossdemo2} provides an illustration of each binning process extended to a two dimensional situation.
 
-
-<<binningDemo,echo=F,include=F,cache=T>>=
-      library(mvtnorm)
-      set.seed(12)
-      d <- rmvnorm(50, c(10, 25), matrix(c(50, 15, 15, 50), nrow=2))
-      d <- data.frame(d)
-      names(d) <- c("x", "y")
-      d <- subset(d, (x>-20 & x<40 & y>0 & y<50),drop=TRUE)
-      d.rand <- d
-      dnew <- binStd(cbind(d-5, Freq=1), c(10, 10))
-      dnew$x <- dnew$x+5
-      dnew$y <- dnew$y+5
-      d$bin <- dnew$x%in%c(5,15) & dnew$y==25
-      d$a <- .33 + .66*d$bin
-      d.orig <- d
-
-      d$xbin <- NA
-      d$ybin <- NA
-      idx <- which(dnew$x%in%c(5, 15) & dnew$y==25)
-      d$xbin[idx] <- dnew$x[idx]
-      d$ybin[idx] <- 25
-
-temp <- data.frame(   
-          x=c( -10,   0,  10,  20,  30,  -10, -10, -10, -10), 
-       xend=c( -10,   0,  10,  20,  30,   30,  30,  30,  30), 
-          y=c( 10,   10,  10,  10,  10,   10,  20,  30,  40), 
-       yend=c( 40,   40,  40,  40,  40,   10,  20,  30,  40), 
-      group=c(  1,   2,   3,   4,   5,   6,   7,   8,   9))
-      qplot(data=d[,], x=x, y=y, alpha=a,  geom="point", 
-            xlim=c(-20, 40), ylim=c(0, 50)) +
-        annotate("polygon", x=c(10, 10, 20, 20), y=c(20, 30, 30, 20), 
-                 fill="blue", alpha=.25) +
-        annotate("polygon", x=c(0, 0, 10, 10), y=c(20, 30, 30, 20), 
-                 fill="green", alpha=.25) +
-        scale_alpha(range=c(.5, 1), guide=FALSE) +
-      #  scale_colour_identity(guide=FALSE) + 
-      #  scale_shape(solid=T,guide=FALSE) +
-        theme_bw() +
-      #  annotate("point", x=rep(seq(-15, 35, 10),each=7), 
-      #         y=rep(seq(-5, 55, 10), times=6), 
-      #         shape='+', size=8, colour="gray90") + 
-        geom_point(data=d[which(!is.na(d$xbin)),], 
-                   aes(x=x, y=y, shape=factor(xbin), colour=factor(xbin)), 
-                   size=I(3), aes.inherit=FALSE) + 
-        scale_shape_manual(name="Bin", values=c("5"=16, "15"=15), 
-                           labels=c("(5,25)", "(15, 25)"),guide=FALSE) +
-        scale_colour_manual(values=c("5"="green", "15"="blue"), name="Bin", 
-                            labels=c("(5,25)", "(15, 25)"),guide=FALSE)+
-        annotate("segment", x=temp$x, y=temp$y, 
-                 xend=temp$xend, yend=temp$yend, group=temp$group) + 
-        ylim(c(10, 40)) + xlim(c(-10,30))
-      ggsave("./figure/Binning-DataAndBin.pdf", width=5, height=5, units="in")
-      
-      d.orig$bin <- dnew$x==15 & dnew$y==25
-      d.orig$a <- .33+.66*d.orig$bin
-      d.orig$l <- "Data outside bin"
-      d.orig$l[d.orig$bin] <- "Binned Data"
-      d.orig$size <- 2
-      d.orig$size[d.orig$bin] <- 3
-      d.orig <- rbind(d.orig, data.frame(x=15, y=25, a=1, l="Visual Center", size=2,bin=TRUE),
-        data.frame(x=mean(d.orig$x[d.orig$bin]), y=mean(d.orig$y[d.orig$bin]),                                                                                    
-        l="Numerical Center", a=1, size=2, bin=TRUE))
-#       ggplot(data=d.orig, aes(x=x, y=y, shape=l, size=l, colour=l)) + 
-#         annotate("polygon", x=c(10, 10, 20, 20), y=c(20, 30, 30, 20), 
-#                  fill="blue", alpha=.10) + 
-#         geom_point() +
-#         scale_shape_manual(name="", values=c("Data outside bin" = 16, 
-#                                              "Binned Data" = 15, 
-#                                              "Numerical Center" = 17, 
-#                                              "Visual Center" = 18)) +
-#         scale_colour_manual(name="", values=c("Data outside bin" = "grey60", 
-#                                               "Binned Data" = "blue",
-#                                               "Numerical Center" = "blue4", 
-#                                               "Visual Center" = "blue4"))+
-#         scale_size_manual(name="", values=c("Data outside bin" = 3, "Binned Data"=3,
-#                                             "Numerical Center" = 5, 
-#                                             "Visual Center" = 5))+
-#         theme_bw() +
-#         annotate("point", x=15, y=25, shape=18, size=5, colour="blue4") + 
-#         annotate("point", x=d.orig$x[which(d.orig$l=="Numerical Center")], 
-#                  y=d.orig$y[which(d.orig$l=="Numerical Center")], shape=17, size=5, 
-#                  colour="blue4") +
-# #        annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + 
-# #         annotate("text", x=d$x[which(d$l=="Numerical Center")], 
-# #                  y=d$y[which(d$l=="Numerical Center")], 
-# #                  label=expression(paste('(', over(phantom(0),x)[i], ',', over(phantom(0),y)[i],')'))) +
-#         scale_x_continuous(breaks=c(10, 15, 20), limits=c(8, 22), labels=c(expression(x^{"*"}-b[x]/2), expression(x^{"*"}), expression(x^{"*"}+b[x]/2)), name='') + 
-#         scale_y_continuous(breaks=c(20, 25, 30), limits=c(18, 32), labels=c(expression(y^{"*"}-b[y]/2), expression(y^{"*"}), expression(y^{"*"}+b[y]/2)), name='')
-#       ggsave("./figure/Binning-DataVisualNumericalCenter.pdf", width=5, height=4, units="in")
-@
-
-<<RandomBinDemo,echo=F,include=FALSE>>=
-nl <- ncol(d.rand)
-dnew <- d.rand
-binning <- c(10, 10)
-for(x in 1:(nl)){
-  y <- d.rand[,x] - binning[x]/2
-dnew[,x] <- binning[x]*(floor(y/binning[x]) + 
-  sapply((y%%binning[x])/binning[x], function(p) rbinom(1, 1, p))) + binning[x]/2
-}
-temp <- data.frame(   
-          x=c( -10,   0,  10,  20,  30,  -10, -10, -10, -10), 
-       xend=c( -10,   0,  10,  20,  30,   30,  30,  30,  30), 
-          y=c( 10,   10,  10,  10,  10,   10,  20,  30,  40), 
-       yend=c( 40,   40,  40,  40,  40,   10,  20,  30,  40), 
-      group=c(  1,   2,   3,   4,   5,   6,   7,   8,   9))
-
-dnew$id <- interaction(dnew[,1:(nl)])
-idx <- which(dnew$x%in%c(5, 15) & dnew$y==25)
-d.rand$bin <- dnew$x%in%c(5, 15) & dnew$y==25
-d.rand$a <- .33 + .66*d.rand$bin
-d.rand$xbin <- NA
-d.rand$ybin <- NA
-d.rand$xbin[idx] <- dnew$x[idx]
-d.rand$ybin[idx] <- 25
-# res <- ddply(dnew, .(id), summarize, n=length(id), fsum=sum(Freq))
-qplot(data=d.rand[,], x=x, y=y, alpha=a,  geom="point", xlim=c(-20, 40), ylim=c(0, 50)) +
-  annotate("polygon", x=c(10, 10, 20, 20), y=c(20, 30, 30, 20), fill="blue", alpha=.25) +
-  annotate("polygon", x=c(0, 0, 10, 10), y=c(20, 30, 30, 20), fill="green", alpha=.25) +
-  scale_alpha(range=c(.5, 1), guide=FALSE) +
-  scale_colour_identity(guide=FALSE) + 
-  scale_shape(solid=T,guide=FALSE) +
-  theme_bw() +
-#  annotate("point", x=rep(seq(-15, 35, 10),each=7), 
-#        y=rep(seq(-5, 55, 10), times=6), 
-#         shape='+', size=8, colour="gray90") + 
-  geom_point(data=d.rand[which(!is.na(d.rand$xbin)),], 
-             aes(x=x, y=y, shape=factor(xbin), colour=factor(xbin)), size=I(3), aes.inherit=FALSE) + 
-  scale_shape_manual(name="Bin", values=c("5"=16, "15"=15), labels=c("(5,25)", "(15, 25)"),guide=FALSE) +
-  scale_colour_manual(values=c("5"="green", "15"="blue"), name="Bin", labels=c("(5,25)", "(15, 25)"),guide=FALSE)+
-  annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + ylim(c(10, 40)) + xlim(c(-10,30))
-ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
-@
-
-\begin{figure}[h]
-  \centering
-  \subfloat[Standard Binning]{\includegraphics[keepaspectratio=true, width=2.5in]{./figure/Binning-DataAndBin.pdf}}
-%   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
-%   {./figure/RandomBinningDataPoints1}}
-  \subfloat[Random Binning]{\includegraphics[keepaspectratio=TRUE, width=2.5in]
-  {./figure/RandomBinningDataPoints2.pdf}}
-  \caption{Visualization of how data pairs are assigned to bins centered at (5, 25) and (15,25) under the two rectangular binning algorithms. Points in the standard algorithm are contained within the defined bin region, where points from the random algorithm may be assigned to any of the surrounding bin centers.}
-  \label{fig:BinningTutorial}
-\end{figure}
+% 
+% <<binningDemo,echo=F,include=F,cache=T>>=
+%       library(mvtnorm)
+%       set.seed(12)
+%       d <- rmvnorm(50, c(10, 25), matrix(c(50, 15, 15, 50), nrow=2))
+%       d <- data.frame(d)
+%       names(d) <- c("x", "y")
+%       d <- subset(d, (x>-20 & x<40 & y>0 & y<50),drop=TRUE)
+%       d.rand <- d
+%       dnew <- binStd(cbind(d-5, Freq=1), c(10, 10))
+%       dnew$x <- dnew$x+5
+%       dnew$y <- dnew$y+5
+%       d$bin <- dnew$x%in%c(5,15) & dnew$y==25
+%       d$a <- .33 + .66*d$bin
+%       d.orig <- d
+% 
+%       d$xbin <- NA
+%       d$ybin <- NA
+%       idx <- which(dnew$x%in%c(5, 15) & dnew$y==25)
+%       d$xbin[idx] <- dnew$x[idx]
+%       d$ybin[idx] <- 25
+% 
+% temp <- data.frame(   
+%           x=c( -10,   0,  10,  20,  30,  -10, -10, -10, -10), 
+%        xend=c( -10,   0,  10,  20,  30,   30,  30,  30,  30), 
+%           y=c( 10,   10,  10,  10,  10,   10,  20,  30,  40), 
+%        yend=c( 40,   40,  40,  40,  40,   10,  20,  30,  40), 
+%       group=c(  1,   2,   3,   4,   5,   6,   7,   8,   9))
+%       qplot(data=d[,], x=x, y=y, alpha=a,  geom="point", 
+%             xlim=c(-20, 40), ylim=c(0, 50)) +
+%         annotate("polygon", x=c(10, 10, 20, 20), y=c(20, 30, 30, 20), 
+%                  fill="blue", alpha=.25) +
+%         annotate("polygon", x=c(0, 0, 10, 10), y=c(20, 30, 30, 20), 
+%                  fill="green", alpha=.25) +
+%         scale_alpha(range=c(.5, 1), guide=FALSE) +
+%       #  scale_colour_identity(guide=FALSE) + 
+%       #  scale_shape(solid=T,guide=FALSE) +
+%         theme_bw() +
+%       #  annotate("point", x=rep(seq(-15, 35, 10),each=7), 
+%       #         y=rep(seq(-5, 55, 10), times=6), 
+%       #         shape='+', size=8, colour="gray90") + 
+%         geom_point(data=d[which(!is.na(d$xbin)),], 
+%                    aes(x=x, y=y, shape=factor(xbin), colour=factor(xbin)), 
+%                    size=I(3), aes.inherit=FALSE) + 
+%         scale_shape_manual(name="Bin", values=c("5"=16, "15"=15), 
+%                            labels=c("(5,25)", "(15, 25)"),guide=FALSE) +
+%         scale_colour_manual(values=c("5"="green", "15"="blue"), name="Bin", 
+%                             labels=c("(5,25)", "(15, 25)"),guide=FALSE)+
+%         annotate("segment", x=temp$x, y=temp$y, 
+%                  xend=temp$xend, yend=temp$yend, group=temp$group) + 
+%         ylim(c(10, 40)) + xlim(c(-10,30))
+%       ggsave("./figure/Binning-DataAndBin.pdf", width=5, height=5, units="in")
+%       
+%       d.orig$bin <- dnew$x==15 & dnew$y==25
+%       d.orig$a <- .33+.66*d.orig$bin
+%       d.orig$l <- "Data outside bin"
+%       d.orig$l[d.orig$bin] <- "Binned Data"
+%       d.orig$size <- 2
+%       d.orig$size[d.orig$bin] <- 3
+%       d.orig <- rbind(d.orig, data.frame(x=15, y=25, a=1, l="Visual Center", size=2,bin=TRUE),
+%         data.frame(x=mean(d.orig$x[d.orig$bin]), y=mean(d.orig$y[d.orig$bin]),                                                                                    
+%         l="Numerical Center", a=1, size=2, bin=TRUE))
+% #       ggplot(data=d.orig, aes(x=x, y=y, shape=l, size=l, colour=l)) + 
+% #         annotate("polygon", x=c(10, 10, 20, 20), y=c(20, 30, 30, 20), 
+% #                  fill="blue", alpha=.10) + 
+% #         geom_point() +
+% #         scale_shape_manual(name="", values=c("Data outside bin" = 16, 
+% #                                              "Binned Data" = 15, 
+% #                                              "Numerical Center" = 17, 
+% #                                              "Visual Center" = 18)) +
+% #         scale_colour_manual(name="", values=c("Data outside bin" = "grey60", 
+% #                                               "Binned Data" = "blue",
+% #                                               "Numerical Center" = "blue4", 
+% #                                               "Visual Center" = "blue4"))+
+% #         scale_size_manual(name="", values=c("Data outside bin" = 3, "Binned Data"=3,
+% #                                             "Numerical Center" = 5, 
+% #                                             "Visual Center" = 5))+
+% #         theme_bw() +
+% #         annotate("point", x=15, y=25, shape=18, size=5, colour="blue4") + 
+% #         annotate("point", x=d.orig$x[which(d.orig$l=="Numerical Center")], 
+% #                  y=d.orig$y[which(d.orig$l=="Numerical Center")], shape=17, size=5, 
+% #                  colour="blue4") +
+% # #        annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + 
+% # #         annotate("text", x=d$x[which(d$l=="Numerical Center")], 
+% # #                  y=d$y[which(d$l=="Numerical Center")], 
+% # #                  label=expression(paste('(', over(phantom(0),x)[i], ',', over(phantom(0),y)[i],')'))) +
+% #         scale_x_continuous(breaks=c(10, 15, 20), limits=c(8, 22), labels=c(expression(x^{"*"}-b[x]/2), expression(x^{"*"}), expression(x^{"*"}+b[x]/2)), name='') + 
+% #         scale_y_continuous(breaks=c(20, 25, 30), limits=c(18, 32), labels=c(expression(y^{"*"}-b[y]/2), expression(y^{"*"}), expression(y^{"*"}+b[y]/2)), name='')
+% #       ggsave("./figure/Binning-DataVisualNumericalCenter.pdf", width=5, height=4, units="in")
+% @
+% 
+% <<RandomBinDemo,echo=F,include=FALSE>>=
+% nl <- ncol(d.rand)
+% dnew <- d.rand
+% binning <- c(10, 10)
+% for(x in 1:(nl)){
+%   y <- d.rand[,x] - binning[x]/2
+% dnew[,x] <- binning[x]*(floor(y/binning[x]) + 
+%   sapply((y%%binning[x])/binning[x], function(p) rbinom(1, 1, p))) + binning[x]/2
+% }
+% temp <- data.frame(   
+%           x=c( -10,   0,  10,  20,  30,  -10, -10, -10, -10), 
+%        xend=c( -10,   0,  10,  20,  30,   30,  30,  30,  30), 
+%           y=c( 10,   10,  10,  10,  10,   10,  20,  30,  40), 
+%        yend=c( 40,   40,  40,  40,  40,   10,  20,  30,  40), 
+%       group=c(  1,   2,   3,   4,   5,   6,   7,   8,   9))
+% 
+% dnew$id <- interaction(dnew[,1:(nl)])
+% idx <- which(dnew$x%in%c(5, 15) & dnew$y==25)
+% d.rand$bin <- dnew$x%in%c(5, 15) & dnew$y==25
+% d.rand$a <- .33 + .66*d.rand$bin
+% d.rand$xbin <- NA
+% d.rand$ybin <- NA
+% d.rand$xbin[idx] <- dnew$x[idx]
+% d.rand$ybin[idx] <- 25
+% # res <- ddply(dnew, .(id), summarize, n=length(id), fsum=sum(Freq))
+% qplot(data=d.rand[,], x=x, y=y, alpha=a,  geom="point", xlim=c(-20, 40), ylim=c(0, 50)) +
+%   annotate("polygon", x=c(10, 10, 20, 20), y=c(20, 30, 30, 20), fill="blue", alpha=.25) +
+%   annotate("polygon", x=c(0, 0, 10, 10), y=c(20, 30, 30, 20), fill="green", alpha=.25) +
+%   scale_alpha(range=c(.5, 1), guide=FALSE) +
+%   scale_colour_identity(guide=FALSE) + 
+%   scale_shape(solid=T,guide=FALSE) +
+%   theme_bw() +
+% #  annotate("point", x=rep(seq(-15, 35, 10),each=7), 
+% #        y=rep(seq(-5, 55, 10), times=6), 
+% #         shape='+', size=8, colour="gray90") + 
+%   geom_point(data=d.rand[which(!is.na(d.rand$xbin)),], 
+%              aes(x=x, y=y, shape=factor(xbin), colour=factor(xbin)), size=I(3), aes.inherit=FALSE) + 
+%   scale_shape_manual(name="Bin", values=c("5"=16, "15"=15), labels=c("(5,25)", "(15, 25)"),guide=FALSE) +
+%   scale_colour_manual(values=c("5"="green", "15"="blue"), name="Bin", labels=c("(5,25)", "(15, 25)"),guide=FALSE)+
+%   annotate("segment", x=temp$x, y=temp$y, xend=temp$xend, yend=temp$yend, group=temp$group) + ylim(c(10, 40)) + xlim(c(-10,30))
+% ggsave("./figure/RandomBinningDataPoints2.pdf",width=5, height=5)
+% @
+% 
+% \begin{figure}[h]
+%   \centering
+%   \subfloat[Standard Binning]{\includegraphics[keepaspectratio=true, width=2.5in]{./figure/Binning-DataAndBin.pdf}}
+% %   \subfloat{\includegraphics[keepaspectratio=TRUE, width=2in]
+% %   {./figure/RandomBinningDataPoints1}}
+%   \subfloat[Random Binning]{\includegraphics[keepaspectratio=TRUE, width=2.5in]
+%   {./figure/RandomBinningDataPoints2.pdf}}
+%   \caption{Visualization of how data pairs are assigned to bins centered at (5, 25) and (15,25) under the two rectangular binning algorithms. Points in the standard algorithm are contained within the defined bin region, where points from the random algorithm may be assigned to any of the surrounding bin centers.}
+%   \label{fig:BinningTutorial}
+% \end{figure}
 
 %--------------------------------------------------------------
 
 \subsection{Binned Data Reduction}
 
 The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c). The reduced binned data is sufficient for constructing the binned scatterplot. In cases of large data, binning greatly reduces the storage size for the information and the computation time needed to construct the plot.
-
-Note that numerical attributes other than frequency of the binned data may also be recorded during binning, however only frequency is required to construct a binned scatterplot. Data reduction comes at the expense of spatial information of any of the individual points. After aggregation the original spatial locations cannot be recovered. The loss of information incurred from binning will be explored in following sections. 
-
-% recover some of the numerical information lost due to binning by storing the numerical center $(\bar{x},\bar{y})$ instead of the visual center $(x^\ast,y^\ast)$ for use in subsequent calculations. Storing the binned data as the arithmetic mean rather than the visual center reduces the total loss, and the visual center can be recovered from the bin width and  bin center $(O_X, O_Y)$, see table \ref{RecoveryComparison} for a numeric example for this. 
 
 <<DataReduction,echo=FALSE,eval=FALSE,results='asis'>>=
 n=12
@@ -488,9 +484,7 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
 \caption{\label{DataReductionExample}Original, Binned and Reduced Binned Data Tables, with data storage sizes.  Binned using standard rectangular approach with origin $(\beta_{0,x},\beta_{0,y})$ = (-10,-10) and binwidths $\omega_x = \omega_y = 10$. }
 \end{table}
 
-%Information recovery comes with a two-fold cost: the additional storage of numeric bin centers triples the amount of information stored, and the computational cost to compute numeric bin centers is O($nm^2$), where $n$ is the number of data points and $m^2$, the total number of bins. O($nm^2$) $\approx$ O($n$), as $m$ is generally negligible compared to $n$.
-
-% In spite of the costs, information recovery is still useful for very large data, where the unbinned data set is  computationally intractable. Minimizing numerical loss in this manner provides for more accurate calculations from the data, while maintaining the storage space advantages of binning. 
+Note that numerical attributes other than frequency of the binned data may also be recorded during binning, however only frequency is required to construct a binned scatterplot. Data reduction comes at the expense of spatial information of any of the individual points. After aggregation the original spatial locations cannot be recovered. The loss of information incurred from binning will be explored in following sections. 
 
 % \subsection{Standard Rectangular Binning Algorithm (old - to be removed)}
 % \hh{XXX Speed this discussion up a bit - you don't need to lay out what you will do in this section, just do it.}
@@ -1394,7 +1388,7 @@ While bin widths can be set to any positive real value, the selection should be 
 
 To demonstrate the importance of properly selecting binwidths consider the coarse version of the simulated uniform data which is recorded to a resolution of two units in each dimension. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with one-by-one unit bins, vertical and horizontal artificial stripes with five-by-five unit bins and the appropriate view of an evenly spread density with four-by-four unit bins.  Note that random binning is effective at smoothing out the artificial stripping patterns when non-integer multiples of the data resolution are selected.
 
-<<UniformStripes, echo=F,include=T,eval=T,fig.width=8, fig.height=5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots of coarse uniform data with square bins of size 1, 4 and 5">>= 
+<<UniformStripes, echo=F,include=T,eval=T,fig.width=8, fig.height=5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots of coarse uniform data with 1X1, 4X4 and 5X5 square bins. For standard binning, the 1X1 bins leaves white-space gaps between bins, and 5X5 bins cause artificial density stripes; whereas random binning smoothes density over these poor choices in bin dimensions.">>= 
 # Commented out code for data generation: run once then recomment
 ### Create data to demonstrate stripes from improper binwidths
 # binoutcoarse1 <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,1,1,type="standard")[[1]]
@@ -1448,7 +1442,7 @@ grid.arrange(p1,p2,p3, nrow=1)
 
 The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density in outermost bins.  Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of ten-by-ten unit bins for the fine exponential data with two different origin choices at (0,0) and (-9,-9). The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are largely empty due to the negative regions. The binning origin at (0,0) is also superior in terms of the net spatial loss, which is about seven percent lower than for the (-9,-9) origin. For data with very fine resolution, it is a good idea to set the origin at the minimum value for each dimension. 
 
-<<ExponentialOriginPlots, echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.9\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots for the fine exponential data using standard binning with 10 by 10 unit bins with origins at (0,0) and (-9,-9). These binnings have net spatial losses of 391067 units and 420458 units, respectively">>= 
+<<ExponentialOriginPlots, echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.9\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots for the fine exponential data using standard binning with 10 by 10 unit bins with origins at (0,0) and (-9,-9). The binning origin at (0,0) leads to 9\\% less net spatial loss than (-9,-9); with losses of 391067 units and 420458 units, respectively.">>= 
 
 #create binned data for fine exponential with 10X10 bins at good and bad origin
 binoutExp5 <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,0,0,10,10,type="standard")
