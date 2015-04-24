@@ -1722,7 +1722,7 @@ grid.arrange(p1,p2,p3,p4,p5,p6, nrow=2)
 % @
 %  \end{minipage}
 %\hfil\begin{minipage}{.685\linewidth}
-<<FreqBinPlots, echo=FALSE, out.width='\\linewidth',fig.width=10, fig.height=5>>=
+<<FreqBinPlots, echo=FALSE, out.width='\\linewidth',fig.width=10, fig.height=4.8>>=
 binout1 <- RectBin2d(datlist[[2]]$x,datlist[[2]]$y,0,0,5,5,type="standard")
 freqgrps = 5
 binoutFreqGroups <- freqBin(binout1, binType="standard", ncolor=freqgrps, logCount=FALSE)
@@ -2076,7 +2076,7 @@ What is not apparent in the alpha blended scatterplot, is some fine-level struct
 \caption{5-minute bins produce a higher-level summary of the data than shown in Figure~\ref{airline-scatter}b. 15-minute bins produce an even more coarse summary of the data.}\label{airline5mins-binning}
 \end{figure}
 
-Figure~\ref{airline5mins-binning} displays the binned scatterplots for the flight departure data with larger bins. Binning data by five-minute intervals produces a more high-level summary of the relationship between actual and scheduled departure time, though it necessarily obscures some of the finer details. In addition, binning data by five minute intervals reduces the size of the data set to a much more manageable 19,787 observations  which can be easily manipulated on probably any modern computer. Binning by 15-minute intervals reduces the data set to a nearly-trivial 3,575 observations, but the graphical summary becomes granular and less appealing at that resolution.
+Figure~\ref{airline5mins-binning} displays the binned scatterplots for the flight departure data with larger bins. Binning data by five-minute intervals produces a more high-level summary of the relationship between actual and scheduled departure time, though it necessarily obscures some of the finer details. In addition, binning data by five minute intervals reduces the size of the data set to a much more manageable 19,787 reduced binned data triples, which can be easily manipulated on probably any modern computer. Binning by 15-minute intervals reduces the data set to a nearly-trivial 3,575 reduced binned data triples, but the graphical summary becomes granular and less appealing at that resolution.
 
 <<airlinesetup,echo=FALSE, eval=FALSE>>=
 setwd("./data/")
