@@ -672,7 +672,7 @@ Loss of information occurs during the binning and rendering process. For the rem
 \begin{itemize}
 \item {\it Spatial Loss}, $L^\text{S}$, occurs when points $(x_i, y_i)$ for observations $i \in \{1,\dots,n\}$ in the data set are reduced to a set of tiles centered at $(x_\ell^\ast, y_\ell^\ast)$ for bins $\ell \in \{1,\dots,\mathscr{L}\}$. By displaying frequency information using tiles that are visually centered at the bin centers causes a loss of information about the exact location of the points.
 
-\item {\it Frequency Loss}, $L^\text{F}$, occurs when bin counts, $c_\ell \in \{1,\dots,\mathscr{L}\}$ are not rendered precisely. A discrete color scale may be used to aid the ability to read a binned scatterplot, however this is effectively a second stage of binning where shade displays binned frequencies, $b_C(c_\ell)$ for bins $\ell \in \{1,\dots,\mathscr{L}\}$, thus losing precision in the display of the true frequencies. This is analogous to the fundamental problem for over-plotted standard scatterplots where frequency is masked by other points. 
+\item {\it Frequency Loss}, $L^\text{F}$, occurs when bin counts, $c_\ell \in \{1,\dots,\mathscr{L}\}$ are not rendered precisely. A discrete color scale may be used to aid the ability to read a binned scatterplot, however this is effectively a second stage of binning where shade displays binned frequencies, $b_C(c_\ell)$, for spatial bins $\ell \in \{1,\dots,\mathscr{L}\}$, thus losing precision in the display of the true frequencies. This is analogous to the fundamental problem for over-plotted standard scatterplots where frequency is masked by other points. 
 \end{itemize}
 }
 
