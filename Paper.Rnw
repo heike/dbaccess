@@ -673,11 +673,11 @@ Loss of information occurs during the binning and rendering process. For the rem
 
 \begin{itemize}
 \item {\it Spatial Loss}, $L^\text{S}$, occurs when points $(x_i, y_i)$ for observations $i \in \{1,\dots,n\}$ in the data set are reduced to a set of tiles centered at $(x_\ell^\ast, y_\ell^\ast)$ for bins $\ell \in \{1,\dots,\mathscr{L}\}$. By displaying frequency information using shaded tiles instead of individual points there is a loss of information about the exact location of the points. %\hh{XXX the frequency information is not what causes the loss}
-\ktm{
+
 \item {\it Frequency Loss}, $L^\text{F}$, occurs when bin counts, $c_\ell \in \{1,\dots,\mathscr{L}\}$ are not mapped to a continuous shading scale. While shade can be \textit{rendered} continuously in HSV color space, thus representing frequency exactly, a human reader can not \textit{extract} this information at the same precision due to limitations of  human cognition.  %A discrete color scale may be used to aid the ability to read a binned scatterplot, however this is effectively 
 In order to model these limitations we 
 introduce a second stage of binning by using a discrete color scale for displaying binned frequencies, $b_C(c_\ell)$, $\ell \in \{1,\dots,\mathscr{L}\}$. %This loss in precision is then quantified as {\it Frequency loss}. %, thus losing precision in the display of the true frequencies.
-}
+
 \end{itemize}
 
 
@@ -689,7 +689,7 @@ Note that even though the losses from creating a binned scatterplot may turn out
 \subsection{Spatial Loss}
 \label{SpatialLoss}
 
-When the individual points of a scatterplot are collapsed to bin centers to be displayed as tiles in a binned scatterplot there is a loss of the location information.  This can be expressed as the Euclidean distance between points and the visual center of the tiles (i.e.\ the bin centers). Note that other distance metrics could be used, but the euclidean distance has a desirable interpretability in $\mathbb{R}^2$. The \textit{total spatial loss}, $L^S$, is defined as 
+When the individual points of a scatterplot are collapsed to bin centers to be displayed as tiles in a binned scatterplot there is a loss of the location information.  This can be expressed as the Euclidean distance between points and the visual center of the tiles (i.e.\ the bin centers). Note that other distance metrics could be used, but the Euclidean distance has a desirable interpretability in $\mathbb{R}^2$. The \textit{total spatial loss}, $L^S$, is defined as 
 \begin{eqnarray}\label{totspatloss}
 L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ \left(x_i-b_X(x_i)\right)^2 + \left(y_i-b_Y(y_i)\right)^2 }
 \end{eqnarray} 
@@ -807,7 +807,7 @@ For random assignment the total spatial loss can be calculated by simply replaci
 
 The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}, $L^S_{net}$. The net spatial loss for standard binned data is always  equivalent to the total spatial loss due to the deterministic bin allocations. For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then finding the total spatial loss from this processed binned data. 
 
-\ktm{The spatial loss is a euclidean distance, but the units affiliated with this distance are based on the units on which each variable is recorded. If the two variables in the binned scatterplot share the same units this leads to direct interpretability of the spatial loss.  However, if the two variables do not share the same units or magnitude of values it is advisable to standardize the variables prior to binning, thus the spatial loss is more universally interpretable as a distance in units of standard deviations. }
+\ktm{The spatial loss is a Euclidean distance, but the units affiliated with this distance are based on the units on which each variable is recorded. If the two variables in the binned scatterplot share the same units this leads to direct interpretability of the spatial loss.  However, if the two variables do not share the same units or magnitude of values it is advisable to standardize the variables prior to binning, thus the spatial loss is more universally interpretable as a distance in units of standard deviations. }
 
 %but requires a reference scale on which the magnitude may be interpretable. We  use the spatial loss from a ``worst-case'' binning scenario as a reference value. The largest displacement of points  occurs if we place all points into a single bin.  While the total spatial loss for single bin could be made arbitrarily large if the bin center is placed far away from the data values, we will consider a reasonable specification of a bin with boundaries that span only the range of the data in each dimension centered at  $( (x_{(1)}-x_{(n)})/2$ , $(y_{(1)}-y_{(n)})/2 )$.  The total spatial loss for this ``worst-case'' bin will be referred to as the \textit{potential spatial loss}, $L^S_p$, which is defined as 
 % \begin{eqnarray}\label{potspatloss}
@@ -979,7 +979,7 @@ where $\mathscr{L}^\ast$ is the index set for all non-empty bins, which is done 
 % \begin{itemize}
 % \item {\it Numerical Loss}, $L^\text{N}$, occurs when points in the data set are reduced to a single points at the bin means.  Allocating points to the numerical center, or the mean of the data corresponding to that bin, causes a loss of information about the exact location of the points.
 % 
-% \item {\it Visual Loss}, $L^\text{V}$, is an implicit loss due to the rendering;  visually we perceive the center of a bin to be the center of the tile. This visual center will generally different from the numerical mean, causing some bias in the perception. Thus visual loss for a bin, $L_i^\text{N}$, is the euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The visual loss is the sum of these bin distances.
+% \item {\it Visual Loss}, $L^\text{V}$, is an implicit loss due to the rendering;  visually we perceive the center of a bin to be the center of the tile. This visual center will generally different from the numerical mean, causing some bias in the perception. Thus visual loss for a bin, $L_i^\text{N}$, is the Euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The visual loss is the sum of these bin distances.
 % 
 % \item {\it Frequency Loss} results from our inability to render the frequency information accurately. Different rendering methods for the frequency information will lead to different losses. For the remainder of the paper we will assume that we are using colors in binned scatterplots to represent this information. The number of colors that can be differentiated and mapped back to frequency information accurately is fairly limited. Note that even though this loss will turn out to be substantial, it is, in fact, a huge gain with respect to the original scatterplot, where frequency information is masked in large data situations due to over-plotting of points.
 % 
@@ -1002,8 +1002,8 @@ where $\mathscr{L}^\ast$ is the index set for all non-empty bins, which is done 
 % The problem is that the visual center and the numerical center for bins will rarely match, which introduces  visual bias  to the graphical representation of the data, as we perceive the bin center to be the physical middle of the symbol representing the data.
 % 
 % Therefore we distinguish two contributions to the total loss. 
-% Numerical loss results from the binning process as points are reduced to the numerical center point. The loss for an individual point, $L_i^\text{N}$, is the euclidean distance between the $i^{th}$ data point $(x_i,y_i)$ and the corresponding bin numerical center $(\bar{x}, \bar{y})$. The overall numerical loss is thus the sum of numerical losses for individual points ($L^\text{N} = \sum_{i=1}^n L_i^\text{N}$).
-% Visual loss is due to the distance between the numerical centers and the visual centers. The visual loss for each bin, $L_j^\text{V}$, is the euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The overall visual loss is the sum of these bin distances ($L^\text{V} = \sum_{j=1}^{N_x} L_j^\text{V}$). 
+% Numerical loss results from the binning process as points are reduced to the numerical center point. The loss for an individual point, $L_i^\text{N}$, is the Euclidean distance between the $i^{th}$ data point $(x_i,y_i)$ and the corresponding bin numerical center $(\bar{x}, \bar{y})$. The overall numerical loss is thus the sum of numerical losses for individual points ($L^\text{N} = \sum_{i=1}^n L_i^\text{N}$).
+% Visual loss is due to the distance between the numerical centers and the visual centers. The visual loss for each bin, $L_j^\text{V}$, is the Euclidean distance between the visual center for the $j^{th}$ bin $(x_j^\ast, y_j^\ast)$ and the numerical center $(\bar{x}_j, \bar{y}_j)$. The overall visual loss is the sum of these bin distances ($L^\text{V} = \sum_{j=1}^{N_x} L_j^\text{V}$). 
 % This discrepancy is particularly clear as demonstrated in Figure~\ref{fig:stdBinTutorial2}, in which the visual center of the bin varies significantly from the numerical center of the data contained within the bin under the standard algorithm.  
 % This discrepancy between the visual center of the bin and the numerical center of the data within the bin occurs in both binning algorithms, and we can note that the loss functions apply to either approach to binning.
 % 
