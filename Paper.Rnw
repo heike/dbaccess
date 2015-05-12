@@ -1385,7 +1385,7 @@ If we view the binned scatterplot as a visual estimator of the bivariate density
 When minimal binning occurs -- with one unique coordinate pair at the center of each bin -- the density estimate is spatially exact; thus making the binned scatterplot a consistent visual estimator. We may also consider minimally binning as a spatially efficient estimator because it minimizes spatial loss in the visual density estimator. It is worth noting that a density estimate requires the combination of spatial and frequency information and that the estimation properties were considered only through the lens of spatial loss. This makes the assumption that frequency information is rendered through a precise continuous mapping of bin frequencies. %Based on the conflicting effects on the estimation properties, of bin size can be seen as a smoother for density estimate that can be adjusted to cut through the noise in the data, but as with all data smoothers caution should be used so that fine signal is not destroyed.  
 
 
-While bin widths can be chosen as any positive real value, the selection should be restricted to an integer multiple of the resolution of the data to avoid undesirable visual artefacts in the binned scatterplot. For example, if the bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of bins in the binned scatterplot.  These gaps of white space are undesirable because they create visual discontinuity that interferes with the interpretation of bivariate density. 
+While bin widths can be chosen as any positive real value, the selection should be restricted to an integer multiple of the resolution of the data to avoid undesirable visual artifacts in the binned scatterplot. For example, if the bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of bins in the binned scatterplot.  These gaps of white space are undesirable because they create visual discontinuity that interferes with the interpretation of bivariate density. 
 \hh{The grid of white spaces also creates an optical illusion, the Hermann-grid illusion~\citep{hermann:1870, spillmann:1994}, which makes dark spots appear in the crossings of the lines and additionally interferes with an evaluation.}
 
 There is also a disruptive visual consequence if bin dimensions are not integer multiples of the bivariate data resolution; where bins have systematically different numbers of possible data values that can cause \textit{artificial striping} -- an oscillating density pattern imposed by the binning that does not exist in the raw data -- to appear in the binned scatterplot.  
@@ -1591,8 +1591,8 @@ Spatial binning reduces data to contain the center and frequency information for
 While bin frequencies could be mapped continuously to a precisely rendered shade, it is naive to believe that this information can be extracted at the same resolution due to limitations of our perception. 
 Implicitly, we lose information  when (imperfectly) mapping the shade of a tile to its frequency. In order to make this loss explicit, we introduce a second stage of binning and discretize the color scale for frequencies in the spatially binned scatterplot.
 
-Figure~\ref{fig:StandardFreqBinning4710none} displays several spatially binned scatterplots. On the right frequency is mapped continuously to colour; on the left  there is a varying numbers of  standard binned frequencies. It is trivial to discern differences between similarly shaded tiles
-when there are only four shades. This becomes more difficult -- but still possible -- at seven frequency bins, but at ten frequency bins we are hardly able to discriminate between colours better than in the continuous shading. 
+Figure~\ref{fig:StandardFreqBinning4710none} displays several spatially binned scatterplots. On the right frequency is mapped continuously to color; on the left  there is a varying numbers of  standard binned frequencies. It is trivial to discern differences between similarly shaded tiles
+when there are only four shades. This becomes more difficult -- but still possible -- at seven frequency bins, but at ten frequency bins we are hardly able to discriminate between colors better than in the continuous shading. 
 This aligns with Healey and Enn's theory on the number of discernible colors \citep{colorperception}. We will therefore use an upper limit of ten frequency bins in our exploration of frequency loss.
 
 <<StandardFreqBinning4710none,echo=F,include=T,eval=T,fig.width=10, fig.height=3, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Binned scatterplots for the simulated bivarate normal data with varying numbers of standard binned frequency groups. At 10 frequency bins the shades are difficult to distinguish, with little difference from a binned scatterplot with continuous frequency shading.">>= 
@@ -1647,7 +1647,7 @@ Thus four and seven bins for color shades allow us to reduce frequency loss whil
 Lastly, for small number of bins, the frequency loss from standard frequency binning is higher than loss from quantile-based binning. However, in all three simulated data sets, the losses drop to similar levels for both algorithms when four or more frequency bins are used. 
 
 The bottom row of Figure~\ref{fig:FreqLossCompare} displays the log frequency loss from using standard and quantile algorithms for binning the \textit{log} bin counts from the same sets of simulated data. 
-Frequency binning using log counts exhibits a very similar behaviour to binning of untransformed frequencies.
+Frequency binning using log counts exhibits a very similar behavior to binning of untransformed frequencies.
 The difference in scales makes it impossible to directly compare frequency loss and log frequency loss. 
 But the same advice to use between four and seven frequency bins also holds for shading a binned scatterplot based on log counts. 
 
@@ -1745,7 +1745,7 @@ For standard log frequency binning, the shade is to be interpreted as an ordinal
 
 
 \hh{XXX fig 13 starts a new thought: }
-Figure~\ref{freqbinning} shows binned scatterplots for the simulated normal data with quantile frequency binning and standard log frequency binning. 
+Figure~\ref{freqbinning} shows binned scatterplots for the simulated normal data with quantile frequency binning and standard log frequency binning.
 \hh{XXX What conclusion do you want to draw from figure 13?}
 
 %We also see that the shading of the binned scatterplot is invariant to the log transformation for quantile frequency binning but not for standard; because a monotone one-to-one transformation will not alter groupings based on order, but will change groupings based on value magnitude.
@@ -2230,25 +2230,25 @@ ggsave("AirlineStdBinning15mins.pdf", binned, width=6, height=6, dpi=576)
 \label{proof:offset}
 \hh{you need to use the same conditions for the proof as you are stating when you refer to it. A uniform distribution was not mentioned before. Also, make sure that this section is 'stand-alone', i.e. explain every single one of the parameters that you are using.}
 
-The following is proof that when univariate data is uniformly distributed at resolution $\alpha$ and standard rectangular binning is used with binwidths that are a scalar multiple of the data resolution (i.e. $\omega = k\alpha$ for some $k \in \{1,2,\dots\})$, then spatial loss is minimized by setting the binning origin to $\alpha/2$ units below the minimum data value; set $\beta = x_{(1)} - \alpha/2$.\\
+\ktm{The following proof assumes three conditions for standard rectangular binning of a set univariate data hold: (i) data are recorded to a resolution of $\alpha_x$ units in the $X$ dimension, (ii) points are symmetric distributed within standard rectangular bins, (iii) the bin width, $\omega_x$, is an integer multiples of $\alpha_x$ (i.e. $\omega_x = k\alpha_x$ for some $k \in \{1,2,\dots\}$).  Under these conditions it will be shown that spatial loss is minimized by setting the binning origin, $\beta_x$, to $\alpha_x/2$ units below the minimum data value (i.e. $\beta_x = x_{(1)} - \alpha_x/2$).\\ }
 
-\noindent Let $x_1, x_2, \dots, x_k \in \mathbb{R}$ represent the values in a single bin such that $x_{i+1} = x_i + \alpha$ for some constant $\alpha \in \mathbb{R}$. Thus $x_j = x_1 + (j-1)\alpha$.\\ 
+\noindent Let $x_1, x_2, \dots, x_k \in \mathbb{R}$ represent the values in a single bin such that $x_{i+1} = x_i + \alpha_x$ for some constant $\alpha_x \in \mathbb{R}$. Thus $x_j = x_1 + (j-1)\alpha_x$.\\ 
 
-\noindent Suppose then that we bin the data using standard rectangular binning with origin, $\beta = x_1 - \theta$, and binwidth $\omega$; where $\theta$ is the \textit{origin offset} from the data. Thus $b(x_j) = \beta + \omega/2 = (x_1 - \theta) + (k\alpha/2)$\\
+\noindent Suppose then that we bin the data using standard rectangular binning with origin, $\beta_x = x_1 - \theta$, and binwidth $\omega$; where $\theta$ is the \textit{origin offset} from the data. Thus $b(x_j) = \beta_x + \omega/2 = (x_1 - \theta) + (k\alpha_x/2)$\\
 
 \noindent Spatial Loss, $L^S = \sum_{i=1}^{k} ||x_i-b_(x_i)|| $ is definitionally minimized when $b_(x_i)$ is the \textit{geometric median}. The geometric median for $x_1, \dots, x_k = Q_x(.5) = (x_{\lceil\frac{k+1}{2}\rceil}+x_{\lfloor \frac{k+1}{2}\rfloor})/2$ , where $Q_x(\cdot)$ is the empirical quantile function. \\
 
 \noindent Thus the optimal offset is the $\theta$ such that\\
 
 $ b(x_i) = Q_x(.5) $ \\
-$ \Rightarrow (x_1 - \theta) + (k\alpha/2) = (x_{\lceil\frac{k+1}{2}\rceil}+x_{\lfloor \frac{k+1}{2}\rfloor})/2 $ \\
-$ \Rightarrow 2x_1 - 2\theta + k\alpha = (x_1 + (\lceil\frac{k+1}{2}\rceil - 1)\alpha ) + (x_1 + (\lfloor\frac{k+1}{2}\rfloor - 1)\alpha ) $ \\
-$ \Rightarrow -2\theta + k\alpha = (\lceil\frac{k+1}{2}\rceil - 1)\alpha  + (\lfloor\frac{k+1}{2}\rfloor - 1)\alpha  $ \\
-$ \Rightarrow -2\theta + k\alpha = ((k+1) - 2)\alpha  $ \\
-$ \Rightarrow -2\theta = -\alpha $ \\
-$ \Rightarrow \theta = \alpha/2 $ \\
+$ \Rightarrow (x_1 - \theta) + (k\alpha_x/2) = (x_{\lceil\frac{k+1}{2}\rceil}+x_{\lfloor \frac{k+1}{2}\rfloor})/2 $ \\
+$ \Rightarrow 2x_1 - 2\theta + k\alpha_x = (x_1 + (\lceil\frac{k+1}{2}\rceil - 1)\alpha_x ) + (x_1 + (\lfloor\frac{k+1}{2}\rfloor - 1)\alpha_x ) $ \\
+$ \Rightarrow -2\theta + k\alpha_x = (\lceil\frac{k+1}{2}\rceil - 1)\alpha_x  + (\lfloor\frac{k+1}{2}\rfloor - 1)\alpha_x  $ \\
+$ \Rightarrow -2\theta + k\alpha_x = ((k+1) - 2)\alpha_x  $ \\
+$ \Rightarrow -2\theta = -\alpha_x $ \\
+$ \Rightarrow \theta = \alpha_x/2 $ \\
 
-Thus the optimal offset for reducing spatial loss in this scenario is $\theta = \alpha/2$.  This result holds for data that is symmetrically distributed within the bin since the median will not change.  It extends to multiple contiguous bins with resolution $\alpha$ data that has symmetrically distributed data withing each bin. \\
+Thus the optimal offset for reducing spatial loss in this scenario is $\theta = \alpha_x/2$.  This result holds for data that is symmetrically distributed within the bin since the median will not change.  It extends to multiple contiguous bins with resolution $\alpha_x$ data that has symmetrically distributed data withing each bin. \\
 
 If the same conditions are extended to the two dimensional case, then the origin for minimal spatial loss is at $(x_{(1)}-\alpha_x/2, y_{(1)}-\alpha_y/2)$ where $\alpha_x$ and $\alpha_y$  are the data resolution for each dimension, respectively. 
 
