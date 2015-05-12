@@ -1591,7 +1591,7 @@ Spatial binning reduces data to contain the center and frequency information for
 While bin frequencies could be mapped continuously to a precisely rendered shade, it is naive to believe that this information can be extracted at the same resolution due to limitations of our perception. 
 Implicitly, we lose information  when (imperfectly) mapping the shade of a tile to its frequency. In order to make this loss explicit, we introduce a second stage of binning and discretize the color scale for frequencies in the spatially binned scatterplot.
 
-Figure~\ref{fig:StandardFreqBinning4710none} displays several spatially binned scatterplots. On the left frequency is mapped continuously to colour; on the right  there is a varying numbers of  standard binned frequencies. It is trivial to discern differences between similarly shaded tiles
+Figure~\ref{fig:StandardFreqBinning4710none} displays several spatially binned scatterplots. On the right frequency is mapped continuously to colour; on the left  there is a varying numbers of  standard binned frequencies. It is trivial to discern differences between similarly shaded tiles
 when there are only four shades. This becomes more difficult -- but still possible -- at seven frequency bins, but at ten frequency bins we are hardly able to discriminate between colours better than in the continuous shading. 
 This aligns with Healey and Enn's theory on the number of discernible colors \citep{colorperception}. We will therefore use an upper limit of ten frequency bins in our exploration of frequency loss.
 
@@ -1639,10 +1639,17 @@ grid.arrange(p4,p7,p10,p0,nrow=1)
 @
 
 The loss of frequency information in frequency binning is dependent on the selection of a discrete color mapping, where the binning algorithm and number of frequency bins must be specified. The top row in Figure~\ref{fig:FreqLossCompare} displays the frequency loss from using standard and quantile frequency binning algorithms, with between one and ten frequency bins, from each set of simulated data. 
-\hh{XXX the next sentence needs to be fixed.}
-\ktm{We first notice that large difference in the magnitude of frequency losses based on the bivariate distribution; frequency losses are highest for the exponential data, lower for the normal data and lowest for the uniform data.} We also note that the frequency loss is a decreasing function in the number of frequency bins for both binning algorithms. This relationship largely flattens out after four frequency bin, each subsequent bin reducing the frequency loss less than the previous. Thus we should consider using between four and seven bin shades in order to reduce loss while also allowing for easy perception of frequency groups in the binned scatterplot. Lastly, the frequency loss with the standard frequency binning is be higher than for the quantile-based algorithm when a minimal number of bins are used. But in all three simulated data sets, the losses drop to comparable levels for each algorithm when four or more frequency bins are used. \ktm{Therefore, it is strongly recommended to use the quantile-based algorithm to bin untransformed frequencies.}
 
-Due to the difference in scales between counts and log counts, the frequency loss and log frequency loss can not be directly compared. The bottom row of Figure~\ref{fig:FreqLossCompare} displays the log frequency loss from using standard and quantile algorithms for binning the \textit{log} bin counts from the same sets of simulated data. Frequency binning using the log counts behaved very similarly, where log frequency loss decreased as the number of frequency bins increased. The same advice to use between four and seven frequency bins also holds for shading a binned scatterplot based on log counts. 
+There is a huge difference in the magnitude of frequency loss between the distributions: frequency losses are the highest in the scatterplot of exponentially distributed data, much lower for the normally distributed data and lowest in the case of the uniform data.
+For all distributions and both binning algorithms, frequency loss decreases as the number of frequency bins increases. This initially sharp decrease  largely flattens out at about four bins.
+Thus four and seven bins for color shades allow us to reduce frequency loss while allowing for easy distinction between frequency groups in the binned scatterplot.
+
+Lastly, for small number of bins, the frequency loss from standard frequency binning is higher than loss from quantile-based binning. However, in all three simulated data sets, the losses drop to similar levels for both algorithms when four or more frequency bins are used. 
+
+The bottom row of Figure~\ref{fig:FreqLossCompare} displays the log frequency loss from using standard and quantile algorithms for binning the \textit{log} bin counts from the same sets of simulated data. 
+Frequency binning using log counts exhibits a very similar behaviour to binning of untransformed frequencies.
+The difference in scales makes it impossible to directly compare frequency loss and log frequency loss. 
+But the same advice to use between four and seven frequency bins also holds for shading a binned scatterplot based on log counts. 
 
 <<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=7, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively, using reduced binned data from each bivariate distribution. ">>= 
 ### Loop over ncolors 1 to 10 and also over data distribution
@@ -1726,10 +1733,20 @@ grid.arrange(p1,p2,p3,p4,p5,p6, nrow=2)
 
 %\hh{XXX the rest of figure 12 should probably go into a figure 14 - to show that quantile binning and log frequency binning yield very similar results. We need to fix the legend. Right now they are atrocious (and I am aware that I am responsible for them, so I can say that :) )}
 
-Log transforming the frequencies prior to binning and using quantile based binning on the raw frequencies are two methods for dealing with the same problem for binned scatterplots: heavily right skewed bin counts where dense bins visually overshadow any structure in low density bins. However, using both -- quantile log frequency binning -- is not a recommended approach \hh{XXX not recommended is too strong. It actually does not help to do both, as can be seen in the figure}. \ktm{Frequency groups for quantile binning are invariant to the log transformation because a monotone transformation does not affect groupings based on quantiles, thus it is preferable leave the frequencies untransformed before quantile binning for better contextual interpretability.} In the common situation where bin frequencies are heavily skewed, the choice is between quantile frequency binning and standard log frequency binning.
+Log transforming the frequencies prior to binning and using quantile based binning on the raw frequencies are two methods for dealing with the same problem in binned scatterplots: the distribution of bin frequencies is heavily right skewed. High frequency bins visually overshadow any structure in low frequency bins. 
 
-Since the loss scales are not comparable, the choice is guided by desired interpretation. 
-Figure~\ref{freqbinning} shows binned scatterplots for the simulated normal data with quantile frequency binning and standard log frequency binning. For standard log frequency binning, the shade is to be interpreted as an ordinal indicator of the groups based on equally spaced groupings of log bin frequencies, whereas for quantile frequency binning the shade denotes groups based on frequency quantiles. This is analogous to the difference in interpreting a histogram of log transformed data and a boxplot in univariate visualization.
+%However, using both -- quantile log frequency binning -- is not a recommended approach \hh{XXX not recommended is too strong. It actually does not help to do both, as can be seen in the figure}. 
+
+Frequency groups for quantile binning are invariant to the log transformation because a monotone transformation does not affect groupings based on quantiles, thus it is preferable leave the frequencies untransformed before quantile binning for better contextual interpretability.
+In the common situation where bin frequencies are heavily skewed, the choice is between quantile frequency binning and standard log frequency binning.
+
+As losses from log-transformed and un-transformed frequencies are not directly comparable, the choice is guided by desired interpretation. 
+For standard log frequency binning, the shade is to be interpreted as an ordinal indicator of the groups based on equally spaced groupings of log bin frequencies, whereas for quantile frequency binning the shade denotes groups based on frequency quantiles. This is analogous to the difference in interpreting a histogram of log transformed data and a boxplot in univariate visualization.
+
+
+\hh{XXX fig 13 starts a new thought: }
+Figure~\ref{freqbinning} shows binned scatterplots for the simulated normal data with quantile frequency binning and standard log frequency binning. 
+\hh{XXX What conclusion do you want to draw from figure 13?}
 
 %We also see that the shading of the binned scatterplot is invariant to the log transformation for quantile frequency binning but not for standard; because a monotone one-to-one transformation will not alter groupings based on order, but will change groupings based on value magnitude.
 
