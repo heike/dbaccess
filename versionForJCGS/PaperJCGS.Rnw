@@ -93,41 +93,29 @@ library(plyr)
 #source in binning functions
 source("BinningLossFunctions.R")
 
-# connect <- dbConnect(dbDriver("MySQL"), host="mysql2.stat.iastate.edu", 
-#                      port=3306, user="dbaccess", dbname="baseball")
-# pitch <- new("dataDB", co=connect, table="Pitching")
-# 
-# d1 <- dbData(pitch, vars=c( "G", "SO")) # Games, Strike Outs
-# 
-# xtd.data <- function(x) {
-# # replicate each line as often as given by the last entry
-#   k <- dim(x)[2]
-# 
-#   res <- data.frame(sapply(1:(k-1), function(var) {
-#   		return(rep(x[,var], x[,k]))
-# 		}
-# 	))
-# 	names(res) <- names(x)[1:(k-1)]
-# 	return(res)
-# }
-# d1.ext <- xtd.data(d1)
-# dbDisconnect(connect)
-# pitchdat <- d1.ext
-# save(d1, d1.ext,pitchdat, file="./data/pitching.Rdata")
+# # Downloaded from http://seanlahman.com/baseball-archive/statistics 2014 update
+# pitchdat <- read.csv("./data/Pitching2014.csv")[,c("G","SO")]
+# source("RectangularBinningFunctions.R")
+# d1 <- RectBin2d(xs=pitch2014$G,ys=pitch2014$SO, 
+#                      originx = .5, originy = -.5, 
+#                      widthx = 1, widthy = 1, type="standard")
+# names(d1) <- c( "G","SO","Freq")
+# save(d1, pitchdat, file="./data/pitching.Rdata")
+
 load("./data/pitching.Rdata")
 @
 
 <<scatterplots, echo=F,include=F>>=
-qplot(data=d1.ext, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", alpha=I(.05), size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
+qplot(data=pitchdat, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", alpha=I(.05), size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/OverplottingAlpha.png", width=5, height=5, dpi=900)
 qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/Overplotting.png", width=5, height=5, dpi=900)
 qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", shape="o", size=I(6)) + scale_shape_identity() + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/OverplottingCircles.png", width=5, height=5, dpi=900)
-qplot(data=d1.ext, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
+qplot(data=pitchdat, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
   ggsave("./figure/HexBinning.png", width=5, height=5, dpi=900)
-d1.hex.obj <- hexbin(d1.ext$G, d1.ext$SO)
+d1.hex.obj <- hexbin(pitchdat$G, pitchdat$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
 d1.hex$Freq <-  d1.hex.obj@count
@@ -157,7 +145,7 @@ In this paper we describe first the inadequacy of traditional scatterplots in la
 \section{Scatterplots for Large Data Sets}
 \label{Scatter}
 
-In the case of modestly sized data, scatterplots are great tools for showing bivariate data relationships. With large data, scatterplots suffer from over-plotting of points, which masks relevant structure. Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 139 seasons (from the years of 1871 -- 2009) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database (\url{http://www.seanlahman.com/baseball-archive/}).  The number of games played in a season is plotted against the number of strikeouts a pitcher threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(d1.ext)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data. 
+In the case of modestly sized data, scatterplots are great tools for showing bivariate data relationships. With large data, scatterplots suffer from over-plotting of points, which masks relevant structure. Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 144 seasons (from the years of 1871 -- 2014) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database (\url{http://www.seanlahman.com/baseball-archive/}).  The number of games played in a season is plotted against the number of strikeouts a pitcher threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(pitchdat)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data. 
 
 Figure~\ref{fig:scatter-alpha}(a) shows a traditional scatterplot with each observation is drawn with a filled circle. A triangular structure is apparent with some outliers at a medium number of games and high number of strikeouts; however the density within the triangular mass of points is indistinguishable. \citet{tukey} suggested the use of open circles (see Figure~\ref{fig:scatter-alpha}(b)) to mitigate the problem of over-plotting. Open circles make points that are close together more visually distinct; thus allowing for the perception of more density information than with filled points.  A modern alternative to open circles is alpha blending (see Figure~\ref{fig:scatter-alpha}(c)). Alpha blending renders points as semi-transparent to provides more visibility of underlying points.
 
