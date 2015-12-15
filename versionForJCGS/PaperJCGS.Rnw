@@ -1251,7 +1251,44 @@ The interpretability of the net spatial loss in this scenario suffers because th
 The Federal Aviation Association (FAA) requires all airlines based in the United States to report   details for every single flight. These are published online by the Bureau of Transportation Services at \url{http://www.transtats.bts.gov/DataIndex.asp}. 
 Every day there are about 16,000 flights across the United States which added up to over 5.8 million flights in 2014. The scheduled and actual departure times for flights in 2014 make up --in uncompressed comma separated form-- a file of about 53 MB. A comparison of scheduled and actual departure times allows us an investigation of on-time performance of air carriers.
 
-Figure~\ref{airline-scatter} shows two plots of the relationship between scheduled versus actual departure times. The plot on the left shows the scatterplot from a sample of one million of those records. Even while using alpha blending this results in a severely over-plotted graph. On the right is a minimally binned scatterplot of the reduced data from standard binning at 1-minute intervals. If the origin is offset by a half minute for both departures and arrivals, this binning does not have any spatial loss, as all observations will be centered within bins. The 1-minute standard binning also reduces the data to around 190,000 reduced data triple, approximately 5\% of the original data size.
+Figure~\ref{airline-scatter} shows two plots of the relationship between scheduled versus actual departure times. The plot on the left shows the traditional scatterplot; even while using alpha-blending this results in a severely over-plotted graph. On the right is a minimally binned scatterplot of the reduced data from standard binning at 1-minute intervals. If the origin is offset by a half minute for both departures and arrivals, this binning does not have any spatial loss, because all observations are be centered within bins. The 1-minute standard binning also reduces the data to around 190,000 reduced data triple, approximately 5\% of the original data size.
+
+<<FlightTradScatterplot, echo=F,include=F,eval=F, cache=TRUE>>=
+source("RectangularBinningFunctions.R")
+load(file="DepartDelaysMinutes.RData")
+# Code takes a long long time to compile so ran once, saved to high res png, then set eval=FALSE
+ggplot(aes(x=Scheduled/60, y=Actual/60), data=DepartDelaysMinutes) +
+  geom_point(alpha=.05) + 
+  theme_bw() + theme(aspect.ratio=1,
+                     panel.grid= element_blank(),
+                     legend.text=element_text(size=12) )  +
+  scale_x_continuous("Scheduled Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
+  scale_y_continuous("Actual Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
+  ggtitle("Alpha-Blended Scatterplot of Airline Departure Times") 
+ggsave(filename = "./figure/AlphaScatterAirline2014.png", width= 6, height=6, dpi=900)
+@
+
+<<FlightMinBinScat, echo=F,include=F, cache=TRUE>>=
+source("RectangularBinningFunctions.R")
+load(file="DepartDelaysMinutes.RData")
+# Create minimal binning
+departure1minute <- RectBin2d(xs=DepartDelaysMinutes$Scheduled,ys=DepartDelaysMinutes$Actual, 
+                              originx = -0.5, originy = -0.5, 
+                              widthx = 1, widthy = 1, type="standard")
+# down to 3.261% of original number of rows
+# nrow(departure1minute)/nrow(DepartDelaysMinutes)
+ggplot(aes(x=binxs/60, y=binys/60), data=departure1minute) +
+  geom_tile( aes(fill=binfreq) ) + 
+  scale_x_continuous("Scheduled Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
+  scale_y_continuous("Actual Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
+  ggtitle("Minimally Binned Scatterplot of Airline Departure Times")+ 
+  scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) +
+  theme_bw() + theme(aspect.ratio=1,
+                   panel.grid= element_blank(),
+                   legend.text=element_text(size=12) ) + 
+  geom_abline(intercept=0,slope=1, color="gray70", linetype=3)
+ggsave(filename = "./figure/MinimalBinnedAirline2014.png", width= 6.5, height=6, dpi=900)
+@
 
 \begin{figure}[hbtp]
   \subfloat[Alpha-Blended Scatterplot of Airline Data]{\includegraphics[keepaspectratio=TRUE,width=.47\textwidth]{./figure/AlphaScatterAirline2014.png}} 
