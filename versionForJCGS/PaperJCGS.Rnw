@@ -162,12 +162,12 @@ In the case of modestly sized data, scatterplots are great tools for showing biv
 Figure~\ref{fig:scatter-alpha}(a) shows a traditional scatterplot with each observation is drawn with a filled circle. A triangular structure is apparent with some outliers at a medium number of games and high number of strikeouts; however the density within the triangular mass of points is indistinguishable. \citet{tukey} suggested the use of open circles (see Figure~\ref{fig:scatter-alpha}(b)) to mitigate the problem of over-plotting. Open circles make points that are close together more visually distinct; thus allowing for the perception of more density information than with filled points.  A modern alternative to open circles is alpha blending (see Figure~\ref{fig:scatter-alpha}(c)). Alpha blending renders points as semi-transparent to provides more visibility of underlying points.
 
 \begin{figure}[hbtp]
-  \subfloat[Overplotted data ]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{./figure/Overplotting.pdf}}
-  \subfloat[Tukey-style open circles]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{./figure/OverplottingCircles.pdf}} 
-	\subfloat[Alpha blending]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{./figure/OverplottingAlpha.pdf}}
+  \subfloat[Overplotted data ]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{./figure/Overplotting.png}}
+  \subfloat[Tukey-style open circles]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{./figure/OverplottingCircles.png}} 
+	\subfloat[Alpha blending]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{./figure/OverplottingAlpha.png}}
   
-  \subfloat[Hexagonal binned scatterplot]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{./figure/HexBinning.pdf}}
-  \subfloat[Hexagonal binned bubble plot]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{./figure/BinScatter.pdf}} 
+  \subfloat[Hexagonal binned scatterplot]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{./figure/HexBinning.png}}
+  \subfloat[Hexagonal binned bubble plot]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{./figure/BinScatter.png}} 
 
 	\caption[Traditional and adapted scatterplots for games vs. strikeouts data.]{\label{fig:scatter-alpha} Scatterplots of games versus strikeouts in major league baseball, using different strategies of dealing with the issue of over-plotting:  (a) uses standard, opaque, filled circles, (b)  uses Tukey's recommended open circles, and (c) uses filled circles with alpha blending ($\alpha$=0.05). Plots (d) and (e) show hexagonal binning strategies with frequency mapped to color and area respectively.}
 \end{figure}
@@ -752,7 +752,7 @@ ggsave("./figure/SimScatters.png", width=8, height=5.5, dpi=900)
 
 \begin{figure}[hbtp]
 \begin{center}
- \includegraphics[keepaspectratio=TRUE,width=.9\textwidth]{./figure/SimScatters.png}
+ \includegraphics[keepaspectratio=TRUE,width=.99\textwidth]{./figure/SimScatters.png}
 	\caption[Scatterplots of fine and coarse versions of the simulated bivariate data.]{\label{fig:SimDataScatterplots} Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\%, 98.7\% and 99.1\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.}
 	\end{center}
 \end{figure}
