@@ -63,7 +63,8 @@ source("BinningLossFunctions.R")
 # }
 # d1.ext <- xtd.data(d1)
 # dbDisconnect(connect)
-# save(d1, d1.ext, file="pitching.Rdata")
+# pitchdat <- d1.ext
+# save(d1, d1.ext,pitchdat, file="pitching.Rdata")
 load("pitching.Rdata")
 @
 
@@ -1145,10 +1146,10 @@ The exploration of spatial and frequency loss in the process of creating a binne
 \subsection{Binning Loss in Baseball Data: Strikeout and Game Counts}
 
 <<BaseballBinningExamplePrep, echo=FALSE, eval=TRUE, include=FALSE, cache=TRUE>>=
-connect <- dbConnect(dbDriver("MySQL"), host="mysql2.stat.iastate.edu", 
-                     port=3306, user="dbaccess", dbname="baseball")
-pitchdat <- dbGetQuery(connect,  sprintf("select G, SO from Pitching"))
-dbDisconnect(connect)
+# connect <- dbConnect(dbDriver("MySQL"), host="mysql2.stat.iastate.edu", 
+#                      port=3306, user="dbaccess", dbname="baseball")
+# pitchdat <- dbGetQuery(connect,  sprintf("select G, SO from Pitching"))
+# dbDisconnect(connect)
 
 # Standard binning ~ 50 in each direction
 # so range(x)/50 = 100/50 = 2 , range(y)/50 = 500/50 = 10 
