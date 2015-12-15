@@ -113,8 +113,8 @@ source("BinningLossFunctions.R")
 # d1.ext <- xtd.data(d1)
 # dbDisconnect(connect)
 # pitchdat <- d1.ext
-# save(d1, d1.ext,pitchdat, file="pitching.Rdata")
-load("pitching.Rdata")
+# save(d1, d1.ext,pitchdat, file="./data/pitching.Rdata")
+load("./data/pitching.Rdata")
 @
 
 <<scatterplots, echo=F,include=F>>=
@@ -946,7 +946,7 @@ Figure~\ref{fig:OriginOffsetSimulations} shows how the net spatial loss changes 
 #   }
 # }
 # write.csv(spatlossdatRound,"LossesByOriginBinwidth.csv", row.names=FALSE)
-lossOrigin <- read.csv("LossesByOriginBinwidth.csv",header=TRUE)
+lossOrigin <- read.csv("./data/LossesByOriginBinwidth.csv",header=TRUE)
 mins <- ddply(lossOrigin, .(widthx, bintype, distrib), summarise,
               minx = max(originx[which(totalSpatialLoss == min(totalSpatialLoss))]),
               minloss = min(totalSpatialLoss))
@@ -1316,7 +1316,7 @@ Figure~\ref{airline-scatter} shows two plots of the relationship between schedul
 
 <<FlightTradScatterplot, echo=F,include=F,eval=F, cache=TRUE>>=
 source("RectangularBinningFunctions.R")
-load(file="DepartDelaysMinutes.RData")
+load(file="./data/DepartDelaysMinutes.RData")
 # Code takes a long long time to compile so ran once, saved to high res png, then set eval=FALSE
 ggplot(aes(x=Scheduled/60, y=Actual/60), data=DepartDelaysMinutes) +
   geom_point(alpha=.05) + 
@@ -1331,7 +1331,7 @@ ggsave(filename = "./figure/AlphaScatterAirline2014.png", width= 6, height=6, dp
 
 <<FlightMinBinScat, echo=F,include=F, cache=TRUE>>=
 source("RectangularBinningFunctions.R")
-load(file="DepartDelaysMinutes.RData")
+load(file="./data/DepartDelaysMinutes.RData")
 # Create minimal binning
 departure1minute <- RectBin2d(xs=DepartDelaysMinutes$Scheduled,ys=DepartDelaysMinutes$Actual, 
                               originx = -0.5, originy = -0.5, 
