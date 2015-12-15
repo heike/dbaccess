@@ -119,14 +119,14 @@ load("pitching.Rdata")
 
 <<scatterplots, echo=F,include=F>>=
 qplot(data=d1.ext, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", alpha=I(.05), size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
-  ggsave("./figure/OverplottingAlpha.pdf", width=5, height=5)
+  ggsave("./figure/OverplottingAlpha.png", width=5, height=5, dpi=900)
 qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
-  ggsave("./figure/Overplotting.pdf", width=5, height=5)
+  ggsave("./figure/Overplotting.png", width=5, height=5, dpi=900)
 qplot(data=d1, x=G, y=SO, geom="point", main="Games and Strike Outs in ML Baseball", shape="o", size=I(6)) + scale_shape_identity() + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
-  ggsave("./figure/OverplottingCircles.pdf", width=5, height=5)
+  ggsave("./figure/OverplottingCircles.png", width=5, height=5, dpi=900)
 qplot(data=d1.ext, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
-  ggsave("./figure/HexBinning.pdf", width=5, height=5)
+  ggsave("./figure/HexBinning.png", width=5, height=5, dpi=900)
 d1.hex.obj <- hexbin(d1.ext$G, d1.ext$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
@@ -138,7 +138,7 @@ qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq+1) +
 qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq+1) + 
   scale_size_area("Frequency", max_size=4, trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
 
-  ggsave("./figure/BinScatter.pdf", width=5, height=5)
+  ggsave("./figure/BinScatter.png", width=5, height=5, dpi=900)
 
 # Sunflower plot
 # d1.hex$id <- seq(1:nrow(d1.hex))
@@ -699,7 +699,7 @@ Data sets were simulated from bivariate distributions to be used throughout this
 %
 The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. 
 
-<<SimDataScatterplots,echo=F,include=T,eval=T,fig.width=8, fig.height=5.5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\\%, 98.7\\% and 99.1\\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.">>= 
+<<SimDataScatterplots2,echo=F,include=F,eval=T,fig.width=8, fig.height=5.5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\\%, 98.7\\% and 99.1\\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.">>= 
 ### Try 2d binning with MVN data
 n=100000
 set.seed(31415)
@@ -745,7 +745,17 @@ qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1))+
   xlab("X") + ylab("Y") + 
   scale_x_continuous(breaks=c(0,25,50,75,100)) + 
   scale_y_continuous(breaks=c(0,25,50,75,100))
+
+ggsave("./figure/SimScatters.png", width=8, height=5.5, dpi=900)
 @
+
+
+\begin{figure}[hbtp]
+\begin{center}
+ \includegraphics[keepaspectratio=TRUE,width=.9\textwidth]{./figure/SimScatters.png}
+	\caption[Scatterplots of fine and coarse versions of the simulated bivariate data.]{\label{fig:SimDataScatterplots} Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\%, 98.7\% and 99.1\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.}
+	\end{center}
+\end{figure}
 
 
 These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places; 6 decimal places in our simulate data. Real data is recorded to only the number of digits that measurement precision allows, and in many cases rounded even further.
