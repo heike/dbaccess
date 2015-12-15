@@ -305,7 +305,7 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
 
 @
 %
-\spacingset{1} % DON'T change the spacing!
+\spacingset{1}
 \begin{table}[hbtp]
 \centering
 \caption[Original, binned and reduced binned data table example.]{\label{DataReductionExample}Original, binned and reduced binned data tables, with data storage sizes. Binned using standard rectangular approach with origin $(\beta_{0,x},\beta_{0,y})$ = (-10,-10) and binwidths $\omega_x = \omega_y = 10$. }
