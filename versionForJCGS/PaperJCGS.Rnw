@@ -259,7 +259,7 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
 \begin{table}[hbtp]
 \centering
 \caption[Original, binned and reduced binned data table example.]{\label{DataReductionExample}Original, binned and reduced binned data tables, with data storage sizes. Binned using standard rectangular approach with origin $(\beta_{0,x},\beta_{0,y})$ = (-10,-10) and binwidths $\omega_x = \omega_y = 10$. }
-\begin{minipage}[t]{.33\textwidth}\centering\subfloat[Original Data, 12 rows]{
+\begin{minipage}[t]{.33\textwidth}\centering\subfloat[Original Data]{
 \begin{tabular}{rr}\hline
        $x$ &  $y$  \\ \hline
 -7.7325 & -9.6340 \\ 
@@ -276,9 +276,9 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
   1.7579 & 5.3759 \\  \hline
 \end{tabular}}
 \end{minipage}\hfil
-\begin{minipage}[t]{.33\textwidth}\centering\subfloat[Binned Data Centers, 12 rows]{
+\begin{minipage}[t]{.33\textwidth}\centering\subfloat[Binned Data Centers]{
 \begin{tabularx}{.7\textwidth}{rr} \hline
-  $b_X(x)$ & \hspace{.4cm} $b_Y(y)$  \\ \hline
+ $b_X(x)$   &  \hspace{.4cm}  $b_Y(y)$   \\ \hline
   -5 & -5 \\ 
   -5 & -5 \\ 
   -5 & -5 \\ 
@@ -293,9 +293,9 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
   5 & 5 \\  \hline
 \end{tabularx}}
 \end{minipage}\hfil
-\begin{minipage}[t]{.33\textwidth}\centering\subfloat[Reduced Binned Data, 4 rows]{
+\begin{minipage}[t]{.33\textwidth}\centering\subfloat[Reduced Binned Data]{
 \begin{tabularx}{.7\textwidth}{rrr}\hline
- \hspace{.2cm} $x^\ast$   &   \hspace{.2cm} $y^\ast$ & \hspace{.4cm}c \\ \hline
+ \hspace{.2cm} $x^\ast$   &  $y^\ast$ & \hspace{.4cm}c \\ \hline
 -5 & -5 & 5 \\ 
   -5 & 5 & 2 \\ 
   5 & -5 & 3 \\ 
