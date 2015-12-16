@@ -205,11 +205,20 @@ b_X(x_i) = \left\{\begin{array}{ll}
 
 \textit{Standard rectangular binning} is a special cases of general rectangular binning that uses intervals of equal size for all bins; thus only the origin of the first bin, $\beta_0$, and a binwidth, $\omega_X$, need to be specified. Standard rectangular binning is necessarily used in the construction of all histograms;  the consistent binwidth makes the display of frequency proportional to density. Fixed width binning procedures are also highly computationally efficient \citep{Wickham2013Bin}. 
 
-Note that this standard rectangular binning procedure utilizes intervals that are open to the left and closes the outer bound of the leftmost bin. These specifications are consistent with the binning procedure used in the \texttt{hist()} function for creating histograms in base \texttt{R} \citep{R}. These specifications were selected for this paper, but these choices are by no means consider universal for binning.  For example, the \texttt{ggplot2} package creates histograms with intervals open to the right and does not close the outer bound of the rightmost bin \citep{ggplot2}. 
+%Note that this standard rectangular binning procedure utilizes intervals that are open to the left and closes the outer bound of the leftmost bin. These specifications are consistent with the binning procedure used in the \texttt{hist()} function for creating histograms in base \texttt{R} \citep{R}. These specifications were selected for this paper, but these choices are by no means consider universal for binning.  For example, the \texttt{ggplot2} package creates histograms with intervals open to the right and does not close the outer bound of the rightmost bin \citep{ggplot2}. 
 
-\textit{Quantile binning} is another option that divides the range of the observations into bins each containing an equal number of points. The $j^{th}$ bin interval takes the form $(Q_X((j-1)/J),Q_X((j)/J)]$, where $Q_X(p)$ is the the $p^{th}$ empirical quantile using the inverse empirical distribution function. Note that this binning approach is \textit{not} desirable for spatially visualizing density patterns, as it effectively balances the frequency counts in all bins; it does however have desirable properties for binned scatterplots that employ a second stage of binning to create discrete shade scheme for displaying grouped bin frequencies, which will be discussed in Section~\ref{FreqLoss}.
-  
-The bin boundaries and centers for each type of rectangular binning algorithm discussed above can be found in Table~\ref{tab:rectbinning}.
+An alternative to the rectangular binning processes discussed above, is a \textit{random binning} algorithm which utilizes a non-deterministic bin function $b^r_X(\cdot)$ to randomly assigns an observation, $x_i$, to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability inversely proportional to the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
+%
+\begin{eqnarray}\label{randbin1}
+b^r_X(x_i) = \left\{\begin{array}{ll} 
+  x^\ast_j & \text{ with probability } (x^\ast_{j+1} - x_i)/(x^\ast_{j+1} -x^\ast_{j}) \\
+  x^\ast_{j+1} &\text{ with probability }  (x_i - x^\ast_{j})/(x^\ast_{j+1} -x^\ast_{j})
+  \end{array}\right.
+\end{eqnarray}  
+%
+for $x_i \in [x^\ast_{j+1}, x^\ast_{j}]$. In Table~\ref{tab:rectbinning} we note that this random binning algorithm does not specify bin boundaries; only a sequence of bin centers. This method is easily extensible to also map $x_i$ into more than two bins and can accommodate non-uniform distribution of bin centers. The bin boundaries and centers for standard and random rectangular binning algorithms can be found in Table~\ref{tab:rectbinning}.
+
+%The deterministic standard binning algorithm is an example of a ``direct" binning algorithm, in which all points are assigned with weight one to the bin center. ``Linear" binning  \citep{martin-gold} is a \textit{computationally intensive} alternative to direct binning in which adjacent bins are assigned a weight depending on the distance from the point to that bin, where all weights sum to one.  With large data sets, the calculations required for linear binning become unwieldy, but the random binning algorithm can be considered an approximation to linear binning. Specifically, the expectation of the random binning algorithm is the same as for linear binning.
  
 \begin{table}[hbtp]
 \centering
@@ -221,27 +230,18 @@ General &  $ \{\beta_j \text{ }|\text{ } \beta_j > \beta_{j-1} \} $ & $\{x_j^\as
 %-------------
 Standard \hspace{0.5cm} & $ \{\beta_j \text{ }|\text{ } \beta_j = \beta_{j-1} + \omega_X \} $\hspace{0.5cm} & $\{x_j^\ast \text{ }|\text{ } x_j^\ast = \beta_{j-1} + \omega_X/2 \}$ \\
 %-------------
-Quantile & $ \{\beta_j \text{ }|\text{ } \beta_j = Q_X(j/J) \} $  & $\{x_j^\ast \text{ }|\text{ } x_j^\ast = Q_X((j-0.5)/J) \}$ \\
-%-------------
 Random &  ---  & $\{x_j^\ast \text{ }|\text{ } x_j^\ast > x_{j-1}^\ast \}$  \\
+%-------------
+%Quantile & $ \{\beta_j \text{ }|\text{ } \beta_j = Q_X(j/J) \} $  & $\{x_j^\ast \text{ }|\text{ } x_j^\ast = Q_X((j-0.5)/J) \}$ \\
 \hline
 \end{tabular}
 \label{tab:rectbinning}
 \end{table}
 %
-An alternative to the rectangular binning processes discussed above, is the random binning algorithm which utilizes a non-deterministic bin function $b^r_X(\cdot)$ to randomly assigns an observation, $x_i$, to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability inversely proportional to the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
-%
-\begin{eqnarray}\label{randbin1}
-b^r_X(x_i) = \left\{\begin{array}{ll} 
-  x^\ast_j & \text{ with probability } (x^\ast_{j+1} - x_i)/(x^\ast_{j+1} -x^\ast_{j}) \\
-  x^\ast_{j+1} &\text{ with probability }  (x_i - x^\ast_{j})/(x^\ast_{j+1} -x^\ast_{j})
-  \end{array}\right.
-\end{eqnarray}  
-%
-for $x_i \in [x^\ast_{j+1}, x^\ast_{j}]$. In Table~\ref{tab:rectbinning} we note that this random binning algorithm does not specify bin boundaries; only a sequence of bin centers.  This method is easily extensible to also map $x_i$ into more than two bins and can accommodate non-uniform distribution of bin centers.  
 
-The deterministic standard binning algorithm is an example of a ``direct" binning algorithm, in which all points are assigned with weight one to the bin center. ``Linear" binning  \citep{martin-gold} is a \textit{computationally intensive} alternative to direct binning in which adjacent bins are assigned a weight depending on the distance from the point to that bin, where all weights sum to one.  With large data sets, the calculations required for linear binning become unwieldy, but the random binning algorithm can be considered an approximation to linear binning. Specifically, the expectation of the random binning algorithm is the same as for linear binning.
-
+\textit{Quantile binning} is another option that divides the range of the observations into bins each containing an equal number of points. The $j^{th}$ bin interval takes the form $(Q_X((j-1)/J),Q_X((j)/J)]$, where $Q_X(p)$ is the the $p^{th}$ empirical quantile using the inverse empirical distribution function. Note that this binning approach is \textit{not} desirable for spatially visualizing density patterns, as it effectively balances the frequency counts in all bins; it does however have desirable properties for binned scatterplots that employ a second stage of binning to create discrete shade scheme for displaying grouped bin frequencies, which will be discussed in Section~\ref{FreqLoss}.
+  
+  
 \subsection{Extension to Two Dimensional Binning}
 \label{TwoDimBin}
 
