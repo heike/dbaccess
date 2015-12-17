@@ -199,9 +199,7 @@ Binning in dimensions $X$ and $Y$ provides us with a more condensed form of the 
 
 We will proceed with rectangular bins for simplicity, but other binning schemes, such as hexagonal bins \citep{Carr1987} are also common.  While hexagonal binning has been shown to have slightly better graphical properties \citep{scott1992}; rectangular bins are advantageous because bins in $x$ and $y$ are orthogonal to each other, thus we can present the one-dimensional case which will easily generalize to two or more dimensions.  We will however only consider binning in up to two dimensions, $X$ and $Y$. The algorithms we discuss are immediately applicable to higher dimension, but we do not feel that the paper would benefit from a more general discussion.
 
-For the univariate case with observations, $x_i$ for $i \in \{1,\dots,n\}$, binning algorithms require a set of bin centers $x_j^\ast$ for $j \in \{1,\dots,J\}$ and a binning function $b_X(.) : x_i \rightarrow x^\ast_j$ that maps observations to  bin centers. 
-
-\textit{Rectangular binning} accomplishes this by defining a sequence of $J$ adjacent intervals, $(\beta_{j-1},\beta_{j}]$ for $j \in \{1,\dots,J\}$, which span over the range of the data. Note that half open intervals are used such that any observation falling on a bin boundary is assigned to a unique interval. Values $x_i$ exactly equal to the lowest bin boundary $\beta_0$ are grouped into the first bin to close the leftmost bound. Each observation is then mapped to a bin center, $x_j^\ast$; the midpoint for the interval to which the observation belongs. 
+For the univariate case with observations, $x_i$ for $i \in \{1,\dots,n\}$, binning algorithms require a set of bin centers $x_j^\ast$ for $j \in \{1,\dots,J\}$ and a binning function $b_X(.) : x_i \rightarrow x^\ast_j$ that maps observations to  bin centers. \textit{Rectangular binning} accomplishes this by defining a sequence of $J$ adjacent intervals, $(\beta_{j-1},\beta_{j}]$ for $j \in \{1,\dots,J\}$, which span over the range of the data. Note that half open intervals are used such that any observation falling on a bin boundary is assigned to a unique interval. Values $x_i$ exactly equal to the lowest bin boundary $\beta_0$ are grouped into the first bin to close the leftmost bound. Each observation is then mapped to a bin center, $x_j^\ast$; the midpoint for the interval to which the observation belongs. 
 
 This is expressed mathematically using the binning function $b_X(.) : x_i \rightarrow x^\ast_j$ defined as 
 %
@@ -213,11 +211,11 @@ b_X(x_i) = \left\{\begin{array}{ll}
 \end{eqnarray}  
 %
 
-\textit{Standard rectangular binning} is a special cases of general rectangular binning that uses intervals of equal size for all bins; thus only the origin of the first bin, $\beta_0$, and a binwidth, $\omega_X$, need to be specified. Standard rectangular binning is necessarily used in the construction of all histograms;  the consistent binwidth makes the display of frequency proportional to density. Fixed width binning procedures are also highly computationally efficient \citep{Wickham2013Bin}. 
+\textit{Standard rectangular binning} is a special cases of general rectangular binning that uses intervals of equal size for all bins; thus only the origin of the first bin, $\beta_0$, and binwidth, $\omega_X$, need to be specified. Standard rectangular binning is necessarily used in the construction of histograms;  the consistent binwidth makes the display of frequency proportional to density. Fixed width binning procedures are also highly computationally efficient \citep{Wickham2013Bin}. 
 
 %Note that this standard rectangular binning procedure utilizes intervals that are open to the left and closes the outer bound of the leftmost bin. These specifications are consistent with the binning procedure used in the \texttt{hist()} function for creating histograms in base \texttt{R} \citep{R}. These specifications were selected for this paper, but these choices are by no means consider universal for binning.  For example, the \texttt{ggplot2} package creates histograms with intervals open to the right and does not close the outer bound of the rightmost bin \citep{ggplot2}. 
 
-An alternative to the rectangular binning processes discussed above, is a \textit{random binning} algorithm which utilizes a non-deterministic bin function $b^r_X(\cdot)$ to randomly assigns an observation, $x_i$, to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability inversely proportional to the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
+An alternative to the rectangular binning process, is a \textit{random binning} algorithm which utilizes a non-deterministic bin function $b^r_X(\cdot)$ to randomly assigns an observation, $x_i$, to a bin center, $x^\ast$, from a set of possible bins. In this paper, we will consider the simplest case of just two bins, so that without loss of generality we can assume that $x_i$ lies between bin centers $x^\ast_j$ and $x^\ast_{j+1}$. The bin function assigns $x_i$ to a bin center with a probability inversely proportional to the distance to that bin center; the closer a value is to a bin center, the higher the probability the value is assigned to that bin center. More formally,
 %
 \begin{eqnarray}\label{randbin1}
 b^r_X(x_i) = \left\{\begin{array}{ll} 
@@ -232,7 +230,6 @@ for $x_i \in [x^\ast_{j+1}, x^\ast_{j}]$. In Table~\ref{tab:rectbinning} we note
  
 \begin{table}[hbtp]
 \centering
-\caption{Rectangular and Random Binning Specifications}
 \begin{tabular}{lll} \hline
  & Bin Boundaries & Bin Centers \\ 
  \hline  
@@ -245,6 +242,7 @@ Random &  ---  & $\{x_j^\ast \text{ }|\text{ } x_j^\ast > x_{j-1}^\ast \}$  \\
 %Quantile & $ \{\beta_j \text{ }|\text{ } \beta_j = Q_X(j/J) \} $  & $\{x_j^\ast \text{ }|\text{ } x_j^\ast = Q_X((j-0.5)/J) \}$ \\
 \hline
 \end{tabular}
+\caption{Rectangular and Random Binning Specifications}
 \label{tab:rectbinning}
 \end{table}
 %
@@ -277,7 +275,7 @@ where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for
 
 \subsection{Binned Data Reduction}
 
-The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming reduced data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c). The reduced binned data is sufficient for constructing the binned scatterplot. In cases of large data, binning greatly reduces the storage size for the information and the computation time needed to construct a binned scatterplot.
+The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming reduced data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c). The reduced binned data is sufficient for constructing the binned scatterplot. In cases of large data, binning greatly reduces the storage size for the information and the computation time needed to construct a binned scatterplot. Note that numerical attributes other than frequency of the binned data may also be recorded during binning, however only frequency is required to construct a binned scatterplot. Data reduction comes at the expense of spatial information of any of the individual points. The original spatial locations can only be recovered when minimally binned at the resolution of the data. The loss of information incurred from binning will be explored in following sections. 
 
 <<DataReduction,echo=FALSE,eval=FALSE,results='asis'>>=
 n=12
@@ -306,7 +304,6 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
 \spacingset{1}
 \begin{table}[hbtp]
 \centering
-\caption[Original, binned and reduced binned data table example.]{\label{DataReductionExample}Original, binned and reduced binned data tables, with data storage sizes. Binned using standard rectangular approach with origin $(\beta_{0,x},\beta_{0,y})$ = (-10,-10) and binwidths $\omega_x = \omega_y = 10$. }
 \begin{minipage}[t]{.33\textwidth}\centering\subfloat[Original Data]{
 \begin{tabular}{rr}\hline
        $x$ &  $y$  \\ \hline
@@ -350,10 +347,11 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
   5 & 5 & 2 \\  \hline
 \end{tabularx}}
 \end{minipage}
+\caption[Original, binned and reduced binned data table example.]{\label{DataReductionExample}Original, binned and reduced binned data tables, using standard rectangular binning with origin $(\beta_{0,x},\beta_{0,y})$ = (-10,-10) and binwidths $\omega_x = \omega_y = 10$. }
 \end{table}
 \spacingset{1.45} % DON'T change the spacing!
 %
-Note that numerical attributes other than frequency of the binned data may also be recorded during binning, however only frequency is required to construct a binned scatterplot. Data reduction comes at the expense of spatial information of any of the individual points. After aggregation the original spatial locations cannot be recovered. The loss of information incurred from binning will be explored in following sections. 
+
 
 %--------------------------------------------------------------
 
