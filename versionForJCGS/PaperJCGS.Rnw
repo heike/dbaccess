@@ -709,8 +709,8 @@ Data sets were simulated from bivariate distributions to be used throughout this
 \item Set III: $x_i \sim \text{iid Uniform}(a,b), y_i \sim \text{iid Uniform}(a,b)$ with $a =0$ and $b=100$
 \end{itemize}
 %
-The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. 
-
+The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places; 6 decimal places in our simulate data. Real data is recorded to only the number of digits that measurement precision allows, and in many cases rounded even further.
+%
 <<SimDataScatterplots2,echo=F,include=F,eval=T,fig.width=8, fig.height=5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\\%, 98.7\\% and 99.1\\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.">>= 
 library(scales) 
 ### Try 2d binning with MVN data
@@ -762,18 +762,15 @@ qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1))+
 
 ggsave("./figure/SimScatters.png", width=8, height=5.5, dpi=900)
 @
-
-
 \begin{figure}[hbtp]
 \begin{center}
  \includegraphics[keepaspectratio=TRUE,width=.9\textwidth]{./figure/SimScatters.png}
-	\caption[Scatterplots of fine and coarse versions of the simulated bivariate data.]{\label{fig:SimDataScatterplots} Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\%, 98.7\% and 99.1\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.}
+	\caption[Scatterplots of fine and coarse versions of the simulated bivariate data.]{\label{fig:SimDataScatterplots} Scatterplots of fine and coarse versions of the simulated bivariate data. }
 	\end{center}
 \end{figure}
-
-
-These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places; 6 decimal places in our simulate data. Real data is recorded to only the number of digits that measurement precision allows, and in many cases rounded even further.
-
+%
+%Density changes are impossible to make out in the solid black areas of the plots. 97.4\%, 98.7\% and 99.1\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.
+%
 The \textit{data resolution} is defined as the smallest increment between successive data values. To observe loss from binning under more realistic conditions, we create three data sets by rounding the values from the originally simulated data sets to the nearest even number, thus a data resolution of 2 units in each dimension. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution at which data is recorded. 
 
 %-----------------------------------------------------------------------------
@@ -784,7 +781,7 @@ For rectangular binning there are many specification options; including type of 
 
 Figure~\ref{fig:SpatialLossCompare} displays the net spatial loss from binning the fine resolution simulated data with standard and random binning algorithms using square bins with a sizes ranging from 2 units$^2$ to 20 units$^2$. It is apparent that the spatial loss for random binning is always higher than for standard binning and the loss grows as bin width increases. The net spatial loss from random binning increases with bin width at a faster rate than from standard binning, as indicated by the widening gap between the lines and the steeper slopes.  
 
-<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=6, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss and computation times over a range of bin sizes for standard and random binning of the fine version of the simulated data from each bivariate distribution.">>= 
+<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss and computation times over a range of bin sizes for standard and random binning of the fine version of the simulated data from each bivariate distribution.">>= 
 ## create binned data for standard and random using variety of bin sizes (from 2 to 20, by 2)
 ##save spatial loss information
 # spatlossdat <- data.frame(NULL)
@@ -814,17 +811,28 @@ Figure~\ref{fig:SpatialLossCompare} displays the net spatial loss from binning t
 # # write.csv(spatlossdat,"SpatialLossData.csv", row.names=FALSE)
 spatlossdatSquareBins <- read.csv("SpatialLossData.csv",header=TRUE)
 spatlossdatSquareBins$bintype <- factor(spatlossdatSquareBins$bintype, levels=c("standard","random"))
-p1 <- qplot(widthx,totalSpatialLoss,geom="path",colour=bintype, linetype=bintype,
-      data=spatlossdatSquareBins,group=bintype, facets=.~distrib, size=I(1)) +
+
+library(tidyr)
+spatlossdatSquareBins2 <- gather(spatlossdatSquareBins, measure, value, c(totalSpatialLoss,binTime))
+spatlossdatSquareBins2$measure <- factor(spatlossdatSquareBins2$measure , labels=c("Net Spatial Loss","Binning Time (sec)"))
+# 
+# p1 <- qplot(widthx,totalSpatialLoss,geom="path",colour=bintype, linetype=bintype,
+#       data=spatlossdatSquareBins,group=bintype, facets=.~distrib, size=I(1)) +
+#   theme_bw() + ylab("Net Spatial Loss") +
+#   xlab("Width/Height of Square Bins") + ylim(c(0, 1100000))
+# 
+# p2 <- qplot(widthx,as.numeric(binTime),geom="path",colour=bintype, linetype=bintype,
+#       data=spatlossdatSquareBins,group=bintype, facets=.~distrib, size=I(1)) +
+#   theme_bw() + ylab("Binning Time (sec)") +
+#   xlab("Width/Height of Square Bins")
+# 
+# grid.arrange(p1,p2, nrow=2)
+
+qplot(widthx,value,geom="path",colour=bintype, linetype=bintype,
+      data=spatlossdatSquareBins2,group=bintype, size=I(1)) +
+  facet_grid(measure~distrib, scales="free_y" )+
   theme_bw() + ylab("Net Spatial Loss") +
-  xlab("Width/Height of Square Bins") + ylim(c(0, 1100000))
-
-p2 <- qplot(widthx,as.numeric(binTime),geom="path",colour=bintype, linetype=bintype,
-      data=spatlossdatSquareBins,group=bintype, facets=.~distrib, size=I(1)) +
-  theme_bw() + ylab("Binning Time (sec)") +
-  xlab("Width/Height of Square Bins")
-
-grid.arrange(p1,p2, nrow=2)
+  xlab("Width/Height of Square Bins") 
 @
 
 All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a potentially non-negligible consideration in settings with truly massive data. Figure~\ref{fig:SpatialLossCompare} also shows that the computation time needed to bin the simulated data sets is a decreasing function of the bin size and that random binning is marginally slower than standard binning across all bin sizes. Computation times for binning were collected using a commercial Asus laptop with an Intel Core i7 processor running at 2.80 GHz. Another pertinent argument for using larger bins is that it will smooth over larger regions if we are primary interested visualizing the large scale density structure.
