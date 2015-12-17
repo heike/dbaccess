@@ -42,7 +42,7 @@
 {
 %opening
 \title{Binning Strategies and Related Loss for Large Data}
-\author{Karsten Maurer$^1$, Susan VanderPlas$^2$, Heike Hofmann$^{2,3}$\\$^1$Department of Statistics, Miami University \\$^2$Department of Statistics, Iowa State University \\$^3$Human Computer Interaction, Iowa State University}
+\author{Karsten Maurer$^1$, Heike Hofmann$^{2,3}$, Susan VanderPlas$^2$\\$^1$Department of Statistics, Miami University \\$^2$Department of Statistics, Iowa State University \\$^3$Human Computer Interaction, Iowa State University}
   \maketitle
 } \fi
 
