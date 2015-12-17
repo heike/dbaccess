@@ -359,96 +359,96 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
 \label{LossIntro}
 
 Problems with large data in scatterplots arise from over-plotting, which is a form of implicit data aggregation. In order to keep track of the number of observations near a given location, we switch to a weighted visual display which explicitly aggregates the data. The reduced binned data carries the sufficient information necessary to render the binned scatterplot. Making the data aggregation explicit allows us to calculate the loss we experience.
-
-By additionally increasing the bin width, we provide increasingly higher-level summaries of the data by smoothing over local structures. Using a small number of large bins may mask the real signal in the data, while an extremely large number of small bins may not sufficiently smooth over {\it noise} inherent in any real data set. Figure~\ref{binning} gives an overview of a data set and binned representations using different numbers of bins, demonstrating the loss of information with increasing bin size. 
-
-\begin{figure}[hbtp]
-<<binning_setup, echo=FALSE,fig.width=2, fig.height=2, out.width='\\linewidth'>>=
-set.seed(46)
-x <- round(rnorm(200), digits=2)
-y <- round(rnorm(200), digits=2)
-X <- data.frame(x,y)
-@
-\begin{minipage}{.35\linewidth}
-<<first, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=4>>=
-qplot(x,y, asp=1, main='Unbinned Data')+theme_bw()
-@
-\end{minipage}
-\hfil\begin{minipage}{.645\linewidth}
-\begin{minipage}{.495\linewidth}
-<<bin001, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
-binwidth=0.1
-binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
-qplot(x,y, asp=1, geom="blank") +
-  geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
-  ggtitle(sprintf("binwidth = %.2f", binwidth)) +
-  geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
-                                by=binwidth)+binwidth/2), colour="grey90") + 
-  geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
-                                by=binwidth)+binwidth/2), colour="grey90") +
-  theme_bw() + theme(panel.grid.major= element_blank(),
-                     panel.grid.minor= element_blank(), legend.position="bottom") +
-  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
-                      trans="log", breaks=c(1, 2, 5, 10, 20))
-
-@
-\end{minipage}\hfil
-\begin{minipage}{.495\linewidth}
-<<bin025, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
-binwidth=0.25
-binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
-qplot(x,y, asp=1, geom="blank") +
-  geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
-  ggtitle(sprintf("binwidth = %.2f", binwidth)) +
-  geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
-                                by=binwidth)+binwidth/2), colour="grey90") + 
-  geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
-                                by=binwidth)+binwidth/2), colour="grey90") +
-  theme_bw() + theme(panel.grid.major= element_blank(),
-                     panel.grid.minor= element_blank(), legend.position="bottom") +
-  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
-                      trans="log", breaks=c(1, 2, 5, 10, 20))
-@
-\end{minipage}\\
-\hfil\begin{minipage}{.495\linewidth}
-<<bin05, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
-binwidth=0.5
-binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
-qplot(x,y, asp=1, geom="blank") +
-  geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
-  ggtitle(sprintf("binwidth = %.2f", binwidth)) +
-  geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
-                                by=binwidth)+binwidth/2), colour="grey90") + 
-  geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
-                                by=binwidth)+binwidth/2), colour="grey90") +
-  theme_bw() + theme(panel.grid.major= element_blank(),
-                     panel.grid.minor= element_blank(), legend.position="bottom") +
-  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
-                      trans="log", breaks=c(1, 2, 5, 10, 20))
-@
-\end{minipage}\hfil
-\begin{minipage}{.495\linewidth}
-<<bin1, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
-binwidth=1
-binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
-qplot(x,y, asp=1, geom="blank") +
-  geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
-  ggtitle(sprintf("binwidth = %.2f", binwidth)) +
-  geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
-                                by=binwidth)+binwidth/2), colour="grey90") + 
-  geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
-                                by=binwidth)+binwidth/2), colour="grey90") +
-  theme_bw() + theme(panel.grid.major= element_blank(),
-                     panel.grid.minor= element_blank(), legend.position="bottom") +
-  scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
-                      trans="log", breaks=c(1, 2, 5, 10, 20))
-@
-\end{minipage}
-\end{minipage}
-\caption[Series of binned scatterplots of decreasing bin dimensions.]{\label{binning}Series of scatterplots showing the original data (scatterplot, left), and versions of the binned data for different bin widths. The visual loss from binning at 0.1 is minimal, while a bin width of 1 gives a rough approximation.}
-\end{figure}
-
-In Figure~\ref{binning} the minimally binned scatterplot, with bin width equal to 0.1, is visually very similar to the traditional scatterplot; but importantly the binned scatterplot contains information about overlapping points. The second and third binned scatterplots, with bin width equal to 0.25 and 0.50 respectively, show higher-level summaries of the data but which may also provide more visually accessible information about the shape of the two-dimensional density distribution between $x$ and $y$. The fourth binned scatterplot, with bin width equal to 1.0, provides only a rough bivariate density display due to over-smoothing from the large bins. 
+%' 
+%' By additionally increasing the bin width, we provide increasingly higher-level summaries of the data by smoothing over local structures. Using a small number of large bins may mask the real signal in the data, while an extremely large number of small bins may not sufficiently smooth over {\it noise} inherent in any real data set. Figure~\ref{binning} gives an overview of a data set and binned representations using different numbers of bins, demonstrating the loss of information with increasing bin size. 
+%' 
+%' \begin{figure}[hbtp]
+%' <<binning_setup, echo=FALSE,fig.width=2, fig.height=2, out.width='\\linewidth'>>=
+%' set.seed(46)
+%' x <- round(rnorm(200), digits=2)
+%' y <- round(rnorm(200), digits=2)
+%' X <- data.frame(x,y)
+%' @
+%' \begin{minipage}{.35\linewidth}
+%' <<first, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=4>>=
+%' qplot(x,y, asp=1, main='Unbinned Data')+theme_bw()
+%' @
+%' \end{minipage}
+%' \hfil\begin{minipage}{.645\linewidth}
+%' \begin{minipage}{.495\linewidth}
+%' <<bin001, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
+%' binwidth=0.1
+%' binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
+%' qplot(x,y, asp=1, geom="blank") +
+%'   geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
+%'   ggtitle(sprintf("binwidth = %.2f", binwidth)) +
+%'   geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
+%'                                 by=binwidth)+binwidth/2), colour="grey90") + 
+%'   geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
+%'                                 by=binwidth)+binwidth/2), colour="grey90") +
+%'   theme_bw() + theme(panel.grid.major= element_blank(),
+%'                      panel.grid.minor= element_blank(), legend.position="bottom") +
+%'   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
+%'                       trans="log", breaks=c(1, 2, 5, 10, 20))
+%' 
+%' @
+%' \end{minipage}\hfil
+%' \begin{minipage}{.495\linewidth}
+%' <<bin025, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
+%' binwidth=0.25
+%' binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
+%' qplot(x,y, asp=1, geom="blank") +
+%'   geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
+%'   ggtitle(sprintf("binwidth = %.2f", binwidth)) +
+%'   geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
+%'                                 by=binwidth)+binwidth/2), colour="grey90") + 
+%'   geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
+%'                                 by=binwidth)+binwidth/2), colour="grey90") +
+%'   theme_bw() + theme(panel.grid.major= element_blank(),
+%'                      panel.grid.minor= element_blank(), legend.position="bottom") +
+%'   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
+%'                       trans="log", breaks=c(1, 2, 5, 10, 20))
+%' @
+%' \end{minipage}\\
+%' \hfil\begin{minipage}{.495\linewidth}
+%' <<bin05, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
+%' binwidth=0.5
+%' binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
+%' qplot(x,y, asp=1, geom="blank") +
+%'   geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
+%'   ggtitle(sprintf("binwidth = %.2f", binwidth)) +
+%'   geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
+%'                                 by=binwidth)+binwidth/2), colour="grey90") + 
+%'   geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
+%'                                 by=binwidth)+binwidth/2), colour="grey90") +
+%'   theme_bw() + theme(panel.grid.major= element_blank(),
+%'                      panel.grid.minor= element_blank(), legend.position="bottom") +
+%'   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
+%'                       trans="log", breaks=c(1, 2, 5, 10, 20))
+%' @
+%' \end{minipage}\hfil
+%' \begin{minipage}{.495\linewidth}
+%' <<bin1, echo=FALSE, out.width='\\linewidth',fig.width=4, fig.height=5>>=
+%' binwidth=1
+%' binout1 <- RectBin2d(x,y,-binwidth/2,-binwidth/2,binwidth,binwidth,type="standard")[[1]]
+%' qplot(x,y, asp=1, geom="blank") +
+%'   geom_tile(binwidth=binwidth, aes(x=binxs, y=binys, fill=binfreq), data=binout1) +
+%'   ggtitle(sprintf("binwidth = %.2f", binwidth)) +
+%'   geom_vline(aes(xintercept=seq(min(binout1$binxs)-binwidth, max(binout1$binxs),
+%'                                 by=binwidth)+binwidth/2), colour="grey90") + 
+%'   geom_hline(aes(yintercept=seq(min(binout1$binys)-binwidth, max(binout1$binys),
+%'                                 by=binwidth)+binwidth/2), colour="grey90") +
+%'   theme_bw() + theme(panel.grid.major= element_blank(),
+%'                      panel.grid.minor= element_blank(), legend.position="bottom") +
+%'   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend",
+%'                       trans="log", breaks=c(1, 2, 5, 10, 20))
+%' @
+%' \end{minipage}
+%' \end{minipage}
+%' \caption[Series of binned scatterplots of decreasing bin dimensions.]{\label{binning}Series of scatterplots showing the original data (scatterplot, left), and versions of the binned data for different bin widths. The visual loss from binning at 0.1 is minimal, while a bin width of 1 gives a rough approximation.}
+%' \end{figure}
+%' 
+%' In Figure~\ref{binning} the minimally binned scatterplot, with bin width equal to 0.1, is visually very similar to the traditional scatterplot; but importantly the binned scatterplot contains information about overlapping points. The second and third binned scatterplots, with bin width equal to 0.25 and 0.50 respectively, show higher-level summaries of the data but which may also provide more visually accessible information about the shape of the two-dimensional density distribution between $x$ and $y$. The fourth binned scatterplot, with bin width equal to 1.0, provides only a rough bivariate density display due to over-smoothing from the large bins. 
 
 Loss of information occurs during the binning and rendering process. For the remainder of the paper we will assume that we are using shade in binned scatterplots to represent frequencies.  We distinguish two sources of loss in the construction of a binned scatterplot:
 
@@ -461,7 +461,7 @@ In order to model these limitations we
 introduce a second stage of binning by using a discrete color scale for displaying binned frequencies, $b_C(c_\ell)$, $\ell \in \{1,\dots,\mathscr{L}\}$. %This loss in precision is then quantified as {\it Frequency loss}. %, thus losing precision in the display of the true frequencies.
 \end{itemize}
 
-Note that even though the losses from creating a binned scatterplot may turn out to be substantial, there is a huge gain with respect to an traditional scatterplot, where information can be masked in large data situations due to over-plotting of points. The idea of loss from one-dimensional binning was explored by Scott using mean integrated squared error as the loss function to be optimized by the choice of the number of bins in  the construction of histograms \citep{scott1979}. He later extended this discussion to two-dimensional binning, where he compared the mean integrated squared error loss for hexagonal, rectangular and triangular binning; finding that hexagonal and rectangular binning performed similarly, both far superior to triangular binning \citep{scott1992}. We will take a similar approach to quantifying loss resulting from the binning algorithms detailed in Section~\ref{GenBinning} above. 
+Note that while the losses from creating a binned scatterplot may turn out to be substantial, they present a huge gain with respect to an traditional scatterplot, where density information is implicitly masked in large data situations. The idea of loss from one-dimensional binning was explored by Scott using mean integrated squared error as the loss function to be optimized by the choice of the number of bins in  the construction of histograms \citep{scott1979}. He later extended this discussion to two-dimensional binning, where he compared the mean integrated squared error loss for hexagonal, rectangular and triangular binning; finding that hexagonal and rectangular binning performed similarly, both far superior to triangular binning \citep{scott1992}. We will take a similar approach to quantifying loss resulting from the binning algorithms detailed in Section~\ref{GenBinning} above. 
 
 \subsection{Spatial Loss}
 \label{SpatialLoss}
@@ -593,33 +593,46 @@ The spatial loss is a Euclidean distance, but the units affiliated with this dis
 
 It is important to note that there is no spatial loss for the traditional scatterplot, as the points are rendered at exact coordinates. The reason we are willing to sacrifice precision of location information is to alleviate the inherent loss of frequency information from over-plotting, which can be immense for large data sets. When a point is rendered in a traditional scatterplot there is no graphical change once any additional points are placed at the same coordinates; thus visually implying a frequency of one data value at the location. This implicit loss of frequency information is then exacerbated when points are rendered as a circle with a radius large enough to also partially cover nearby points. In binned scatterplots, we have traded the exact locations for exact frequencies within bins. 
 
-Bin counts can be displayed using a continuous shading scale in HSV color space \citep{colorperception} and thus we can theoretically map frequency to shade perfectly. While the tiles of the binned scatterplot would be \textit{rendered} precisely, the ability of a human with average vision to extract that information by visually mapping the tile shade to a frequency scale in the plot legend is largely imprecise. Color perception of shade is extremely context sensitive allowing an inaccurate mapping of tile shade to the corresponding shade in the plot legend.
-It is therefore not realistic, to expect readers to be able to decode frequency from a continuous shade scheme, even though theoretically we can perceive shades continuously (see e.g.\ the discussion in \url{http://hypertextbook.com/facts/2006/JenniferLeong.shtml}). Figure~\ref{fig:context} shows an example of the context sensitivity of colors. Even though there is a lot of spread between the colors in this example, most onlookers have trouble answering the question about the relative relationship of the shading of the darkest/lightest points in each cloud of points.
+Bin counts can be displayed using a continuous shading scale in HSV color space \citep{colorperception} and thus we can theoretically map frequency to shade perfectly. While the tiles of the binned scatterplot would be \textit{rendered} precisely, the ability of a human with average vision to extract that information by visually mapping the tile shade to a frequency scale in the plot legend is largely imprecise. Color perception of shade is extremely context sensitive -- see Figure~\ref{fig:FreqLossDemoPlot} for a demonstration of context sensitivity of colors -- allowing an inaccurate mapping of tile shade to the corresponding shade in the plot legend. It is therefore not realistic, to expect readers to be able to decode frequency from a continuous shade scheme, even though theoretically we can perceive shades continuously \citep{Leong}.  %Even though there is a lot of spread between the colors in this example, most onlookers have trouble answering the question about the relative relationship of the shading of the darkest/lightest points in each cloud of points.
 
-\begin{figure}[hbtp]
-\centering
-<<context, echo=F, fig.width=6, fig.height=4.5, out.width='.5\\textwidth'>>=
-#col <- c(rnorm(200, mean=0, sd=10), rnorm(10, mean=50), rnorm(200, mean=100, sd=10), rnorm(10, mean=50))
+
+%' <<context, echo=F, include=F, fig.width=6, fig.height=4.5, out.width='.5\\textwidth'>>=
+%' #col <- c(rnorm(200, mean=0, sd=10), rnorm(10, mean=50), rnorm(200, mean=100, sd=10), rnorm(10, mean=50))
+%' Shade <- c(rbeta(200, 1,10),rep(.5,10), rbeta(200,10,1), rep(.5,10))
+%' x <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
+%' y <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
+%' Shape <- c(rep("circle",200),rep("triangle",10),rep("circle",200),rep("triangle",10))
+%' 
+%' require(ggplot2)
+%' qplot(x, y, colour=Shade, size=I(5),shape=Shape) + theme_bw() + 
+%'   xlab("") + ylab("")+
+%'   theme(aspect.ratio=1, axis.ticks=element_blank(), axis.text=element_blank()) +
+%'   scale_colour_gradient(limits=c(0,1), breaks=c(0,.5,1))
+%' 
+%' ggsave("./figure/ShadeContextDemo.png",width=5, height=5, dpi=600)
+%' @
+
+<<FreqLossDemoPlot,echo=F,include=T,eval=T,fig.width=c(6,6), fig.height=c(6,3), out.width=c('.49\\linewidth','.5\\linewidth'), fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="(Left) Q: Which triangles are darker? A: All triangles same shade = 500. \\newline (Right) Continuous and standard rectangular binned frequency color scales.", fig.scap="Continuous and discrete color scales for counts.">>= 
+
+library(scales)
+#match color scales in each
+low = "#132B43"
+high = "#56B1F7"
+
 Shade <- c(rbeta(200, 1,10),rep(.5,10), rbeta(200,10,1), rep(.5,10))
 x <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
 y <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
 Shape <- c(rep("circle",200),rep("triangle",10),rep("circle",200),rep("triangle",10))
 
 require(ggplot2)
-qplot(x, y, colour=Shade, size=I(5),shape=Shape) + theme_bw() + 
+qplot(x, y, colour=1000*Shade, size=I(5),shape=Shape) + theme_bw() + 
   xlab("") + ylab("")+
-  theme(aspect.ratio=1, axis.ticks=element_blank(), axis.text=element_blank()) +
-  scale_colour_gradient(limits=c(0,1), breaks=c(0,.5,1))
-@
-\caption[Demonstration of the contextual sensitivity of shade perception.]{\label{fig:context}Assess the colors in this scatterplot. Are the triangles in the lighter cloud of points as dark as the triangles in the darker cloud of points? The answer is that all the triangles have the exact same shade!}
-\end{figure}
+  theme(plot.margin = unit(c(0.1,0.1,0.1,.1),"cm"), aspect.ratio=1,
+        axis.ticks=element_blank(), axis.text=element_blank()) +
+  scale_colour_gradient("Shade",limits=c(0,1000), breaks=c(0,500,1000), 
+                        low=high, high=low)
 
- Whenever the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. We can model this as a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, \mathscr{L} \}$ are placed into frequency bins using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}.  Figure~\ref{fig:FreqLossDemo} provides a visual example of a discrete color palette resulting from frequency binning.  
- 
-Research suggests that even under optimal conditions, we can effectively compare only about seven color hues simultaneously, and that we are even more limited in terms of distinguishing shade \citep{colorperception}. This provides a physical upper limit on the amount of frequency variation we can perceive through color. As a result, a frequency binning which produces seven of fewer frequency categories is preferable.
 
-<<FreqLossDemo,echo=F,include=T,eval=T,fig.width=6, fig.height=3, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Continuous and discrete color scales for counts in the range 0 to 1000. Frequency binning done using  standard rectangular binning with origin $\\beta_0 = 0$ and binwidth $\\omega_c = 200$.", fig.scap="Continuous and discrete color scales for counts.">>= 
-#J= 1
 J2 = 200
 bound = 1000
 #id <- seq(0+J/2,bound-J/2,by=J )
@@ -629,7 +642,6 @@ fill2 <- seq(J2/2,bound-(J2/2), by=J2)
 
 low = "#132B43"
 high = "#56B1F7"
-library(scales)
 blueGradient <- matrix(seq_gradient_pal(high, low, "Lab")(0:4400/4400), byrow=TRUE,
        nrow=1000, ncol=4401)
 g <- rasterGrob(blueGradient, interpolate=TRUE)
@@ -643,17 +655,24 @@ p1 <- qplot(c(0,1000), 2, geom="blank") +   # just to set up the dimensions
         panel.background=element_blank()
         ) + scale_x_continuous("", breaks=c(0,250,500,750,1000), labels=c(0,250,500,750,1000)) + 
   ylab("Continuous") 
-p2 <- qplot(id2, 2, geom="tile", fill=-fill2) + 
+p2 <- qplot(id2, 1.8, geom="tile", fill=-fill2) +  
   theme(plot.margin = unit(c(0.1,1,0.1, 1),"cm"), 
         legend.position = "none",
-        axis.ticks=element_blank(),
-        axis.text.y=element_blank(),
-        panel.background=element_blank()) + 
-  ylab("Discrete") + xlab("Count")
+        axis.ticks=element_blank(),axis.text.y=element_blank(),
+        panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
+        panel.background=element_blank())  + 
+  ylab("Discrete") + xlab("")
 
 grid.arrange(p1,p2,nrow=2)
-#ggsave("./figure/FreqBin.pdf",width=5, height=1.5)
+#ggsave("./figure/FreqBinDemo.png",width=5, height=1.5, dpi=600)
 @
+
+
+ Whenever the shading scheme for rendering the counts in each bin is discretized there is a loss of frequency information. We can model this as a second stage of binning; wherein the bin counts, $c_\ell$, for bins $\ell \in \{1, \dots, \mathscr{L} \}$ are placed into frequency bins using any of the previously discussed univariate binning algorithms in Section~\ref{GenBinning}.  Figure~\ref{fig:FreqLossDemoPlot} provides a visual example of a discrete color palette resulting from frequency binning.  
+ 
+Research suggests that even under optimal conditions, we can effectively compare only about seven color hues simultaneously, and that we are even more limited in terms of distinguishing shade \citep{colorperception}. This provides a physical upper limit on the amount of frequency variation we can perceive through color. As a result, a frequency binning which produces seven of fewer frequency categories is preferable.
+
+
 
  
 The goal of binning the frequencies and using a ordinal shading scheme is to quantify the imprecision in visually extracting frequency information. It does so by using shade to display binned frequencies, $b_c(c_\ell)$ instead of the true frequencies, $c_\ell$. The \textit{total frequency loss}, $L^F$, is defined as
@@ -662,9 +681,7 @@ The goal of binning the frequencies and using a ordinal shading scheme is to qua
 L^F = \sum_{\ell=1}^{\mathscr{L}} L_\ell^F = \sum_{\ell=1}^{\mathscr{L}} (c_\ell-b_c(c_\ell))^2
 \end{eqnarray}  
 %
-where $L_\ell^F$ is the frequency loss for the $\ell^{th}$ bin. Note that this is effectively a sum of squared error from binning frequencies.
-
-While this numerical assessment of frequency loss does not exactly account for limitations in human perceptual ability, it does provide a more realistic model for the loss in perception that does occur.
+where $L_\ell^F$ is the frequency loss for the $\ell^{th}$ bin. Note that this is effectively a sum of squared error from binning frequencies. While this numerical assessment of frequency loss does not exactly account for limitations in human perceptual ability, it does provide a more realistic model for the loss in perception that does occur.
 
 Frequency data consists of counts, which commonly exhibit skew densities, i.e.\ there are usually a lot of bins with small bin counts and a few bins with extremely large frequencies. The use of quantile binning is promising in the case of frequency binning because it seeks to place the same number of bins in each shaded group. An alternative is to use a log transformation which produces a more symmetric distribution of frequency information, increasing perceptual resolution. This is consistent with the Weber-Fechner law which suggests that increased stimulus intensity is perceptually mapped on the log scale \citep{sp}. Using a logarithmic mapping of frequency to the shade aesthetic provides a more natural perceptual experience and simultaneously increases the perceptual resolution of the graph. The \textit{log frequency loss}, $L^{\log F}$, is defined as
 %
