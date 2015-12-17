@@ -301,8 +301,10 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
 
 @
 %
+
 \spacingset{1}
 \begin{table}[hbtp]
+\small
 \centering
 \begin{minipage}[t]{.33\textwidth}\centering\subfloat[Original Data]{
 \begin{tabular}{rr}\hline
@@ -347,6 +349,7 @@ print(xtable(dbin, digits=c(0, 0, 0, 0), caption=paste('Binned Data\\newline', n
   5 & 5 & 2 \\  \hline
 \end{tabularx}}
 \end{minipage}
+\normalsize
 \caption[Original, binned and reduced binned data table example.]{\label{DataReductionExample}Original, binned and reduced binned data tables, using standard rectangular binning with origin $(\beta_{0,x},\beta_{0,y})$ = (-10,-10) and binwidths $\omega_x = \omega_y = 10$. }
 \end{table}
 \spacingset{1.45} % DON'T change the spacing!
@@ -473,9 +476,9 @@ L^S = \sum_{i=1}^{n} L_i^S = \sum_{i=1}^{n} \sqrt{ \left(x_i-b_X(x_i)\right)^2 +
 %
 where $L_i^S$ is the loss in the  $i$th observation. 
 %
-Figure~\ref{fig:spatlossdemo2} visually displays the spatial loss for the data from  Table~\ref{DataReductionExample} as a result of standard rectangular binning. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all line segments represents the total spatial loss, $L^S$.  
+Figure~\ref{fig:spatlossdemo2} visually displays the spatial loss for the data from  Table~\ref{DataReductionExample} as a result of standard rectangular binning. Observations $(x_i,y_i)$ and bin centers $\left(x_\ell^\ast,y_\ell^\ast\right)$ are displayed as black points and gray crosses, respectively. The length of line segments connecting these represent $L^S_i$, the spatial loss for each observation; thus, the combined length of all line segments represents the total spatial loss, $L^S$.  For random assignment the total spatial loss can be calculated by simply replacing the standard binning function with the random binning function in Equation~\ref{totspatloss}. 
 
-<<spatlossdemo2,echo=F,include=T,eval=T,fig.width=12, fig.height=6, out.width='1\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Visualization of spatial loss for same data using standard, random and post-processed random binning algorithms.  Note that the total spatial loss for the standard algorithm is smaller than by random binning. The net spatial loss for the original random binned data is the total spatial loss of the post-processed assignment." >>= 
+<<spatlossdemo2,echo=F,include=T,eval=T,fig.width=12, fig.height=6, out.width='1\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Visualization of spatial loss for same data using standard, random and post-processed random binning algorithms." >>= 
 n=12
 param1 = 1
 param2 = 1.6
@@ -580,9 +583,7 @@ p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
 grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
 @
 
-For random assignment the total spatial loss can be calculated by simply replacing the standard binning function with the random binning function in Equation~\ref{totspatloss}. The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. Special consideration should be paid to the two points with line segments highlighted in red in the panel for random binning. In standard binning these points are in neighboring bins but have been allocated to the opposite bin during random binning. We see that the binned scatterplot remains identical if these points are re-allocated back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed.  
-
-The minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot, will be referred to as the \textit{net spatial loss}, $L^S_{net}$. The net spatial loss for standard binned data is always  equivalent to the total spatial loss due to the deterministic bin allocations. For random binning algorithms the net spatial loss is achieved by first exchanging bin assignments for all pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then calculating the total spatial loss from this processed binned data. 
+The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. We see that in random binning there are pairs of points -- like those with line segments highlighted in red -- that have been allocated in such a way that they are closer to their partner's bin center than their own. We see that the binned scatterplot remains identical if these points are swapped back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed. To appropriately reflect the perceived loss of spatial information we use the \textit{net spatial loss}, $L^S_{net}$, which is the minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot. For standard binned data, the net spatial loss is always equivalent to the total spatial loss due to the deterministic bin allocations. For random binned data, the net spatial loss is achieved by first exchanging bin assignments for all pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then calculating the total spatial loss from this post-processed binned data. 
 
 The spatial loss is a Euclidean distance, but the units affiliated with this distance are based on the units on which each variable is recorded. If the two variables in the binned scatterplot share the same units this leads to direct interpretability of the spatial loss.  However, if the two variables do not share the same units or the same magnitude of values it is advisable to standardize the variables prior to binning, thus making the spatial loss more universally interpretable as a distance in units of standard deviations. 
 
@@ -591,8 +592,8 @@ The spatial loss is a Euclidean distance, but the units affiliated with this dis
 \subsection{Frequency Loss}
 \label{FreqLoss}
 
-It is important to note that there is no spatial loss for the traditional scatterplot, as the points are rendered at exact coordinates. The reason we are willing to sacrifice precision of location information is to alleviate the inherent loss of frequency information from over-plotting, which can be immense for large data sets. When a point is rendered in a traditional scatterplot there is no graphical change once any additional points are placed at the same coordinates; thus visually implying a frequency of one data value at the location. This implicit loss of frequency information is then exacerbated when points are rendered as a circle with a radius large enough to also partially cover nearby points. In binned scatterplots, we have traded the exact locations for exact frequencies within bins. 
-
+% It is important to note that there is no spatial loss for the traditional scatterplot, as the points are rendered at exact coordinates. The reason we are willing to sacrifice precision of location information is to alleviate the inherent loss of frequency information from over-plotting, which can be immense for large data sets. When a point is rendered in a traditional scatterplot there is no graphical change once any additional points are placed at the same coordinates; thus visually implying a frequency of one data value at the location. This implicit loss of frequency information is then exacerbated when points are rendered as a circle with a radius large enough to also partially cover nearby points. In binned scatterplots, we have traded the exact locations for exact frequencies within bins. 
+% 
 Bin counts can be displayed using a continuous shading scale in HSV color space \citep{colorperception} and thus we can theoretically map frequency to shade perfectly. While the tiles of the binned scatterplot would be \textit{rendered} precisely, the ability of a human with average vision to extract that information by visually mapping the tile shade to a frequency scale in the plot legend is largely imprecise. Color perception of shade is extremely context sensitive -- see Figure~\ref{fig:FreqLossDemoPlot} for a demonstration of context sensitivity of colors -- allowing an inaccurate mapping of tile shade to the corresponding shade in the plot legend. It is therefore not realistic, to expect readers to be able to decode frequency from a continuous shade scheme, even though theoretically we can perceive shades continuously \citep{Leong}.  %Even though there is a lot of spread between the colors in this example, most onlookers have trouble answering the question about the relative relationship of the shading of the darkest/lightest points in each cloud of points.
 
 
@@ -696,7 +697,7 @@ where $\mathscr{L}^\ast$ is the index set for all non-empty bins, which is done 
 
 \section{Exploring Properties of Loss}
 
-Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm as well as a choice of parameters associated with that binning algorithm.  This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of scenarios. Some choices may be proven optimal through analytical properties, while other are data dependent and require empirical exploration of loss from binning.  Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices.
+Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm as well as a choice of parameters associated with that binning algorithm. This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of scenarios. Some choices may be proven optimal through analytical properties, while other are data dependent and require empirical exploration of loss from binning.  Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices.
 
 Data sets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform.  These distributions were selected for their variety in terms of shape, center and spread. 100,000 observation pairs were simulated for each data set from the following distributions: 
 
@@ -710,7 +711,8 @@ Data sets were simulated from bivariate distributions to be used throughout this
 %
 The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. 
 
-<<SimDataScatterplots2,echo=F,include=F,eval=T,fig.width=8, fig.height=5.5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\\%, 98.7\\% and 99.1\\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.">>= 
+<<SimDataScatterplots2,echo=F,include=F,eval=T,fig.width=8, fig.height=5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\\%, 98.7\\% and 99.1\\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.">>= 
+library(scales) 
 ### Try 2d binning with MVN data
 n=100000
 set.seed(31415)
@@ -752,6 +754,7 @@ alldat$type <- factor(alldat$type, levels=c("Exponential","Normal","Uniform"))
 
 qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1))+
   theme_bw() + 
+  theme(plot.margin =unit(c(0.1,0.1,0.1,.1),"cm")) +
   #ggtitle("Scatterplots of Simulated Data") +
   xlab("X") + ylab("Y") + 
   scale_x_continuous(breaks=c(0,25,50,75,100)) + 
@@ -763,7 +766,7 @@ ggsave("./figure/SimScatters.png", width=8, height=5.5, dpi=900)
 
 \begin{figure}[hbtp]
 \begin{center}
- \includegraphics[keepaspectratio=TRUE,width=.99\textwidth]{./figure/SimScatters.png}
+ \includegraphics[keepaspectratio=TRUE,width=.9\textwidth]{./figure/SimScatters.png}
 	\caption[Scatterplots of fine and coarse versions of the simulated bivariate data.]{\label{fig:SimDataScatterplots} Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\%, 98.7\% and 99.1\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.}
 	\end{center}
 \end{figure}
