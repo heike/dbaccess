@@ -842,7 +842,7 @@ While bin widths can be chosen as any positive real value, bin widths should be 
 To demonstrate the importance of properly selecting binwidths we consider the coarse version of the simulated bivariate-uniform data which is recorded to a resolution of two units in each dimension. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with one-by-one unit bins, vertical and horizontal artificial stripes with five-by-five unit bins, and the appropriate view of an evenly spread density with four-by-four unit bins.  Note that random binning is effective at smoothing out the artificial striping patterns when non-integer multiples of the data resolution are selected.
 
 
-<<UniformStripes, echo=F,include=T,eval=T,fig.width=7, fig.height=3, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots of coarse uniform data.">>= 
+<<UniformStripes, echo=F,include=T,eval=T,fig.width=7, fig.height=3, out.width='.99\\linewidth', fig.pos='hbtp',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots of coarse uniform data.">>= 
 # Commented out code for data generation: run once then recomment
 ### Create data to demonstrate stripes from improper binwidths
 # binoutcoarse1 <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,1,1,type="standard")[[1]]
@@ -904,25 +904,29 @@ ggplot(aes(x=binxs, y=binys), data=allbindat) +
 @
 
 
-The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density in outermost bins.  Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of ten-by-ten unit bins for the fine exponential data with two different origin choices: (0,0) and (-9,-9). The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are largely empty due to the negative regions. The binning origin at (0,0) is also superior in terms of the net spatial loss, which is about seven percent lower than for the (-9,-9) origin. For data with very fine resolution, it is a good idea to set the origin at the minimum value for each dimension. 
+The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density near a natural boundary -- e.g. weights of small items bounded below at 0 -- where the origin should align with the boundary so that the outermost bins do not cover empty density regions. As an example, Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of ten-by-ten unit bins for the fine exponential data where the binning origin at (0,0) incurs seven percent lower spatial loss than for the (-9,-9) origin due to the heavy overlap into negative regions.
+%The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are largely empty due to the negative regions. 
 
-<<ExponentialOriginPlots, echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.9\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots for the fine exponential data using standard binning with 10X10 square bins with origins at (0,0) and (-9,-9). The bold lines at x=0 and y=0 denote the lower bounds of the data.">>= 
+
+<<ExponentialOriginPlots, echo=F,include=T,eval=T,fig.width=8, fig.height=3, out.width='.9\\linewidth', fig.pos='hbtp',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots for the fine exponential data using standard binning with 10X10 square bins with origins at (0,0) and (-9,-9). The bold lines denote data lower bounds.">>= 
 
 #create binned data for fine exponential with 10X10 bins at good and bad origin
 binoutExp5 <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,0,0,10,10,type="standard")
 binoutExp5offset <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,-9,-9,10,10,type="standard")
 
 p1 <- qplot(binxs, binys, geom="tile", fill=log(binfreq), data=binoutExp5[[1]]) +  
-  ggtitle("Origin at (0,0)") +
+#  ggtitle("Origin at (0,0)") +
   scale_fill_gradient(low="#56B1F7", high="#132B43") + 
-  theme_bw() + theme(legend.position="none",
+  theme_bw() + theme(plot.margin = unit(c(0.1,0.1,-0.5, 0.1),"cm"),
+                     legend.position="none",
                      aspect.ratio=1, panel.grid= element_blank()) +
   xlab("") + ylab("")+ geom_hline(yintercept=0) + geom_vline(xintercept=0)
 
 p2 <- qplot(binxs, binys, geom="tile", fill=log(binfreq), data=binoutExp5offset[[1]]) +  
-  ggtitle("Origin at (-9,-9)") + 
+#  ggtitle("Origin at (-9,-9)") + 
   scale_fill_gradient(low="#56B1F7", high="#132B43") + 
-  theme_bw() + theme(legend.position="none",
+  theme_bw() + theme(plot.margin = unit(c(0.1,0.1,-0.5, 0.1),"cm"),
+                     legend.position="none",
                      aspect.ratio=1, panel.grid= element_blank()) +
   xlab("") + ylab("") + geom_hline(yintercept=0) + geom_vline(xintercept=0)
 
@@ -933,21 +937,17 @@ grid.arrange(p1,p2,nrow=1)
 
 @
 
+For data with a coarse resolution the location of the origin is important because the origin controls the proximity of possible data values to bin centers. We define the \textit{origin offset} for each dimension, as the tuple, ($o_x$, $o_y$), by which we offset the bivariate bin origin from the data minima, ($x_{(1)}$, $y_{(1)}$). Thus the origin offset indicates the number of units in each dimension to shift the binning origin below the origin naturally encouraged by the data, resulting in $(\beta_{0,x},\beta_{0,y})= (x_{(1)}, y_{(1)}) - (o_x, o_y)$.
+% %
+% \begin{eqnarray}\label{OriginOffset}
+% (\beta_{0,x},\beta_{0,y}) = (x_{(1)}, y_{(1)}) - (o_x, o_y),
+% \end{eqnarray}  
+% %
+ It can be shown analytically that an origin offset of ($\alpha_x/2$,$\alpha_y/2$) units  minimizes the net spatial loss in the situation with the following three properties: (i) data are recorded to a resolution of $\alpha_x$ units in the $X$ dimension and $\alpha_y$ units in the $Y$ dimension, (ii) points are symmetric distributed within rectangular bins, (iii) the bin dimensions are integer multiples of $\alpha_x$ and $\alpha_y$, respectively (see proof in Appendix~\ref{proof:offset}). 
+ 
+In practice the ($\alpha_x/2$,$\alpha_y/2$) origin offset is found to be a reasonable binning choice for lowering spatial loss for coarse resolution bivariately symmetric data using bin dimensions that are integer multiples of $\alpha_x$ and $\alpha_y$. Figure~\ref{fig:OriginOffsetSimulations} shows how the net spatial loss changes as the origin offset is shifted while using standard rectangular binning for the coarse simulated data sets. Note that for simplicity, changes to the origin offset are made equally in each dimension. Since the coarse data has a 2X2 unit resolution, we pay special attention to an origin offset of (1,1) in order to assess how well the proposed default origin offset at ($\alpha_x/2$,$\alpha_y/2$) works in each scenario. The round glyphs indicate the origin offset where the net loss reaches an absolute minimum in the simulation. For the two symmetrically distributed data sets, normal and uniform, the origin offset of (1,1) was found to either minimize the net spatial loss or achieve a local minimum very near to the overall minimum (within a 0.2\% increase from the minimum spatial loss) for each considered bin size. For the bivariately skewed exponential data, the origin offset of (1,1) minimized net loss for the smaller intervals but was not optimal for the largest intervals; 2.5\% and 7\% above the minimum spatial losses for the 8X8 and 10X10 unit bins, respectively.
 
-For data with a coarse resolution the location of the origin is also important because the origin controls the proximity of possible data values to bin centers. We define the \textit{origin offset} for each dimension, as the tuple, ($o_x$, $o_y$), by which we shift the bivariate bin origin $(\beta_{0,x},\beta_{0,y})$ from the minimal values in $x$ and $y$:
-%
-\begin{eqnarray}\label{OriginOffset}
-(\beta_{0,x},\beta_{0,y}) = (x_{(1)}, y_{(1)}) - (o_x, o_y),
-\end{eqnarray}  
-%
-where $x_{(1)}$ and $y_{(1)}$ are the minimal data values in $x$ and $y$. %, and $(o_x, o_y)$ is the origin offset. 
-Thus the offset indicates the number of units in each dimension to shift the binning origin below the origin naturally encouraged by the data. 
-
-It can be shown analytically that an origin offset of ($\alpha_x/2$,$\alpha_y/2$) units  minimizes the net spatial loss in the situation with the following three properties: (i) data are recorded to a resolution of $\alpha_x$ units in the $X$ dimension and $\alpha_y$ units in the $Y$ dimension, (ii) points are symmetric distributed within rectangular bins, (iii) the bin dimensions are integer multiples of $\alpha_x$ and $\alpha_y$, respectively (see proof in Appendix~\ref{proof:offset}). In practice the ($\alpha_x/2$,$\alpha_y/2$) origin offset is found to be a reasonable choice for lowering spatial loss for symmetric bivariate data at a coarse resolution while using bin dimensions that are integer multiples of $\alpha_x$ and $\alpha_y$.
-
-Figure~\ref{fig:OriginOffsetSimulations} shows how the net spatial loss changes as the origin offset is shifted while using standard rectangular binning for the coarse simulated data sets. Note that for simplicity, changes to the origin offset are made equally in each dimension, thus shifting the origin at a 45 degree angle. Since the coarse data has a 2X2 unit resolution, we pay special attention to an origin offset of (1,1) in order to assess how well the theoretically optimal origin offset at ($\alpha_x/2$,$\alpha_y/2$) works for data that violate the theoretical assumptions to differing degrees. The round glyphs indicate the origin offset where the net loss reaches an absolute minimum in the simulation. For the two symmetrically distributed data sets, normal and uniform, the origin offset of (1,1) was found to either minimize the net spatial loss or achieve a local minimum very near to the overall minimum (within a 0.2\% increase from the minimum spatial loss) for each considered bin size. For the bivariately skewed exponential data, the origin offset of (1,1) minimized net loss for the smaller intervals but was not optimal for the largest intervals; 2.5\% and 7\% above the minimum spatial losses for the 8X8 and 10X10 unit bins, respectively.
-
-<<OriginOffsetSimulations, echo=F,include=T,eval=T,fig.width=8, fig.height=4, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Net spatial loss for coarse simulated data at a 2X2 unit resolution using various sized square bins over the range of possible origin offsets. The vertical gray line in each facet indicates the origin offset of (1,1).">>= 
+<<OriginOffsetSimulations, echo=F,include=T,eval=T,fig.width=8, fig.height=4, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Net spatial loss 2X2 unit resolution data using various sized square bins over the range of possible origin offsets. The vertical gray lines indicate origin offset of (1,1).">>= 
 ##  Check out the spatial loss for the data that is recorded to resolution = alpha at various origin offsets
 # standard and random binning with bin sizes that are scalar multiples of the data resolution
 # save spatial loss information
@@ -1534,6 +1534,9 @@ If the same conditions are extended to the two dimensional case, then the origin
 \end{appendix}
 
 \bibliographystyle{asa}
+
+\spacingset{1} % reference spacing
+
 \bibliography{references}
 
 \end{document}
