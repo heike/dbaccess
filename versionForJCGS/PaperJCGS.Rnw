@@ -1020,11 +1020,11 @@ qplot(originx,totalSpatialLoss/1000,geom="path",group=distrib, colour=distrib,
 \label{FreqBinningSpec}
 
 
-The reduced binned data from spatial binning contains the center and count information for all bins. The bin frequencies may be mapped continuously to a precisely rendered shade, however it is naive to believe that human perception will be able to perfectly extract that information. There is implicitly loss of frequency information occurring when the shade of a tile is visually mapped back to a frequency through the use of a shading scale index. Bin frequencies may themselves be binned in order to discretize the color scale for the binned scatterplot, thus making the loss explicit.
+The reduced binned data from spatial binning contains the center and count information for all bins. The bin frequencies may be mapped continuously to a precisely rendered shade, however it is naive to believe that human perception will be able to perfectly extract that information as a numeric value. There is implicitly loss of frequency information occurring when the shade of a tile is visually mapped back to a frequency through the use of a shading scale index. Bin frequencies may themselves be binned in order to discretize the color scale for the binned scatterplot, thus making the loss explicit.
 
 Figure~\ref{fig:StandardFreqBinning4710none} displays binned scatterplots with varying numbers of  standard binned frequency groups. If we attempt to discern differences between similarly shaded tiles: it is trivial when only four shades exist, it becomes much more difficult at seven bins, and at ten frequency bins we are hardly able to discriminate better than in continuous shading. This aligns with Healey and Enn's theory on the number of discernible colors \citep{colorperception}. Our exploration of frequency loss will focus on frequency binning with at most ten bins because above this we experience implicit frequency from perceptual bounds that are not well reflected in the explicitly defined frequency loss. 
 
-<<StandardFreqBinning4710none,echo=F,include=T,eval=T,fig.width=10, fig.height=3, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Binned scatterplots for the simulated bivarate normal data with varying numbers of standard binned frequency groups. At 10 frequency bins the shades are difficult to distinguish, with little difference from a binned scatterplot with continuous frequency shading.">>= 
+<<StandardFreqBinning4710none,echo=F,include=T,eval=T,fig.width=10, fig.height=3, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Binned scatterplots for the simulated bivarate normal data with varying numbers of standard binned frequency groups.">>= 
 binout1 <- RectBin2d(datlist[[2]]$x,datlist[[2]]$y,0,0,5,5,type="standard")
 binoutFreqGroups4 <- freqBin(binout1, binType="standard", ncolor=4, logCount=FALSE)
 binoutFreqGroups7 <- freqBin(binout1, binType="standard", ncolor=7, logCount=FALSE)
@@ -1067,13 +1067,16 @@ p0 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
 grid.arrange(p4,p7,p10,p0,nrow=1)
 @
 
-The loss of frequency information in frequency binning is dependent on the selection of a discrete color mapping, where the binning algorithm and number of frequency bins must be specified. The top row in Figure~\ref{fig:FreqLossCompare} displays the frequency loss from using standard and quantile frequency binning algorithms, with between one and ten frequency bins, from each set of simulated data. We first notice the large difference in the magnitude of frequency losses based on the bivariate distribution; frequency losses are highest for the exponential data, lower for the normal data, and lowest for the uniform data. We also note that the frequency loss is a decreasing function of the number of frequency bins for both binning algorithms. This relationship largely flattens out after the fourth frequency bin, each subsequent bin reducing the frequency loss less than the previous. Thus we should consider using between four and seven bin shades in order to reduce loss while also allowing for easy perception of frequency groups in the binned scatterplot. Lastly, the frequency loss with the standard frequency binning is be higher than for the quantile-based algorithm when a minimal number of bins are used. But in all three simulated data sets, the losses drop to comparable levels for each algorithm when four or more frequency bins are used. Therefore, it is strongly recommended to use the quantile-based algorithm to bin untransformed frequencies.
+The loss of frequency information in frequency binning is dependent on the selection of a discrete color mapping, where the binning algorithm and number of frequency bins must be specified. Frequency loss is definitionally a decreasing function of the number of frequency bins for both standard and quantile frequency binning algorithms. The top row in Figure~\ref{fig:FreqLossCompare} displays the frequency loss from using both binning algorithms, with between one and ten frequency bins, from each set of simulated data. We first note the large difference in the magnitude of frequency losses based on the bivariate distribution; frequency losses are highest for the exponential data, lower for the normal data, and lowest for the uniform data. The decreasing frequency loss for both algorithms flattens out after the fourth frequency bin, each subsequent bin reducing the frequency loss less than the previous. Thus we should consider using between four and seven bin shades in order to reduce loss while also allowing for easy perception of frequency groups in the binned scatterplot.
 
-Due to the difference in scales between counts and log counts, the frequency loss and log frequency loss can not be directly compared. The bottom row of Figure~\ref{fig:FreqLossCompare} displays the log frequency loss from using standard and quantile algorithms for binning the \textit{log} counts for bins from the same sets of simulated data. Log frequency binning behaved very similarly to standard frequency binning, where log frequency loss decreased as the number of frequency bins increased. The same advice to use between four and seven frequency bins also holds for shading a binned scatterplot based on log counts. 
+Log transforming the frequencies prior to binning and using quantile based binning on the raw frequencies are two methods for dealing with the same problem for binned scatterplots: heavily right skewed bin counts where dense bins visually overshadow any structure in low density bins. It is strongly recommended to use the quantile-based algorithm to bin untransformed frequencies due to the improved handling of skewed bin count distibutions while maintaining similar frequency loss to standard frequency binning when four to seven frequency bins are used, as seen in Figure~\ref{fig:FreqLossCompare}. Frequency groups for quantile binning are invariant to the log transformation because a monotone transformation does not affect groupings based on quantiles, thus it is preferable leave the frequencies untransformed before quantile binning for better contextual interpretability. %In the common situation where bin frequencies are heavily skewed, the choice is between quantile frequency binning and standard log frequency binning.  
 
-<<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=7, out.width='.99\\linewidth', fig.pos='H',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively, using reduced binned data from each bivariate distribution. ",fig.scap="Lineplots for total frequency losses from standard and quantile binning for simulated bivariate data. ">>= 
+
+<<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=7, out.width='.99\\linewidth', fig.pos='hbtp',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively.",fig.scap="Lineplots for total frequency losses from standard and quantile binning for simulated bivariate data. ">>= 
 ### Loop over ncolors 1 to 10 and also over data distribution
 # find freq loss from standard, quantile, logCount
+detach("package:dplyr", unload=TRUE)
+source("BinningLossFunctions.R")
 freqLossSimDat <- NULL
 distrib <- c("Uniform", "Normal", "Exponential")
 for (distidx in 1:3){
@@ -1091,8 +1094,18 @@ for (distidx in 1:3){
 }
 
 freqLossSimDat$FreqBinType <- factor(freqLossSimDat$FreqBinType , levels= c("Standard", "Quantile", "Standard Log", "Quantile Log"))
+# freqLossSimDat$FreqLossType <- "Total Freq Loss"
+# freqLossSimDat$FreqLossType[which(freqLossSimDat$FreqBinType=="Standard Log" |freqLossSimDat$FreqBinType=="Quantile Log" )] <- "Total Log Freq Loss"
+# 
+# qplot(ncolor, totalFreqLoss, geom="path",linetype=FreqBinType,
+#       data=freqLossSimDat , color = FreqBinType, size=I(1)) +
+#   facet_grid(FreqLossType~DistType, scales="free") +  theme_bw() +
+#   scale_x_continuous(breaks=1:10) +
+#   xlab("Freq Bins") + ylab("Total Freq Loss") + 
+#   theme(legend.position="bottom",plot.margin = unit(c(.1,.1,.1,.1),"cm"))
+# 
 
-plotdat <- freqLossSimDat[(freqLossSimDat$FreqBinType!="Standard Log" & freqLossSimDat$FreqBinType!="Quantile Log" & freqLossSimDat$DistType=="Exponential"),]
+plotdat <- freqLossSimDat[(freqLossSimDat$FreqBinType!="Standard Log" & freqLossSimDat$FreqBinType!="Quantile Log" &  freqLossSimDat$DistType=="Exponential"),]
 p1 <- qplot(ncolor, totalFreqLoss, geom="path",linetype=FreqBinType,
       data=plotdat , color = FreqBinType, size=I(1)) +
   facet_grid(.~DistType, scales="free_y") +  theme_bw() +
@@ -1143,88 +1156,90 @@ p6 <-qplot(ncolor, totalFreqLoss, geom="path",linetype=FreqBinType,
 grid.arrange(p1,p2,p3,p4,p5,p6, nrow=2)
 @
 
-Log transforming the frequencies prior to binning and using quantile based binning on the raw frequencies are two methods for dealing with the same problem for binned scatterplots: heavily right skewed bin counts where dense bins visually overshadow any structure in low density bins. Frequency groups for quantile binning are invariant to the log transformation because a monotone transformation does not affect groupings based on quantiles, thus it is preferable leave the frequencies untransformed before quantile binning for better contextual interpretability. In the common situation where bin frequencies are heavily skewed, the choice is between quantile frequency binning and standard log frequency binning.
+Due to the difference in scales between counts and log counts, the frequency loss and log frequency loss can not be directly compared. The bottom row of Figure~\ref{fig:FreqLossCompare} displays the log frequency loss from using standard and quantile algorithms for binning the \textit{log} counts for bins from the same sets of simulated data. Log frequency binning behaved very similarly to standard frequency binning, where log frequency loss decreased as the number of frequency bins increased. The same advice to use between four and seven frequency bins also holds for shading a binned scatterplot based on log counts. Since the loss scales are not comparable, the choice is guided by desired interpretation. 
+%Figure~\ref{freqbinning} shows binned scatterplots for the simulated normal data with quantile frequency binning and standard log frequency binning.
+For standard log frequency binning, the shade is to be interpreted as an ordinal indicator based on equally spaced groupings of log bin frequencies; whereas for quantile frequency binning the shade denotes groups based on frequency quantiles. This is analogous to the difference in interpreting a histogram of log transformed data and a boxplot of untransformed data in univariate visualization. Both shading schemes are effective at reducing the visual impact of the highest density bins near the center of each plot, allowing for the differences in the surrounding bin frequencies to be emphasized. 
+%It should be noted that both frequency binning algorithms produced very similar looking binned scatterplots, but this will not always be the case. It occurred in this scenario because the distribution of log bin frequencies from the bivariate normal data is nearly uniform, thus the standard log frequency binning aligns closely with groupings from the quantile frequency binning.
 
-Since the loss scales are not comparable, the choice is guided by desired interpretation. 
-Figure~\ref{freqbinning} shows binned scatterplots for the simulated normal data with quantile frequency binning and standard log frequency binning. For standard log frequency binning, the shade is to be interpreted as an ordinal indicator based on equally spaced groupings of log bin frequencies; whereas for quantile frequency binning the shade denotes groups based on frequency quantiles. This is analogous to the difference in interpreting a histogram of log transformed data and a boxplot of untransformed data in univariate visualization. Both shading schemes are effective at reducing the visual impact of the highest density bins near the center of each plot, allowing for the differences in the surrounding bin frequencies to be emphasized. It should be noted that both frequency binning algorithms produced very similar looking binned scatterplots, but this will not always be the case. It occurred in this scenario because the distribution of log bin frequencies from the bivariate normal data is nearly uniform, thus the standard log frequency binning aligns closely with groupings from the quantile frequency binning.
 
-\begin{figure}[hbtp]
-<<FreqBinPlots, echo=FALSE, out.width='\\linewidth',fig.width=10, fig.height=4.8>>=
-binout1 <- RectBin2d(datlist[[2]]$x,datlist[[2]]$y,0,0,5,5,type="standard")
-freqgrps = 5
-binoutFreqGroups <- freqBin(binout1, binType="standard", ncolor=freqgrps, logCount=FALSE)
-binoutQuantFreqGroups <- freqBin(binout1, binType="quantile", ncolor=freqgrps, logCount=FALSE)
-binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=freqgrps, logCount=TRUE)
-binoutQuantLogFreqGroups <- freqBin(binout1, binType="quantile", ncolor=freqgrps, logCount=TRUE)
-cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:freqgrps)/freqgrps)
- 
-# #Plot with Binned Frequencies
-# labels = paste(unique(binoutFreqGroups[[1]]$freqlabel), "\n(", unique(binoutFreqGroups[[1]]$freqgroup), ")", sep="")
-# p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutFreqGroups[[1]],
-#             main="Standard Freq Binning") +
-#     xlab("") + ylab("")+
-#   scale_fill_manual("Frequencies", values=cols, 
-#                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
-#                                            title.position = "top"),
-#                       breaks=unique(binoutFreqGroups[[1]]$freqgroup),
-#                       labels=labels) + 
-#   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-#                      legend.key.width = unit(1, "cm"),
-#                      panel.grid= element_blank(),
-#                      plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
-#                      legend.text=element_text(size=12) )
-
-# Plot with Quantile Binned Frequencies
-labels = paste(unique(binoutQuantFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantFreqGroups[[1]]$freqgroup), ")", sep="")
-p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutQuantFreqGroups[[1]],
-            main="Quantile Freq Binning") +
-    xlab("") + ylab("")+
-  scale_fill_manual("Frequencies", values=cols, 
-                      guide = guide_legend(label.position="bottom", label.hjust=0.5,  
-                                           title.position = "top"),
-                      labels=labels) + 
-  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-                     legend.key.width = unit(1, "cm"),
-                     panel.grid= element_blank(),
-                     plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
-                     legend.text=element_text(size=12) ) 
-# Plot with standard binned Log Frequencies
-labels = paste(unique(binoutLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutLogFreqGroups[[1]]$freqgroup), ")", sep="")
-p4 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutLogFreqGroups[[1]],
-            main="Standard Log Freq Binning") +
-    xlab("") + ylab("")+
-  scale_fill_manual("Log Frequencies", values=cols, 
-                      guide = guide_legend(label.position="bottom", label.hjust=0.5,  
-                                           title.position = "top"),
-                      breaks=unique(binoutLogFreqGroups[[1]]$freqgroup),
-                      labels=labels) + 
-  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-                     legend.key.width = unit(1, "cm"),
-                     panel.grid= element_blank(),
-                     plot.margin = unit(c(0.5,.1,.1,.1),"cm") ,
-                     legend.text=element_text(size=12)) 
-
-# # Plot with quantile binned Log Frequencies
-# labels = paste(unique(binoutQuantLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantLogFreqGroups[[1]]$freqgroup), ")", sep="")
-# p5 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup),
-#             data=binoutQuantLogFreqGroups[[1]],
-#             main="Quantile Log Freq Binning") +
-#     xlab("") + ylab("")+
-#   scale_fill_manual("Log Frequencies", values=cols, 
-#                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
-#                                            title.position = "top"),
-#                       breaks=unique(binoutQuantLogFreqGroups[[1]]$freqgroup),
-#                       labels=labels) + 
-#   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-#                      legend.key.width = unit(1, "cm"),
-#                      panel.grid= element_blank(),
-#                      plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
-#                      legend.text=element_text(size=12)) 
- 
-grid.arrange(p3,p4, nrow=1)
-@
-\caption[Frequency binned scatterplots for simulated bivarate normal data. ]{\label{freqbinning}Simulated bivariate normal data spatially binned using standard algorithm with 5X5 unit bins and origin at (0,0). Binned scatterplots with five frequency bins from quantile frequency binning (left) and standard log frequency binning (right). }
-\end{figure}
+%' 
+%' \begin{figure}[hbtp]
+%' <<FreqBinPlots, echo=FALSE, out.width='\\linewidth',fig.width=10, fig.height=4.8>>=
+%' binout1 <- RectBin2d(datlist[[2]]$x,datlist[[2]]$y,0,0,5,5,type="standard")
+%' freqgrps = 5
+%' binoutFreqGroups <- freqBin(binout1, binType="standard", ncolor=freqgrps, logCount=FALSE)
+%' binoutQuantFreqGroups <- freqBin(binout1, binType="quantile", ncolor=freqgrps, logCount=FALSE)
+%' binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=freqgrps, logCount=TRUE)
+%' binoutQuantLogFreqGroups <- freqBin(binout1, binType="quantile", ncolor=freqgrps, logCount=TRUE)
+%' cols <- seq_gradient_pal(low="#56B1F7", high="#132B43", space="Lab")((0:freqgrps)/freqgrps)
+%'  
+%' # #Plot with Binned Frequencies
+%' # labels = paste(unique(binoutFreqGroups[[1]]$freqlabel), "\n(", unique(binoutFreqGroups[[1]]$freqgroup), ")", sep="")
+%' # p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutFreqGroups[[1]],
+%' #             main="Standard Freq Binning") +
+%' #     xlab("") + ylab("")+
+%' #   scale_fill_manual("Frequencies", values=cols, 
+%' #                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+%' #                                            title.position = "top"),
+%' #                       breaks=unique(binoutFreqGroups[[1]]$freqgroup),
+%' #                       labels=labels) + 
+%' #   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+%' #                      legend.key.width = unit(1, "cm"),
+%' #                      panel.grid= element_blank(),
+%' #                      plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+%' #                      legend.text=element_text(size=12) )
+%' 
+%' # Plot with Quantile Binned Frequencies
+%' labels = paste(unique(binoutQuantFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantFreqGroups[[1]]$freqgroup), ")", sep="")
+%' p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutQuantFreqGroups[[1]],
+%'             main="Quantile Freq Binning") +
+%'     xlab("") + ylab("")+
+%'   scale_fill_manual("Frequencies", values=cols, 
+%'                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+%'                                            title.position = "top"),
+%'                       labels=labels) + 
+%'   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+%'                      legend.key.width = unit(1, "cm"),
+%'                      panel.grid= element_blank(),
+%'                      plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+%'                      legend.text=element_text(size=12) ) 
+%' # Plot with standard binned Log Frequencies
+%' labels = paste(unique(binoutLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutLogFreqGroups[[1]]$freqgroup), ")", sep="")
+%' p4 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup), data=binoutLogFreqGroups[[1]],
+%'             main="Standard Log Freq Binning") +
+%'     xlab("") + ylab("")+
+%'   scale_fill_manual("Log Frequencies", values=cols, 
+%'                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+%'                                            title.position = "top"),
+%'                       breaks=unique(binoutLogFreqGroups[[1]]$freqgroup),
+%'                       labels=labels) + 
+%'   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+%'                      legend.key.width = unit(1, "cm"),
+%'                      panel.grid= element_blank(),
+%'                      plot.margin = unit(c(0.5,.1,.1,.1),"cm") ,
+%'                      legend.text=element_text(size=12)) 
+%' 
+%' # # Plot with quantile binned Log Frequencies
+%' # labels = paste(unique(binoutQuantLogFreqGroups[[1]]$freqlabel), "\n(", unique(binoutQuantLogFreqGroups[[1]]$freqgroup), ")", sep="")
+%' # p5 <- qplot(binxs, binys, geom="tile", fill=factor(freqgroup),
+%' #             data=binoutQuantLogFreqGroups[[1]],
+%' #             main="Quantile Log Freq Binning") +
+%' #     xlab("") + ylab("")+
+%' #   scale_fill_manual("Log Frequencies", values=cols, 
+%' #                       guide = guide_legend(label.position="bottom", label.hjust=0.5,  
+%' #                                            title.position = "top"),
+%' #                       breaks=unique(binoutQuantLogFreqGroups[[1]]$freqgroup),
+%' #                       labels=labels) + 
+%' #   theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+%' #                      legend.key.width = unit(1, "cm"),
+%' #                      panel.grid= element_blank(),
+%' #                      plot.margin = unit(c(0.5,.1,.1,.1),"cm"),
+%' #                      legend.text=element_text(size=12)) 
+%'  
+%' grid.arrange(p3,p4, nrow=1)
+%' @
+%' \caption[Frequency binned scatterplots for simulated bivarate normal data. ]{\label{freqbinning}Simulated bivariate normal data spatially binned using standard algorithm with 5X5 unit bins and origin at (0,0). Binned scatterplots with five frequency bins from quantile frequency binning (left) and standard log frequency binning (right). }
+%' \end{figure}
 
 %-----------------------------------------------------------------------------
 
