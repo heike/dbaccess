@@ -143,7 +143,7 @@ qplot(G, SO, geom="tile", fill=Freq, data=d1) +
 # ggplot(d1.hex2) + geom_subplot(aes(x=G, y=SO, group=id,  subplot=geom_star(aes(r=r, angle=theta, fill=log(Freq), colour=log(Freq)), r.zero=TRUE)))
 @
 
-Technological advances have facilitated collection and dissemination of large data as records are digitized and our lives are increasingly lived online. According to an EMC report in 2014 ``the digital universe is doubling in size every two years and will multiply 10-fold between 2013 and 2020 - from 4.4 trillion gigabytes to 44 trillion gigabytes" (\url{http://www.emc.com/about/news/press/2014/20140409-01.htm}). This ``Data Deluge" of the Big Data Age (NY Times, Feb 2012) poses exciting challenges to data scientists everywhere: ``It's a revolution $\dots$ The march of quantification, made possible by enormous new sources of data, will sweep through academia, business and government. There is no area that is going to be untouched"-- Gary King, Harvard Institute.  
+Technological advances have facilitated collection and dissemination of large data as records are digitized and our lives are increasingly lived online. According to an EMC report in 2014 ``the digital universe is doubling in size every two years and will multiply 10-fold between 2013 and 2020 - from 4.4 trillion gigabytes to 44 trillion gigabytes". \footnote{Access 12/18/2015 at \url{http://www.emc.com/about/news/press/2014/20140409-01.htm}} This ``Data Deluge" of the Big Data Age (NY Times, Feb 2012) poses exciting challenges to data scientists everywhere: ``It's a revolution $\dots$ The march of quantification, made possible by enormous new sources of data, will sweep through academia, business and government. There is no area that is going to be untouched"-- Gary King, Harvard Institute.  
  
 Data sets with millions of records and thousands of variables are not uncommon. \citet{Friedman97} proposed in his paper on data mining and statistics that ``Every time the amount of data increases by a factor of ten, we should totally rethink how we analyze it". \citet{jacobs2009} echoed the sentiment, stating that ``big data should be defined at any point in time as \textit{data whose size forces us to look beyond the tried-and-true methods that are prevalent at that time}". The same holds true for visualizations. With a 100-1000 fold increase in the amount of data, the utility of some of our most commonly used graphical tools, such as scatterplots, deteriorates quickly \citep{gold}. 
 
@@ -777,6 +777,8 @@ The \textit{data resolution} is defined as the smallest increment between succes
 \subsection{Rectangular Binning Specifications and Spatial Loss}
 
 For rectangular binning specification options include the type of algorithm, location of the origin and binwidths for each dimension. To explore the spatial loss properties under different binning approaches we begin with a comparison of standard and random binning. Figure~\ref{fig:SpatialLossCompare} displays the net spatial loss from binning the fine resolution simulated data with standard and random binning algorithms using square bins with a sizes ranging from 2 units$^2$ to 20 units$^2$. For equal bin sizes, the net spatial loss under standard binning is always less than or equal to the net spatial loss under random binning. This is because the minimal spatial loss for each data point under random binning is to allocate to the nearest bin center, which is how the point would be allocated in standard binning. The net spatial loss from random binning becomes increasingly costly as bin sizes increase, as indicated by the widening gap between the lines and the steeper slopes.  
+
+If we view the binned scatterplot as a visual estimator of the bivariate density then we may consider a few desirable properties of estimators: unbiasedness, consistency and efficiency. Binned scatterplots shift visual emphasis from true location of individual points to the geometric centers of tiles, making them visually biased displays of density. However, as bin sizes become increasingly fine, the bias decreases; with no visual bias when minimal binning perfectly matches bins with the data resolution the density estimate. Also, the density estimation more perfectly reflect the bivariate density as the sample size increases; thus making the binned scatterplot a consistent visual estimator. We may also consider a minimal binned scatterplot as a spatially efficient estimator because it minimizes spatial loss in the visual density estimator. It is worth noting that a density estimate requires the combination of spatial and frequency information and that the estimation properties were considered only through the lens of spatial loss. This makes the assumption that frequency information is rendered through a precise continuous mapping of bin frequencies. %Based on the conflicting effects on the estimation properties, of bin size can be seen as a smoother for density estimate that can be adjusted to cut through the noise in the data, but as with all data smoothers caution should be used so that fine signal is not destroyed.  
 %
 <<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=3.5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss and computation times over a range of bin sizes for standard and random binning.">>= 
 ## create binned data for standard and random using variety of bin sizes (from 2 to 20, by 2)
@@ -1072,7 +1074,7 @@ The loss of frequency information in frequency binning is dependent on the selec
 Log transforming the frequencies prior to binning and using quantile based binning on the raw frequencies are two methods for dealing with the same problem for binned scatterplots: heavily right skewed bin counts where dense bins visually overshadow any structure in low density bins. It is strongly recommended to use the quantile-based algorithm to bin untransformed frequencies due to the improved handling of skewed bin count distibutions while maintaining similar frequency loss to standard frequency binning when four to seven frequency bins are used, as seen in Figure~\ref{fig:FreqLossCompare}. Frequency groups for quantile binning are invariant to the log transformation because a monotone transformation does not affect groupings based on quantiles, thus it is preferable leave the frequencies untransformed before quantile binning for better contextual interpretability. %In the common situation where bin frequencies are heavily skewed, the choice is between quantile frequency binning and standard log frequency binning.  
 
 
-<<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=7, out.width='.99\\linewidth', fig.pos='hbtp',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively.",fig.scap="Lineplots for total frequency losses from standard and quantile binning for simulated bivariate data. ">>= 
+<<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=7, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively.",fig.scap="Lineplots for total frequency losses from standard and quantile binning for simulated bivariate data. ">>= 
 ### Loop over ncolors 1 to 10 and also over data distribution
 # find freq loss from standard, quantile, logCount
 detach("package:dplyr", unload=TRUE)
@@ -1240,16 +1242,16 @@ For standard log frequency binning, the shade is to be interpreted as an ordinal
 %' @
 %' \caption[Frequency binned scatterplots for simulated bivarate normal data. ]{\label{freqbinning}Simulated bivariate normal data spatially binned using standard algorithm with 5X5 unit bins and origin at (0,0). Binned scatterplots with five frequency bins from quantile frequency binning (left) and standard log frequency binning (right). }
 %' \end{figure}
+% 
+% %-----------------------------------------------------------------------------
+% 
+% \section{Discussion and Examples}
+% 
+% 
+% 
+% The exploration of spatial and frequency loss in the process of creating a binned scatterplot yields a number of important properties and practical recommendations for their construction. These recommendations and loss properties will now be demonstrated through two examples using real bivariate data. First we further explore the baseball pitching data. In a second example, we will investigate the relationship between scheduled and actual departure times for American commercial airline data. 
 
-%-----------------------------------------------------------------------------
-
-\section{Discussion and Examples}
-
-If we view the binned scatterplot as a visual estimator of the bivariate density then we may consider a few desirable properties of estimators: unbiasedness, consistency and efficiency. Binned scatterplots shift visual emphasis from true location of individual points to the geometric centers of tiles, making them visually biased displays of density. However, as bin sizes become increasingly fine, the bias decreases; with no visual bias when minimal binning perfectly matches bins with the data resolution the density estimate. Also, the density estimation more perfectly reflect the bivariate density as the sample size increases; thus making the binned scatterplot a consistent visual estimator. We may also consider a minimal binned scatterplot as a spatially efficient estimator because it minimizes spatial loss in the visual density estimator. It is worth noting that a density estimate requires the combination of spatial and frequency information and that the estimation properties were considered only through the lens of spatial loss. This makes the assumption that frequency information is rendered through a precise continuous mapping of bin frequencies. %Based on the conflicting effects on the estimation properties, of bin size can be seen as a smoother for density estimate that can be adjusted to cut through the noise in the data, but as with all data smoothers caution should be used so that fine signal is not destroyed.  
-
-The exploration of spatial and frequency loss in the process of creating a binned scatterplot yields a number of important properties and practical recommendations for their construction. These recommendations and loss properties will now be demonstrated through two examples using real bivariate data. First we further explore the baseball pitching data. In a second example, we will investigate the relationship between scheduled and actual departure times for American commercial airline data. 
-
-\subsection{Binning Loss in Baseball Data: Strikeout and Game Counts}
+\subsection{Binning Loss in Baseball Data}
 
 <<BaseballBinningExamplePrep, echo=FALSE, eval=TRUE, include=FALSE, cache=TRUE>>=
 # connect <- dbConnect(dbDriver("MySQL"), host="mysql2.stat.iastate.edu", 
@@ -1276,15 +1278,14 @@ standBaseballLoss2X10 <- binoutRecOrigin[[2]]$totalSpatialLoss
 standBaseballLoss2X10PerObs <- binoutRecOrigin[[2]]$totalSpatialLoss / nrow(pitchdat)
 @
 
-We now revisit the baseball data used earlier and construct binned scatterplots to display the relationship between strikeouts and game counts. We begin by specifying the bin dimensions and origin for standard rectangular binning. The data are counts, each variable is therefore recorded as an integer, corresponding to a one game by one strike-out data resolution. We use integer bin widths in each dimension of spatial bins to avoid artificial density stripes. The data has only 42,583 observations, so we can bin on a fine grid without taking an inordinate amount of computation time. We use approximately 50 bins in each dimension; the data range from 1 to 106 games and from 0 to 513 strike-outs, thus we use bins that are two games wide and ten strikeouts high. The origin will be set to a half unit below the minimum value in each dimension, at $(0.5,-0.5)$. 
- 
-The leftmost plot in Figure~\ref{fig:BaseballBinnedScatters2X10} displays the binned scatterplot with a continuous shading of raw bin frequencies. The most striking feature in the frequency distribution is the dark spot in the bottom right of the plot representing a large number of pitchers that played very few games and had very few strikeouts. It is nearly impossible to distinguish the density structure across the remaining bins, representing better pitchers who played many games and earned many strikeouts. 
-In this case there are two frequency binning options that we can employ to deal with this skewness of the distribution of bin counts. Quantile frequency binning using four shade groups (center plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) allows us to visualizes the quartiles of the bin densities. Alternatively, standard log frequency binning using four shade groups (rightmost plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) uses the log transformation to diminish the visual impact of high density bins. Each frequency binning approach adds a layer of complexity to interpreting the shade, however they both effectively emphasize the forked ridges in the density structure. 
+We now revisit the baseball data used earlier and construct binned scatterplots using specification principles developed based on loss properties from the previous sections. We begin by specifying the bin dimensions and origin for standard rectangular binning. We use integer bin widths in each dimension of spatial bins to avoid artificial density stripes because each variable is recorded as an integer, corresponding to a one game by one strike-out data resolution. We desire relatively fine binning of approximately 50 bins in each dimension; the data range from 1 to 106 games and from 0 to 513 strike-outs, thus we set bin dimensions to two games by ten strikeouts. The origin offset of $(0.5,-0.5)$ is used to shift the binning back by a half game and down by one half strikeout to adjust for the data resolution. %The data has only 42,583 observations, so we can bin on a fine grid without taking an inordinate amount of computation time. 
+We find that we have approximately 3\% lower net spatial loss, after standardizing measurement units, for our binning specification using the recommended origin offset than if we were to naively set the binning origin at the minimum data values of one game and zero strikeouts. 
+
 
 <<BaseballBinnedScatters2X10,echo=F,include=T,eval=T,fig.width=12, fig.height=4, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Binned scatterplots for games versus strikeouts.">>=  
  # raw frequencies plot
 p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
-      main="Standard Freq Binning") +
+      main="Raw Freq Binning") +
   xlab("Games (count)") + ylab("Strike Outs (count)")+
   scale_fill_gradient("Frequencies", low="#56B1F7", high="#132B43",
                       guide=guide_colourbar( 
@@ -1348,171 +1349,177 @@ p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutLogFre
 grid.arrange(p1,p2,p3, nrow=1)
 
 @
+ 
+The leftmost plot in Figure~\ref{fig:BaseballBinnedScatters2X10} displays the binned scatterplot with a continuous shading of raw bin frequencies. The most striking feature in the frequency distribution is the dark spot in the bottom right of the plot representing a large number of pitchers that played very few games and had very few strikeouts. It is nearly impossible to distinguish the density structure across the remaining bins, representing better pitchers who played many games and earned many strikeouts. 
+%In this case there are two frequency binning options that we can employ to deal with this skewness of the distribution of bin counts. 
+Quantile frequency binning using four shade groups (center plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) allows us to visualizes the quartiles of the bin densities. Alternatively, standard log frequency binning using four shade groups (rightmost plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) uses the log transformation to diminish the visual impact of high density bins. Each frequency binning approach adds a layer of complexity to interpreting the shade, however they both effectively emphasize the forked ridges in the density structure. 
 
-The interpretability of the net spatial loss in this scenario suffers because the units and scales of the two variables differ. To remedy this, the two variables can be standardized then binned equivalently by rescaling the bin dimension, where the net spatial loss is interpreted as a distance in units of standard deviations. The net spatial loss for the standardized data is the same for each plot in Figure~\ref{fig:BaseballBinnedScatters2X10} because they do not differ in location, only in frequency shading. The net spatial loss is \Sexpr{round(standBaseballLoss2X10,2)} standard deviations, an average of \Sexpr{round(standBaseballLoss2X10PerObs,4)} standard deviation per data point. We also find that we have approximately 3\% lower net spatial loss, on the standardized scale, for our binning specification using the recommended origin offset than if we were to naively set the binning origin at the minimum data values of one game and zero strikeouts. 
+%The interpretability of the net spatial loss in this scenario suffers because the units and scales of the two variables differ. To remedy this, the two variables can be standardized then binned equivalently by rescaling the bin dimension, where the net spatial loss is interpreted as a distance in units of standard deviations. The net spatial loss for the standardized data is the same for each plot in Figure~\ref{fig:BaseballBinnedScatters2X10} because they do not differ in location, only in frequency shading. The net spatial loss is \Sexpr{round(standBaseballLoss2X10,2)} standard deviations, an average of \Sexpr{round(standBaseballLoss2X10PerObs,4)} standard deviation per data point. We also find that we have approximately 3\% lower net spatial loss, on the standardized scale, for our binning specification using the recommended origin offset than if we were to naively set the binning origin at the minimum data values of one game and zero strikeouts. 
 
-%--------------------------------------------------------------------
-
-\subsection{Big Data: Airline Departure Times}
-The Federal Aviation Association (FAA) requires all airlines based in the United States to report   details for every single flight. These are published online by the Bureau of Transportation Services at \url{http://www.transtats.bts.gov/DataIndex.asp}. 
-Every day there are about 16,000 flights across the United States which added up to over 5.8 million flights in 2014. The scheduled and actual departure times for flights in 2014 make up --in uncompressed comma separated form-- a file of about 53 MB. A comparison of scheduled and actual departure times allows us an investigation of on-time performance of air carriers.
-
-Figure~\ref{airline-scatter} shows two plots of the relationship between scheduled versus actual departure times. The plot on the left shows the traditional scatterplot; even while using alpha-blending this results in a severely over-plotted graph. On the right is a minimally binned scatterplot of the reduced data from standard binning at 1-minute intervals. If the origin is offset by a half minute for both departures and arrivals, this binning does not have any spatial loss, because all observations are be centered within bins. The 1-minute standard binning also reduces the data to around 190,000 reduced data triple, approximately 5\% of the original data size.
-
-<<FlightTradScatterplot, echo=F,include=F,eval=F, cache=TRUE>>=
-source("RectangularBinningFunctions.R")
-load(file="./data/DepartDelaysMinutes.RData")
-# Code takes a long long time to compile so ran once, saved to high res png, then set eval=FALSE
-ggplot(aes(x=Scheduled/60, y=Actual/60), data=DepartDelaysMinutes) +
-  geom_point(alpha=.05) + 
-  theme_bw() + theme(aspect.ratio=1,
-                     panel.grid= element_blank(),
-                     legend.text=element_text(size=12) )  +
-  scale_x_continuous("Scheduled Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
-  scale_y_continuous("Actual Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
-  ggtitle("Alpha-Blended Scatterplot of Airline Departure Times") 
-ggsave(filename = "./figure/AlphaScatterAirline2014.png", width= 6, height=6, dpi=300)
-@
-
-<<FlightMinBinScat, echo=F,include=F, cache=TRUE>>=
-source("./data/RectangularBinningFunctions.R")
-load(file="./data/DepartDelaysMinutes.RData")
-# Create minimal binning
-departure1minute <- RectBin2d(xs=DepartDelaysMinutes$Scheduled,ys=DepartDelaysMinutes$Actual, 
-                              originx = -0.5, originy = -0.5, 
-                              widthx = 1, widthy = 1, type="standard")
-# down to 3.261% of original number of rows
-# nrow(departure1minute)/nrow(DepartDelaysMinutes)
-ggplot(aes(x=binxs/60, y=binys/60), data=departure1minute) +
-  geom_tile( aes(fill=binfreq) ) + 
-  scale_x_continuous("Scheduled Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
-  scale_y_continuous("Actual Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
-  ggtitle("Minimally Binned Scatterplot of Airline Departure Times")+ 
-  scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) +
-  theme_bw() + theme(aspect.ratio=1,
-                   panel.grid= element_blank(),
-                   legend.text=element_text(size=12) ) + 
-  geom_abline(intercept=0,slope=1, color="gray70", linetype=3)
-ggsave(filename = "./figure/MinimalBinnedAirline2014.png", width= 6.5, height=6, dpi=300)
-@
-
-\begin{figure}[hbtp]
-  \subfloat[Alpha-Blended Scatterplot of Airline Data]{\includegraphics[keepaspectratio=TRUE,width=.47\textwidth]{./figure/AlphaScatterAirline2014.png}} 
-%   Swap Back at later date (shrinks size of pdf to managable)
-%\subfloat[Million-point sample of Airline Data. \ktm{This plot is not compiling and needs to be reconstructed (my apologies)}]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/RplotFiller.pdf}}\hfil
-\subfloat[Minimally Binned of Airline Data]{\includegraphics[width=.53\linewidth, keepaspectratio=TRUE]{./figure/MinimalBinnedAirline2014.png}}
-
-\caption[Alpha-blended and minimally binned scatterplots for scheduled and actual departure times of airline flights.]{\label{airline-scatter}Scheduled and actual departure times of flights across the United States in 2014. The large scale distributional patterns are visible in both plots, but the plot on the left misses some of the finer level details in scheduling that is visible in the plot on the right.}
-\end{figure}
-
-Both plots show the same large scale distributional patterns: scheduled and actual arrival times are highly correlated, recognizable from the conglomeration of points along the identity line. Scheduled departure times past 6:00 am in the morning are much more common than earlier flights. It is much more likely for a  flight to be delayed than to leave early, leading to the wash-out effect above the line, that is getting thinner with increasing delays. The range of delays on usual days starts at about one hour at 6:00 am and increases during the day to about a two hour delay. The small number of flights before 6:00 am are also visible in both plots. The triangle of observations on the bottom right in both plots is nothing but an artifact of the data collection consisting of flights that are scheduled before midnight, but are delayed to departures past midnight. The cloud of outliers halfway between the two main structures is potentially interesting, since no immediate explanation comes to mind, and would be worthy of a follow-up investigation.
-
-What is not apparent in the alpha-blended scatterplot, is some fine-level structure that the minimally binned scatterplot shows. Note that because we have bin widths equal to the resolution to which the data is recorded in each dimension, we know that the spatial binning algorithm will not cause any \textit{artificial} density stripes. A close inspection of the plot on the right hand side reveals darker colored vertical lines at 30 minute intervals. It is obvious that more flights are scheduled with departures on the hour and at 30 minutes past the hour. 
-
-\begin{figure}[hbtp]
-\includegraphics[width=.49\linewidth,keepaspectratio=true]{./figure/AirlineStdBinning5mins.pdf}
-\includegraphics[width=.49\linewidth,keepaspectratio=true]{./figure/AirlineStdBinning15mins.pdf}
-\caption[Binned scatterplots for scheduled and actual departure times of airline flights using 5X5 and 15X15 minute bins.]{5-minute bins produce a higher-level summary of the data than shown in Figure~\ref{airline-scatter}b. 15-minute bins produce an even more coarse summary of the data.}\label{airline5mins-binning}
-\end{figure}
-
-Figure~\ref{airline5mins-binning} displays the binned scatterplots for the flight departure data with larger bins. Binning data by five-minute intervals produces a more high-level summary of the relationship between actual and scheduled departure time, though it necessarily obscures some of the finer details. In addition, binning data by five minute intervals reduces the size of the data set to a much more manageable 19,787 reduced binned data triples, which can be easily manipulated on probably any modern computer. Binning by 15-minute intervals reduces the data set to a nearly-trivial 3,575 reduced binned data triples, but the graphical summary becomes granular and less appealing at that resolution.
-
-<<airlinesetup,echo=FALSE, eval=FALSE>>=
-setwd("./data/")
-if (!file.exists("airline.csv.gz")) {
-  # HH: I'm not sure, which files these should be ... 
-  # airline <- do.call("rbind", lapply(list.files(), function(i) read.csv(i)))
-  
-  # write.csv(airline, "airline.csv", row.names=FALSE)
-}
-airline <- read.csv("airline.csv.gz")
-na.departure <- (is.na(airline[,8]) + is.na(airline[,9]))> 0
-airline <- airline[!na.departure,8:9]
-
-airline$CRS_DEP_TIME <- floor(airline$CRS_DEP_TIME/100)*60 + airline$CRS_DEP_TIME%%100
-airline$DEP_TIME <- floor(airline$DEP_TIME/100)*60 + airline$DEP_TIME%%100
-
-library(lubridate)
-convert.time <- function(x){
-  floor(x/60) + (x%%60)/60
-}
-
-library(multicore)
-
-if (!file.exists("ReducedAirlineData.csv")) {
-  airline.freq <- ddply(airline, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(unique(i), Freq=nrow(i)))
-  write.csv(airline.freq, "ReducedAirlineData.csv", row.names=FALSE)
-}
-airline.freq <- read.csv("ReducedAirlineData.csv")
-airline.freq.plot <- airline.freq
-airline.freq.plot[,1] <- convert.time(airline.freq.plot[,1])
-airline.freq.plot[,2] <- convert.time(airline.freq.plot[,2])
-airline.freq.plot <- airline.freq.plot[order(airline.freq.plot$Freq),]
-airline.dummy <- airline.freq.plot[1,]
-airline.dummy[1,1] <- NA
-qplot(data=airline.freq.plot, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="blank", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (1 minute bins)") + geom_rect(aes(xmin=CRS_DEP_TIME-3/60, xmax=CRS_DEP_TIME+3/60, ymin=DEP_TIME-3/60, ymax=DEP_TIME+3/60, fill=Freq), alpha=I(.5)) + geom_rect(data=airline.dummy, aes(xmin=CRS_DEP_TIME-3/60, xmax=CRS_DEP_TIME+3/60, ymin=DEP_TIME-3/60, ymax=DEP_TIME+3/60, fill=Freq), aes.inherit=FALSE) + theme_bw()+ theme(legend.position="right") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
-ggsave("AirlineStdBinning1min.pdf", width=7.5, height=6, dpi=2304)
-    
-
-library(ggplot2)
-library(dbData)
-air.sample <- airline.freq.plot[sample(1:nrow(airline.freq.plot), 1000000, replace=TRUE, prob=airline.freq.plot$Freq),1:2]
-
-qplot(data=air.sample, x=CRS_DEP_TIME, y=DEP_TIME, geom="point", alpha=I(.05), xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Sampled Airline Departure Times") + theme_bw()+ theme(legend.position="right") + scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
-ggsave("MillionSample.pdf", width=6, height=6, dpi=576)
-
-if (!file.exists("airlineBin5Std.csv")) {
-  air.binned5 <- binStd(airline.freq, c(5, 5))
-  air.binned5 <- ddply(air.binned5, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(convert.time(unique(i[,1:2])), Freq=sum(i$Freq)))
-  write.csv(air.binned5, "airlineBin5Std.csv", row.names=FALSE)
-}
-# air.binned5.rdm <- binRdm(cbind(airline, Freq=1), c(5, 5))
-# air.binned5.rdm2 <- ddply(air.binned5.rdm, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(convert.time(unique(i[,1:2]), Freq=sum(i$Freq)))
-# write.csv(air.binned5.rdm2, "airlineBin5Rdm.csv", row.names=FALSE)
-
-air.binned5 <- read.csv("airlineBin5Std.csv")
-qplot(data=air.binned5, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (5 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
-ggsave("AirlineStdBinning5mins.pdf", width=6, height=6, dpi=576)
-# 
-# qplot(data=air.binned5.rdm2, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (5 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradient(low="#56B4FB", high="#183347", guide="legend", trans="log")
-# ggsave("AirlineRdmBinning5mins.png", binned, width=6, height=6)
-
-# air.binned <- data.frame(apply(airline, 2, function(i) 15*round(i/15, 0)))
-# air.binned.rdm <- binRdm(airline.freq, c(15, 15))
-# air.binned2 <- ddply(air.binned, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(unique(i), Freq=sum(i$Freq)))
-# write.csv(air.binned2, "airlineBin15.csv", row.names=FALSE)
-air.binned <- read.csv("airlineBin15.csv")
-air.binned2 <- air.binned
-air.binned2[,1] <- convert.time(air.binned[,1])
-air.binned2[,2] <- convert.time(air.binned[,2])
-air.binned.rdm <- read.csv("airlineBin15Rdm.csv")
-air.binned2.rdm <- air.binned.rdm
-air.binned2.rdm[,1] <- convert.time(air.binned.rdm[,1])
-air.binned2.rdm[,2] <- convert.time(air.binned.rdm[,2])
-
-# air.binned2.rdm <- ddply(air.binned.rdm, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(unique(i), Freq=sum(i$Freq)))
-# write.csv(air.binned2.rdm, "airlineBin15Rdm.csv", row.names=FALSE)
-
-binned <- qplot(data=air.binned2, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (15 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
-ggsave("AirlineStdBinning15mins.pdf", binned, width=6, height=6, dpi=576)
-
-# binnedRdm <- qplot(data=air.binned2.rdm, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (15 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
-# ggsave("AirlineRdmBinning15mins.png", binnedRdm, width=8, height=8, dpi=300)
-@
-
-%--------------------------------------------------------------------------------------
 
 \section{Conclusions and Future Work}
 
 Large bivariate data sets are very difficult to visualize in raw form, due to over-plotting of points. Binning allows for the visualization and manipulation of large data sets, and easily translates into binned scatterplots which are more appropriate for the human visual system. Reducing the data for binned scatterplots has distinct computational and visual advantages, however the aggregation comes at the cost of losing precision in spatial and frequency information.
 
-We have presented two algorithms for spatially binning data points; standard and random rectangular binning algorithms. The random binning algorithm displayed strong advantage of avoiding the problem of artificial stripes that occur when data recorded to a coarse resolution are binned using a bin width that was a non-integer multiple of the data resolution. However, the standard binning algorithm is superior due to lower spatial loss. For data with a coarse resolution ($\alpha_x$ units in the X dimension and $\alpha_y$ units in the Y dimension) artificial stripes in the standard binning process can be avoided, if  bin dimensions are chosen as integer multiples of $\alpha_x$ and $\alpha_y$.  We were also able to show through simulation that a reasonable default for the binning uses an origin offset of $(\alpha_x/2, \alpha_y/2)$ because it resulted in minimal or near minimal spatial loss for symmetric data and performed well even for spatially skewed data. 
+We have presented two algorithms for spatially binning data points; standard and random rectangular binning algorithms. The random binning algorithm displayed strong advantage of avoiding the problem of artificial stripes that occur when data recorded to a coarse resolution are binned using a bin width that was a non-integer multiple of the data resolution. However, the standard binning algorithm is superior due to lower spatial loss. For data with a coarse resolution ($\alpha_x$ units in the X dimension and $\alpha_y$ units in the Y dimension) artificial stripes in the standard binning process can be avoided, if  bin dimensions are chosen as integer multiples of $\alpha_x$ and $\alpha_y$.  We were also able to show through simulation that a reasonable default for the binning uses an origin offset of $(\alpha_x/2, \alpha_y/2)$ because it resulted in minimal or near minimal spatial loss for symmetric data and performed well for heavily skewed data. 
 
 Spatial binning with smaller bin dimensions will lead to lower spatial losses; however, finer binning requires more processing time and does not highlight large scale density structure. It is left to the plot designer to decide how much spatial information they are willing to sacrifice in order to simplify the display of density structure. %; we do however suggest to err on the side of smaller bins which allow for visualization of finer density structure with lower spatial loss.
 
 If we elect to use frequency binning to shade tiles ordinally, it is recommended to use between four and seven distinct shades. This is done to minimize the frequency loss within the bounds of human perceptual ability to distinguish multiple shades simultaneously. Using quantile frequency binning or standard log frequency binning are shown to be reasonable methods -- with slight differences of interpretability -- for handling situations with heavily skewed bin counts.
 
 Future implementations of software for constructing binned scatterplots would be well served to allow for choices in specification of binning algorithms. The findings of this research provide suggestions for reasonable default settings of binning parameters that maintain spatial and frequency information and lead to desirable visual properties in the binned scatterplot.
+
+%' 
+%' %--------------------------------------------------------------------
+%' 
+%' \subsection{Big Data: Airline Departure Times}
+%' The Federal Aviation Association (FAA) requires all airlines based in the United States to report   details for every single flight. These are published online by the Bureau of Transportation Services at \url{http://www.transtats.bts.gov/DataIndex.asp}. 
+%' Every day there are about 16,000 flights across the United States which added up to over 5.8 million flights in 2014. The scheduled and actual departure times for flights in 2014 make up --in uncompressed comma separated form-- a file of about 53 MB. A comparison of scheduled and actual departure times allows us an investigation of on-time performance of air carriers.
+%' 
+%' Figure~\ref{airline-scatter} shows two plots of the relationship between scheduled versus actual departure times. The plot on the left shows the traditional scatterplot; even while using alpha-blending this results in a severely over-plotted graph. On the right is a minimally binned scatterplot of the reduced data from standard binning at 1-minute intervals. If the origin is offset by a half minute for both departures and arrivals, this binning does not have any spatial loss, because all observations are be centered within bins. The 1-minute standard binning also reduces the data to around 190,000 reduced data triple, approximately 5\% of the original data size.
+%' 
+%' <<FlightTradScatterplot, echo=F,include=F,eval=F, cache=TRUE>>=
+%' source("RectangularBinningFunctions.R")
+%' load(file="./data/DepartDelaysMinutes.RData")
+%' # Code takes a long long time to compile so ran once, saved to high res png, then set eval=FALSE
+%' ggplot(aes(x=Scheduled/60, y=Actual/60), data=DepartDelaysMinutes) +
+%'   geom_point(alpha=.05) + 
+%'   theme_bw() + theme(aspect.ratio=1,
+%'                      panel.grid= element_blank(),
+%'                      legend.text=element_text(size=12) )  +
+%'   scale_x_continuous("Scheduled Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
+%'   scale_y_continuous("Actual Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
+%'   ggtitle("Alpha-Blended Scatterplot of Airline Departure Times") 
+%' ggsave(filename = "./figure/AlphaScatterAirline2014.png", width= 6, height=6, dpi=300)
+%' @
+%' 
+%' <<FlightMinBinScat, echo=F,include=F, cache=TRUE>>=
+%' source("./data/RectangularBinningFunctions.R")
+%' load(file="./data/DepartDelaysMinutes.RData")
+%' # Create minimal binning
+%' departure1minute <- RectBin2d(xs=DepartDelaysMinutes$Scheduled,ys=DepartDelaysMinutes$Actual, 
+%'                               originx = -0.5, originy = -0.5, 
+%'                               widthx = 1, widthy = 1, type="standard")
+%' # down to 3.261% of original number of rows
+%' # nrow(departure1minute)/nrow(DepartDelaysMinutes)
+%' ggplot(aes(x=binxs/60, y=binys/60), data=departure1minute) +
+%'   geom_tile( aes(fill=binfreq) ) + 
+%'   scale_x_continuous("Scheduled Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
+%'   scale_y_continuous("Actual Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
+%'   ggtitle("Minimally Binned Scatterplot of Airline Departure Times")+ 
+%'   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) +
+%'   theme_bw() + theme(aspect.ratio=1,
+%'                    panel.grid= element_blank(),
+%'                    legend.text=element_text(size=12) ) + 
+%'   geom_abline(intercept=0,slope=1, color="gray70", linetype=3)
+%' ggsave(filename = "./figure/MinimalBinnedAirline2014.png", width= 6.5, height=6, dpi=300)
+%' @
+%' 
+%' \begin{figure}[hbtp]
+%'   \subfloat[Alpha-Blended Scatterplot of Airline Data]{\includegraphics[keepaspectratio=TRUE,width=.47\textwidth]{./figure/AlphaScatterAirline2014.png}} 
+%' %   Swap Back at later date (shrinks size of pdf to managable)
+%' %\subfloat[Million-point sample of Airline Data. \ktm{This plot is not compiling and needs to be reconstructed (my apologies)}]{\includegraphics[width=.44\linewidth, keepaspectratio=TRUE]{images/RplotFiller.pdf}}\hfil
+%' \subfloat[Minimally Binned of Airline Data]{\includegraphics[width=.53\linewidth, keepaspectratio=TRUE]{./figure/MinimalBinnedAirline2014.png}}
+%' 
+%' \caption[Alpha-blended and minimally binned scatterplots for scheduled and actual departure times of airline flights.]{\label{airline-scatter}Scheduled and actual departure times of flights across the United States in 2014. The large scale distributional patterns are visible in both plots, but the plot on the left misses some of the finer level details in scheduling that is visible in the plot on the right.}
+%' \end{figure}
+%' 
+%' Both plots show the same large scale distributional patterns: scheduled and actual arrival times are highly correlated, recognizable from the conglomeration of points along the identity line. Scheduled departure times past 6:00 am in the morning are much more common than earlier flights. It is much more likely for a  flight to be delayed than to leave early, leading to the wash-out effect above the line, that is getting thinner with increasing delays. The range of delays on usual days starts at about one hour at 6:00 am and increases during the day to about a two hour delay. The small number of flights before 6:00 am are also visible in both plots. The triangle of observations on the bottom right in both plots is nothing but an artifact of the data collection consisting of flights that are scheduled before midnight, but are delayed to departures past midnight. The cloud of outliers halfway between the two main structures is potentially interesting, since no immediate explanation comes to mind, and would be worthy of a follow-up investigation.
+%' 
+%' What is not apparent in the alpha-blended scatterplot, is some fine-level structure that the minimally binned scatterplot shows. Note that because we have bin widths equal to the resolution to which the data is recorded in each dimension, we know that the spatial binning algorithm will not cause any \textit{artificial} density stripes. A close inspection of the plot on the right hand side reveals darker colored vertical lines at 30 minute intervals. It is obvious that more flights are scheduled with departures on the hour and at 30 minutes past the hour. 
+%' 
+%' \begin{figure}[hbtp]
+%' \includegraphics[width=.49\linewidth,keepaspectratio=true]{./figure/AirlineStdBinning5mins.pdf}
+%' \includegraphics[width=.49\linewidth,keepaspectratio=true]{./figure/AirlineStdBinning15mins.pdf}
+%' \caption[Binned scatterplots for scheduled and actual departure times of airline flights using 5X5 and 15X15 minute bins.]{5-minute bins produce a higher-level summary of the data than shown in Figure~\ref{airline-scatter}b. 15-minute bins produce an even more coarse summary of the data.}\label{airline5mins-binning}
+%' \end{figure}
+%' 
+%' Figure~\ref{airline5mins-binning} displays the binned scatterplots for the flight departure data with larger bins. Binning data by five-minute intervals produces a more high-level summary of the relationship between actual and scheduled departure time, though it necessarily obscures some of the finer details. In addition, binning data by five minute intervals reduces the size of the data set to a much more manageable 19,787 reduced binned data triples, which can be easily manipulated on probably any modern computer. Binning by 15-minute intervals reduces the data set to a nearly-trivial 3,575 reduced binned data triples, but the graphical summary becomes granular and less appealing at that resolution.
+%' 
+%' <<airlinesetup,echo=FALSE, eval=FALSE>>=
+%' setwd("./data/")
+%' if (!file.exists("airline.csv.gz")) {
+%'   # HH: I'm not sure, which files these should be ... 
+%'   # airline <- do.call("rbind", lapply(list.files(), function(i) read.csv(i)))
+%'   
+%'   # write.csv(airline, "airline.csv", row.names=FALSE)
+%' }
+%' airline <- read.csv("airline.csv.gz")
+%' na.departure <- (is.na(airline[,8]) + is.na(airline[,9]))> 0
+%' airline <- airline[!na.departure,8:9]
+%' 
+%' airline$CRS_DEP_TIME <- floor(airline$CRS_DEP_TIME/100)*60 + airline$CRS_DEP_TIME%%100
+%' airline$DEP_TIME <- floor(airline$DEP_TIME/100)*60 + airline$DEP_TIME%%100
+%' 
+%' library(lubridate)
+%' convert.time <- function(x){
+%'   floor(x/60) + (x%%60)/60
+%' }
+%' 
+%' library(multicore)
+%' 
+%' if (!file.exists("ReducedAirlineData.csv")) {
+%'   airline.freq <- ddply(airline, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(unique(i), Freq=nrow(i)))
+%'   write.csv(airline.freq, "ReducedAirlineData.csv", row.names=FALSE)
+%' }
+%' airline.freq <- read.csv("ReducedAirlineData.csv")
+%' airline.freq.plot <- airline.freq
+%' airline.freq.plot[,1] <- convert.time(airline.freq.plot[,1])
+%' airline.freq.plot[,2] <- convert.time(airline.freq.plot[,2])
+%' airline.freq.plot <- airline.freq.plot[order(airline.freq.plot$Freq),]
+%' airline.dummy <- airline.freq.plot[1,]
+%' airline.dummy[1,1] <- NA
+%' qplot(data=airline.freq.plot, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="blank", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (1 minute bins)") + geom_rect(aes(xmin=CRS_DEP_TIME-3/60, xmax=CRS_DEP_TIME+3/60, ymin=DEP_TIME-3/60, ymax=DEP_TIME+3/60, fill=Freq), alpha=I(.5)) + geom_rect(data=airline.dummy, aes(xmin=CRS_DEP_TIME-3/60, xmax=CRS_DEP_TIME+3/60, ymin=DEP_TIME-3/60, ymax=DEP_TIME+3/60, fill=Freq), aes.inherit=FALSE) + theme_bw()+ theme(legend.position="right") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
+%' ggsave("AirlineStdBinning1min.pdf", width=7.5, height=6, dpi=2304)
+%'     
+%' 
+%' library(ggplot2)
+%' library(dbData)
+%' air.sample <- airline.freq.plot[sample(1:nrow(airline.freq.plot), 1000000, replace=TRUE, prob=airline.freq.plot$Freq),1:2]
+%' 
+%' qplot(data=air.sample, x=CRS_DEP_TIME, y=DEP_TIME, geom="point", alpha=I(.05), xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Sampled Airline Departure Times") + theme_bw()+ theme(legend.position="right") + scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
+%' ggsave("MillionSample.pdf", width=6, height=6, dpi=576)
+%' 
+%' if (!file.exists("airlineBin5Std.csv")) {
+%'   air.binned5 <- binStd(airline.freq, c(5, 5))
+%'   air.binned5 <- ddply(air.binned5, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(convert.time(unique(i[,1:2])), Freq=sum(i$Freq)))
+%'   write.csv(air.binned5, "airlineBin5Std.csv", row.names=FALSE)
+%' }
+%' # air.binned5.rdm <- binRdm(cbind(airline, Freq=1), c(5, 5))
+%' # air.binned5.rdm2 <- ddply(air.binned5.rdm, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(convert.time(unique(i[,1:2]), Freq=sum(i$Freq)))
+%' # write.csv(air.binned5.rdm2, "airlineBin5Rdm.csv", row.names=FALSE)
+%' 
+%' air.binned5 <- read.csv("airlineBin5Std.csv")
+%' qplot(data=air.binned5, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (5 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
+%' ggsave("AirlineStdBinning5mins.pdf", width=6, height=6, dpi=576)
+%' # 
+%' # qplot(data=air.binned5.rdm2, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (5 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradient(low="#56B4FB", high="#183347", guide="legend", trans="log")
+%' # ggsave("AirlineRdmBinning5mins.png", binned, width=6, height=6)
+%' 
+%' # air.binned <- data.frame(apply(airline, 2, function(i) 15*round(i/15, 0)))
+%' # air.binned.rdm <- binRdm(airline.freq, c(15, 15))
+%' # air.binned2 <- ddply(air.binned, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(unique(i), Freq=sum(i$Freq)))
+%' # write.csv(air.binned2, "airlineBin15.csv", row.names=FALSE)
+%' air.binned <- read.csv("airlineBin15.csv")
+%' air.binned2 <- air.binned
+%' air.binned2[,1] <- convert.time(air.binned[,1])
+%' air.binned2[,2] <- convert.time(air.binned[,2])
+%' air.binned.rdm <- read.csv("airlineBin15Rdm.csv")
+%' air.binned2.rdm <- air.binned.rdm
+%' air.binned2.rdm[,1] <- convert.time(air.binned.rdm[,1])
+%' air.binned2.rdm[,2] <- convert.time(air.binned.rdm[,2])
+%' 
+%' # air.binned2.rdm <- ddply(air.binned.rdm, .(CRS_DEP_TIME, DEP_TIME), function(i) cbind(unique(i), Freq=sum(i$Freq)))
+%' # write.csv(air.binned2.rdm, "airlineBin15Rdm.csv", row.names=FALSE)
+%' 
+%' binned <- qplot(data=air.binned2, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (15 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
+%' ggsave("AirlineStdBinning15mins.pdf", binned, width=6, height=6, dpi=576)
+%' 
+%' # binnedRdm <- qplot(data=air.binned2.rdm, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (15 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
+%' # ggsave("AirlineRdmBinning15mins.png", binnedRdm, width=8, height=8, dpi=300)
+%' @
+%' 
+%' %--------------------------------------------------------------------------------------
 
 %----------------------------------------------------------------------------
 \newpage
