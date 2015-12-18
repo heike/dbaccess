@@ -161,6 +161,7 @@ The top row of Figure~\ref{fig:scatter-alpha} demonstrates several varients of t
 The data set is large enough that neither alpha blending nor open circles are completely effective, and so we must pursue a different strategy which can provide better information about the relative density of points at a given location.
 
 \begin{figure}[hbtp]
+\centering
   \subfloat[Traditional scatterplot ]{\includegraphics[keepaspectratio=TRUE,width=.32\textwidth]{./figure/Overplotting.png}}
   \subfloat[Tukey-style open circles]{\includegraphics[keepaspectratio=TRUE,width=.32\textwidth]{./figure/OverplottingCircles.png}} 
 	\subfloat[Alpha blending]{\includegraphics[keepaspectratio=TRUE,width=.32\textwidth]{./figure/OverplottingAlpha.png}}
@@ -168,8 +169,6 @@ The data set is large enough that neither alpha blending nor open circles are co
   \subfloat[Rectangular minimally binned scatterplot]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{./figure/BinScatter.png}}  
 %  \subfloat[Hexagonal binned scatterplot]{\includegraphics[keepaspectratio=TRUE,width=.32\textwidth]{./figure/HexBinning.png}}
   \subfloat[Hexagonal binned bubble plot]{\includegraphics[keepaspectratio=TRUE,width=.48\textwidth]{./figure/BinBubble.png}}
- 
-
 	\caption[Traditional and adapted scatterplots for games vs. strikeouts data.]{\label{fig:scatter-alpha} Traditional and adapted scatterplots for games vs. strikeouts data. Note improved density information in the aggregation-based plots.}
 \end{figure}
 
