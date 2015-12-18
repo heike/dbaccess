@@ -52,7 +52,7 @@
   \bigskip
   \bigskip
   \begin{center}
-    {\LARGE\bf Title}
+    {\LARGE\bf Binning Strategies and Related Loss for Large Data}
 \end{center}
   \medskip
 } \fi
@@ -1361,7 +1361,7 @@ ggsave(filename = "./figure/AlphaScatterAirline2014.png", width= 6, height=6, dp
 @
 
 <<FlightMinBinScat, echo=F,include=F, cache=TRUE>>=
-source("RectangularBinningFunctions.R")
+source("./data/RectangularBinningFunctions.R")
 load(file="./data/DepartDelaysMinutes.RData")
 # Create minimal binning
 departure1minute <- RectBin2d(xs=DepartDelaysMinutes$Scheduled,ys=DepartDelaysMinutes$Actual, 
