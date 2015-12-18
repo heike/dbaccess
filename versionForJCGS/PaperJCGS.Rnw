@@ -780,7 +780,7 @@ For rectangular binning specification options include the type of algorithm, loc
 
 If we view the binned scatterplot as a visual estimator of the bivariate density then we may consider a few desirable properties of estimators: unbiasedness, consistency and efficiency. Binned scatterplots shift visual emphasis from true location of individual points to the geometric centers of tiles, making them visually biased displays of density. However, as bin sizes become increasingly fine, the bias decreases; with no visual bias when minimal binning perfectly matches bins with the data resolution the density estimate. Also, the density estimation more perfectly reflect the bivariate density as the sample size increases; thus making the binned scatterplot a consistent visual estimator. We may also consider a minimal binned scatterplot as a spatially efficient estimator because it minimizes spatial loss in the visual density estimator. It is worth noting that a density estimate requires the combination of spatial and frequency information and that the estimation properties were considered only through the lens of spatial loss. This makes the assumption that frequency information is rendered through a precise continuous mapping of bin frequencies. %Based on the conflicting effects on the estimation properties, of bin size can be seen as a smoother for density estimate that can be adjusted to cut through the noise in the data, but as with all data smoothers caution should be used so that fine signal is not destroyed.  
 %
-<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=3.5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss and computation times over a range of bin sizes for standard and random binning.">>= 
+<<SpatialLossCompare,echo=F,warning=FALSE,include=T,eval=T,fig.width=8, fig.height=3.5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss and computation times over a range of bin sizes for standard and random binning.">>= 
 ## create binned data for standard and random using variety of bin sizes (from 2 to 20, by 2)
 ##save spatial loss information
 # spatlossdat <- data.frame(NULL)
@@ -1077,7 +1077,6 @@ Log transforming the frequencies prior to binning and using quantile based binni
 <<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=7, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively.",fig.scap="Lineplots for total frequency losses from standard and quantile binning for simulated bivariate data. ">>= 
 ### Loop over ncolors 1 to 10 and also over data distribution
 # find freq loss from standard, quantile, logCount
-detach("package:dplyr", unload=TRUE)
 source("BinningLossFunctions.R")
 freqLossSimDat <- NULL
 distrib <- c("Uniform", "Normal", "Exponential")
