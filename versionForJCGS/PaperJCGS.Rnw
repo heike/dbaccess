@@ -108,20 +108,20 @@ load("./data/pitching.Rdata")
 <<scatterplots, echo=F,include=F>>=
 # Traditional scatter
 qplot(data=pitchdat, x=G, y=SO, geom="point", alpha=I(.05), size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
-  ggsave("./figure/OverplottingAlpha.png", width=5, height=5, dpi=900)
+  ggsave("./figure/OverplottingAlpha.png", width=5, height=5, dpi=300)
   
 # Open Circle Scatter
 qplot(data=d1, x=G, y=SO, geom="point", size=I(3)) + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
-  ggsave("./figure/Overplotting.png", width=5, height=5, dpi=900)
+  ggsave("./figure/Overplotting.png", width=5, height=5, dpi=300)
 
 # Alpha Blended Scatter
   qplot(data=d1, x=G, y=SO, geom="point", shape="o", size=I(6)) + scale_shape_identity() + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
-  ggsave("./figure/OverplottingCircles.png", width=5, height=5, dpi=900)
+  ggsave("./figure/OverplottingCircles.png", width=5, height=5, dpi=300)
 
 # Hex binned scatterplot
   qplot(data=pitchdat, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
-  ggsave("./figure/HexBinning.png", width=5, height=5, dpi=900)
+  ggsave("./figure/HexBinning.png", width=5, height=5, dpi=300)
 d1.hex.obj <- hexbin(pitchdat$G, pitchdat$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
@@ -130,12 +130,12 @@ d1.hex$Freq <-  d1.hex.obj@count
 # hex binned bubbleplot
 qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq+1) + 
   scale_size_area("Frequency", max_size=4, trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
-ggsave("./figure/BinBubble.png", width=5, height=5, dpi=900)
+ggsave("./figure/BinBubble.png", width=5, height=5, dpi=300)
 
 # minimally binned rectangular  
 qplot(G, SO, geom="tile", fill=Freq, data=d1) +
   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
-  ggsave("./figure/BinScatter.png", width=5, height=5, dpi=900)
+  ggsave("./figure/BinScatter.png", width=5, height=5, dpi=300)
 
 # Sunflower plot
 # d1.hex$id <- seq(1:nrow(d1.hex))
@@ -154,7 +154,7 @@ In this paper we describe first the inadequacy of traditional scatterplots in la
 \section{Scatterplots for Large Data Sets}
 \label{Scatter}
 
-In the case of modestly sized data, scatterplots are great tools for showing bivariate data relationships. With large data, scatterplots suffer from over-plotting of points, which masks relevant structure. Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 144 seasons (from the years of 1871 -- 2014) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database (\url{http://www.seanlahman.com/baseball-archive/}).  The number of games played in a season is plotted against the number of strikeouts a pitcher threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(pitchdat)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data. 
+In the case of modestly sized data, scatterplots are great tools for showing bivariate data relationships. With large data, scatterplots suffer from over-plotting of points, which masks relevant structure. Figure~\ref{fig:scatter-alpha} shows an example taken from baseball statistics. The scatterplot shows 144 seasons (from the years of 1871 -- 2014) of  pitching statistics for every baseball pitcher as published in Sean Lahman's Baseball database.\footnote{Data Accessed 12/16/2015 at \url{http://www.seanlahman.com/baseball-archive/}}  The number of games played in a season is plotted against the number of strikeouts a pitcher threw over the course of a season. While the data set is only medium sized with \Sexpr{dim(pitchdat)[1]} observations, it already shows some of the break-down patterns scatterplots experience with large data. 
 
 The top row of Figure~\ref{fig:scatter-alpha} demonstrates several varients of the traditional scatterplot where each observation is plotted using distinct points. The traditional, solid point, scatterplot in Figure~\ref{fig:scatter-alpha}(a) shows a triangular structure is apparent with some outliers at a medium number of games and high number of strikeouts; however the density within the triangular mass of points is indistinguishable. \citet{tukey} suggested the use of open circles (see Figure~\ref{fig:scatter-alpha}(b)) to mitigate the problem of over-plotting. A modern alternative to open circles is alpha blending (see Figure~\ref{fig:scatter-alpha}(c)) which renders points as semi-transparent to provides more visibility of underlying points.
 %All of these methods fall short in the example. As can be seen in Figure~\ref{fig:scatter-alpha}, strategy (a) is the least effective, as it provides information about the outliers and range of the data but cannot provide any point density information. Tukey's open circles (b) help to a degree, but are also prone to over-plotting  when the data set is very large. Alpha blending (c) highlights the structure, but minimizes the visual impact of outliers. 
@@ -275,7 +275,7 @@ where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for
 
 \subsection{Binned Data Reduction}
 
-The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming reduced data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c). The reduced binned data is sufficient for constructing the binned scatterplot. In cases of large data, binning greatly reduces the storage size for the information and the computation time needed to construct a binned scatterplot. Note that numerical attributes other than frequency of the binned data may also be recorded during binning, however only frequency is required to construct a binned scatterplot. Data reduction comes at the expense of spatial information of any of the individual points. The original spatial locations can only be recovered when minimally binned at the resolution of the data. The loss of information incurred from binning will be explored in following sections. 
+The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming reduced data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c). The reduced binned data is sufficient for constructing the binned scatterplot. In cases of large data, binning greatly reduces the storage size for the information and the computation time needed to construct a binned scatterplot. Note that numerical attributes other than frequency of the binned data may also be recorded during binning, however only frequency is required to construct a binned scatterplot. Data reduction comes at the expense of spatial information of any of the individual points, which can only be recovered when minimally binned at the resolution of the data. The loss of information incurred from binning will be explored in following sections. 
 
 <<DataReduction,echo=FALSE,eval=FALSE,results='asis'>>=
 n=12
@@ -610,7 +610,7 @@ Bin counts can be displayed using a continuous shading scale in HSV color space 
 %'   theme(aspect.ratio=1, axis.ticks=element_blank(), axis.text=element_blank()) +
 %'   scale_colour_gradient(limits=c(0,1), breaks=c(0,.5,1))
 %' 
-%' ggsave("./figure/ShadeContextDemo.png",width=5, height=5, dpi=600)
+%' ggsave("./figure/ShadeContextDemo.png",width=5, height=5, dpi=300)
 %' @
 
 <<FreqLossDemoPlot,echo=F,include=T,eval=T,fig.width=c(6,6), fig.height=c(6,3), out.width=c('.49\\linewidth','.5\\linewidth'), fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="(Left) Q: Which triangles are darker? A: All triangles same shade = 500. \\newline (Right) Continuous and standard rectangular binned frequency color scales.", fig.scap="Continuous and discrete color scales for counts.">>= 
@@ -665,7 +665,7 @@ p2 <- qplot(id2, 1.8, geom="tile", fill=-fill2) +
   ylab("Discrete") + xlab("")
 
 grid.arrange(p1,p2,nrow=2)
-#ggsave("./figure/FreqBinDemo.png",width=5, height=1.5, dpi=600)
+#ggsave("./figure/FreqBinDemo.png",width=5, height=1.5, dpi=300)
 @
 
 
@@ -760,7 +760,7 @@ qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1))+
   scale_x_continuous(breaks=c(0,25,50,75,100)) + 
   scale_y_continuous(breaks=c(0,25,50,75,100))
 
-ggsave("./figure/SimScatters.png", width=8, height=5.5, dpi=900)
+ggsave("./figure/SimScatters.png", width=8, height=5.5, dpi=300)
 @
 \begin{figure}[hbtp]
 \begin{center}
@@ -777,11 +777,9 @@ The \textit{data resolution} is defined as the smallest increment between succes
 
 \subsection{Rectangular Binning Specifications and Spatial Loss}
 
-For rectangular binning there are many specification options; including type of algorithm, location of the origin and binwidths for each dimension. To explore the spatial loss properties under different binning approaches we begin with a comparison of standard and random binning. For equal bin widths, the net spatial loss under standard binning is always less than or equal to the net spatial loss under random binning. This is because the minimal spatial loss for each data point under random binning is to allocate to the nearest bin center, which is how the point would be allocated in standard binning. 
-
-Figure~\ref{fig:SpatialLossCompare} displays the net spatial loss from binning the fine resolution simulated data with standard and random binning algorithms using square bins with a sizes ranging from 2 units$^2$ to 20 units$^2$. It is apparent that the spatial loss for random binning is always higher than for standard binning and the loss grows as bin width increases. The net spatial loss from random binning increases with bin width at a faster rate than from standard binning, as indicated by the widening gap between the lines and the steeper slopes.  
-
-<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss and computation times over a range of bin sizes for standard and random binning of the fine version of the simulated data from each bivariate distribution.">>= 
+For rectangular binning specification options include the type of algorithm, location of the origin and binwidths for each dimension. To explore the spatial loss properties under different binning approaches we begin with a comparison of standard and random binning. Figure~\ref{fig:SpatialLossCompare} displays the net spatial loss from binning the fine resolution simulated data with standard and random binning algorithms using square bins with a sizes ranging from 2 units$^2$ to 20 units$^2$. For equal bin sizes, the net spatial loss under standard binning is always less than or equal to the net spatial loss under random binning. This is because the minimal spatial loss for each data point under random binning is to allocate to the nearest bin center, which is how the point would be allocated in standard binning. The net spatial loss from random binning becomes increasingly costly as bin sizes increase, as indicated by the widening gap between the lines and the steeper slopes.  
+%
+<<SpatialLossCompare,echo=F,include=T,eval=T,fig.width=8, fig.height=3.5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Lineplots for net spatial loss and computation times over a range of bin sizes for standard and random binning.">>= 
 ## create binned data for standard and random using variety of bin sizes (from 2 to 20, by 2)
 ##save spatial loss information
 # spatlossdat <- data.frame(NULL)
@@ -831,21 +829,20 @@ spatlossdatSquareBins2$measure <- factor(spatlossdatSquareBins2$measure , labels
 qplot(widthx,value,geom="path",colour=bintype, linetype=bintype,
       data=spatlossdatSquareBins2,group=bintype, size=I(1)) +
   facet_grid(measure~distrib, scales="free_y" )+
-  theme_bw() + ylab("Net Spatial Loss") +
+  theme_bw() + theme(plot.margin = unit(c(0.1,0.1,0.1, 0.1),"cm")) + 
+  ylab("Net Spatial Loss") +
   xlab("Width/Height of Square Bins") 
 @
+%
+%All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. 
+While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a potentially non-negligible consideration in settings with truly massive data. Figure~\ref{fig:SpatialLossCompare} also shows that the computation time needed to bin the simulated data sets is a decreasing function of the bin size and that random binning is marginally slower than standard binning across all bin sizes.\footnote{Computation times using a commercial Asus laptop with an Intel Core i7 processor running at 2.80 GHz.} Larger bins may also be reasonable to use if we are primary interested visualizing the large scale density structure and wish to smooth over fine structural noise.
 
-All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a potentially non-negligible consideration in settings with truly massive data. Figure~\ref{fig:SpatialLossCompare} also shows that the computation time needed to bin the simulated data sets is a decreasing function of the bin size and that random binning is marginally slower than standard binning across all bin sizes. Computation times for binning were collected using a commercial Asus laptop with an Intel Core i7 processor running at 2.80 GHz. Another pertinent argument for using larger bins is that it will smooth over larger regions if we are primary interested visualizing the large scale density structure.
+While bin widths can be chosen as any positive real value, bin widths should be specified as an integer multiple of the resolution of the data because non-integer multiples of the data resolution lead to systematically different numbers of possible data values per bin. For bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of tiles in the binned scatterplot. While these gaps do exist in the data, they are undesirable because they create visual discontinuity that interferes with the interpretation of bivariate density and could also create the Hermann-grid optical illusion~\citep{hermann:1870, spillmann:1994}. More seriously, bin dimensions that are non-integer multiples larger than the data resolution lead to \textit{artificial striping} -- an oscillating density pattern imposed by the binning that does not exist in the raw data.  
 
-If we view the binned scatterplot as a visual estimator of the bivariate density then we may consider a few desirable properties of estimators: unbiasedness, consistency and efficiency. Binned scatterplots are inherently biased displays of spatial information as they shift visual emphasis from the true location of individual points to the geometric centers of tiles. However, as bin sizes become increasingly fine,  the bias decreases as the plot shows more precise spatial locations. When minimal binning occurs -- with one unique coordinate pair at the center of each bin -- the density estimate is spatially exact. Also, the density estimation more perfectly reflect the bivariate density as the sample size increases; thus making the binned scatterplot a consistent visual estimator. We may also consider minimally binning as a spatially efficient estimator because it minimizes spatial loss in the visual density estimator. It is worth noting that a density estimate requires the combination of spatial and frequency information and that the estimation properties were considered only through the lens of spatial loss. This makes the assumption that frequency information is rendered through a precise continuous mapping of bin frequencies. %Based on the conflicting effects on the estimation properties, of bin size can be seen as a smoother for density estimate that can be adjusted to cut through the noise in the data, but as with all data smoothers caution should be used so that fine signal is not destroyed.  
+To demonstrate the importance of properly selecting binwidths we consider the coarse version of the simulated bivariate-uniform data which is recorded to a resolution of two units in each dimension. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with one-by-one unit bins, vertical and horizontal artificial stripes with five-by-five unit bins, and the appropriate view of an evenly spread density with four-by-four unit bins.  Note that random binning is effective at smoothing out the artificial striping patterns when non-integer multiples of the data resolution are selected.
 
-While bin widths can be chosen as any positive real value, the selection should be restricted to an integer multiple of the resolution of the data to avoid undesirable visual artifacts in the binned scatterplot. For example, if the bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of bins in the binned scatterplot.  These gaps of white space are undesirable because they create visual discontinuity that interferes with the interpretation of bivariate density. The grid of white spaces also creates an optical illusion, the Hermann-grid illusion~\citep{hermann:1870, spillmann:1994}, which makes dark spots appear in the crossings of the lines and additionally interferes with visual evaluation.
 
-There is also a disruptive visual consequence if bin dimensions are not integer multiples of the bivariate data resolution; where bins have systematically different numbers of possible data values that can cause \textit{artificial striping} -- an oscillating density pattern imposed by the binning that does not exist in the raw data -- to appear in the binned scatterplot.  
-
-To demonstrate the importance of properly selecting binwidths we consider the coarse version of the simulated uniform data which is recorded to a resolution of two units in each dimension. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with one-by-one unit bins, vertical and horizontal artificial stripes with five-by-five unit bins, and the appropriate view of an evenly spread density with four-by-four unit bins.  Note that random binning is effective at smoothing out the artificial striping patterns when non-integer multiples of the data resolution are selected.
-
-<<UniformStripes, echo=F,include=T,eval=T,fig.width=8, fig.height=5, out.width='.9\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots of coarse uniform data with 1X1, 4X4 and 5X5 square bins. For standard binning, the 1X1 bins leaves white-space gaps between bins, and 5X5 bins cause artificial density stripes; whereas random binning smoothes density over these poor choices in bin dimensions.">>= 
+<<UniformStripes, echo=F,include=T,eval=T,fig.width=7, fig.height=3, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots of coarse uniform data.">>= 
 # Commented out code for data generation: run once then recomment
 ### Create data to demonstrate stripes from improper binwidths
 # binoutcoarse1 <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,1,1,type="standard")[[1]]
@@ -868,34 +865,44 @@ To demonstrate the importance of properly selecting binwidths we consider the co
 
 allbindat <- read.csv("StripeBinData.csv",header=TRUE)
 allbindat$BinningType <- factor(allbindat$BinningType, levels=c("Standard","Random"))
+allbindat$height <- 1 ; allbindat$width <- 1
+allbindat$height[which(allbindat$BinSize=="4 X 4 Unit")] <- 4
+allbindat$width[which(allbindat$BinSize=="4 X 4 Unit")] <- 4
+allbindat$height[which(allbindat$BinSize=="5 X 5 Unit")] <- 5
+allbindat$width[which(allbindat$BinSize=="5 X 5 Unit")] <- 5
 
-p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=subset(allbindat,BinSize=="1 X 1 Unit")) +
-  facet_grid(BinningType~BinSize)+
+ggplot(aes(x=binxs, y=binys), data=allbindat) +
+  geom_tile(aes(fill=binfreq,height=height, width=width), data=allbindat)+
+  facet_grid(BinningType~BinSize, scales="free", space="free")+
   ggtitle(" ") +   xlab("") + ylab("") +
   scale_fill_gradient(low="#56B1F7", high="#132B43",
                       limits=c(0, 450),name="Bin Count") + 
-  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
+  theme_bw() + theme(plot.margin = unit(c(0.1,0.1,-0.5, 0.1),"cm"),
+                     aspect.ratio=1,
                      panel.grid= element_blank())
 
-p2 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=subset(allbindat,BinSize=="4 X 4 Unit")) +
-  facet_grid(BinningType~BinSize)+
-  ggtitle(" ") +   xlab("") + ylab("") +
-  scale_fill_gradient(low="#56B1F7", high="#132B43",
-                      limits=c(0, 450),name="Bin Count") + 
-  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-                     panel.grid= element_blank())
-
-p3 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=subset(allbindat,BinSize=="5 X 5 Unit")) +
-  facet_grid(BinningType~BinSize)+
-  ggtitle(" ") +   xlab("") + ylab("") +
-  scale_fill_gradient(low="#56B1F7", high="#132B43",
-                      limits=c(0, 450),name="Bin Count") + 
-  theme_bw() + theme(legend.position="bottom",aspect.ratio=1,
-                     panel.grid= element_blank())
-
-grid.arrange(p1,p2,p3, nrow=1)
+# p2 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=subset(allbindat,BinSize=="4 X 4 Unit")) +
+#   facet_grid(BinningType~BinSize)+
+#   ggtitle(" ") +   xlab("") + ylab("") +
+#   scale_fill_gradient(low="#56B1F7", high="#132B43",
+#                       limits=c(0, 450),name="Bin Count") + 
+#   theme_bw() + theme(plot.margin =,
+#                      legend.position="none",aspect.ratio=1,
+#                      panel.grid= element_blank())
+# 
+# p3 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=subset(allbindat,BinSize=="5 X 5 Unit")) +
+#   facet_grid(BinningType~BinSize)+
+#   ggtitle(" ") +   xlab("") + ylab("") +
+#   scale_fill_gradient(low="#56B1F7", high="#132B43",
+#                       limits=c(0, 450),name="Bin Count") + 
+#   theme_bw() + theme(plot.margin = unit(c(0.1,0.1,0.1, 0.1),"cm"),
+#                      aspect.ratio=1,
+#                      panel.grid= element_blank())
+# 
+# grid.arrange(p1,p2,p3, nrow=1)
 
 @
+
 
 The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density in outermost bins.  Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of ten-by-ten unit bins for the fine exponential data with two different origin choices: (0,0) and (-9,-9). The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are largely empty due to the negative regions. The binning origin at (0,0) is also superior in terms of the net spatial loss, which is about seven percent lower than for the (-9,-9) origin. For data with very fine resolution, it is a good idea to set the origin at the minimum value for each dimension. 
 
@@ -1224,6 +1231,8 @@ grid.arrange(p3,p4, nrow=1)
 
 \section{Discussion and Examples}
 
+If we view the binned scatterplot as a visual estimator of the bivariate density then we may consider a few desirable properties of estimators: unbiasedness, consistency and efficiency. Binned scatterplots shift visual emphasis from true location of individual points to the geometric centers of tiles, making them visually biased displays of density. However, as bin sizes become increasingly fine, the bias decreases; with no visual bias when minimal binning perfectly matches bins with the data resolution the density estimate. Also, the density estimation more perfectly reflect the bivariate density as the sample size increases; thus making the binned scatterplot a consistent visual estimator. We may also consider a minimal binned scatterplot as a spatially efficient estimator because it minimizes spatial loss in the visual density estimator. It is worth noting that a density estimate requires the combination of spatial and frequency information and that the estimation properties were considered only through the lens of spatial loss. This makes the assumption that frequency information is rendered through a precise continuous mapping of bin frequencies. %Based on the conflicting effects on the estimation properties, of bin size can be seen as a smoother for density estimate that can be adjusted to cut through the noise in the data, but as with all data smoothers caution should be used so that fine signal is not destroyed.  
+
 The exploration of spatial and frequency loss in the process of creating a binned scatterplot yields a number of important properties and practical recommendations for their construction. These recommendations and loss properties will now be demonstrated through two examples using real bivariate data. First we further explore the baseball pitching data. In a second example, we will investigate the relationship between scheduled and actual departure times for American commercial airline data. 
 
 \subsection{Binning Loss in Baseball Data: Strikeout and Game Counts}
@@ -1348,7 +1357,7 @@ ggplot(aes(x=Scheduled/60, y=Actual/60), data=DepartDelaysMinutes) +
   scale_x_continuous("Scheduled Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
   scale_y_continuous("Actual Departure Time", limits=c(0,24), breaks=seq(0,24,by=6)) +
   ggtitle("Alpha-Blended Scatterplot of Airline Departure Times") 
-ggsave(filename = "./figure/AlphaScatterAirline2014.png", width= 6, height=6, dpi=900)
+ggsave(filename = "./figure/AlphaScatterAirline2014.png", width= 6, height=6, dpi=300)
 @
 
 <<FlightMinBinScat, echo=F,include=F, cache=TRUE>>=
@@ -1370,7 +1379,7 @@ ggplot(aes(x=binxs/60, y=binys/60), data=departure1minute) +
                    panel.grid= element_blank(),
                    legend.text=element_text(size=12) ) + 
   geom_abline(intercept=0,slope=1, color="gray70", linetype=3)
-ggsave(filename = "./figure/MinimalBinnedAirline2014.png", width= 6.5, height=6, dpi=900)
+ggsave(filename = "./figure/MinimalBinnedAirline2014.png", width= 6.5, height=6, dpi=300)
 @
 
 \begin{figure}[hbtp]
@@ -1474,7 +1483,7 @@ binned <- qplot(data=air.binned2, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, 
 ggsave("AirlineStdBinning15mins.pdf", binned, width=6, height=6, dpi=576)
 
 # binnedRdm <- qplot(data=air.binned2.rdm, x=CRS_DEP_TIME, y=DEP_TIME, fill=Freq, asp=1, geom="tile", xlab="Scheduled Departure Time", ylab="Actual Departure Time", main="Airline Departure Times (15 minute bins)") + theme_bw()+ theme(legend.position="bottom") +scale_fill_gradientn(colours=c("#56B1F7", "#132B43"), guide="legend", trans="log", breaks=c(1, 10, 100, 1000, 10000))+ scale_x_continuous(breaks=c(0, 6, 12, 18, 24)) + scale_y_continuous(breaks=c(0, 6, 12, 18, 24))
-# ggsave("AirlineRdmBinning15mins.png", binnedRdm, width=8, height=8, dpi=600)
+# ggsave("AirlineRdmBinning15mins.png", binnedRdm, width=8, height=8, dpi=300)
 @
 
 %--------------------------------------------------------------------------------------
