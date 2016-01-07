@@ -41,14 +41,14 @@
 \if0\blind
 {
 %opening
-\title{Binning Strategies and Related Loss for Large Data}
+\title{Binning Strategies and Related Loss for Binned Scatterplots of Large Data}
 \author{Karsten Maurer$^1$, Heike Hofmann$^{2,3}$, Susan VanderPlas$^2$\\$^1$Department of Statistics, Miami University \\$^2$Department of Statistics, Iowa State University \\$^3$Human Computer Interaction, Iowa State University}
   \maketitle
 } \fi
 
 \if1\blind
 {
-\title{Binning Strategies and Related Loss for Large Data}
+\title{Binning Strategies and Related Loss for Binned Scatterplots of Large Data}
 \author{Author A$^1$, Author B$^{2,3}$, Author C$^2$\\$^1$Affiliation X \\$^2$Affiliation Y \\$^3$Affiliation Z}
   \maketitle
 } \fi
@@ -62,7 +62,7 @@ Dealing with the data deluge of the Big Data Age is both exciting and challengin
 \end{abstract}
 
 \noindent%
-{\it Keywords:}  scatterplots, visual loss, aggregation, graphics
+{\it Keywords:}  binned scatterplots, visual loss, aggregation, graphics
 \vfill
 
 %-----------------------------------------------------------------------------------------------------
@@ -510,7 +510,7 @@ linecolor[c(1,11)] <- "red"
 
 p2 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
   geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) + 
-  geom_segment(aes(x = x, y = y, xend = rxcent, yend = rycent, color=linecolor)) + 
+  geom_segment(aes(x = x, y = y, xend = rxcent, yend = rycent, color=linecolor, linetype=linecolor)) + 
   scale_colour_manual(values = c("darkblue","red"))+
   geom_point(aes(x=x,y=y), size=I(3))+ 
   theme_bw() + xlab("") + ylab("") +
@@ -533,7 +533,7 @@ linecolor[c(1,11)] <- "red"
 
 p3 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) +
   geom_segment(aes(x = x, y = y, xend = xend, yend = yend), data=temp) + 
-  geom_segment(aes(x = x, y = y, xend = rxcentpost, yend = rycentpost, color=linecolor)) + 
+  geom_segment(aes(x = x, y = y, xend = rxcentpost, yend = rycentpost, color=linecolor, linetype=linecolor)) + 
   scale_colour_manual(values = c("darkblue","red"))+
   geom_point(aes(x=x,y=y), size=I(3))+ 
   theme_bw() + xlab("") + ylab("") +
@@ -578,7 +578,7 @@ p6 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
 grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
 @
 
-The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. We see that in random binning there are pairs of points -- like those with line segments highlighted in red -- that have been allocated in such a way that they are closer to their partner's bin center than their own. We see that the binned scatterplot remains identical if these points are swapped back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed. To appropriately reflect the perceived loss of spatial information we use the \textit{net spatial loss}, $L^S_{net}$, which is the minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot. For standard binned data, the net spatial loss is always equivalent to the total spatial loss due to the deterministic bin allocations. For random binned data, the net spatial loss is achieved by first exchanging bin assignments for all pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then calculating the total spatial loss from this post-processed binned data. 
+The total spatial loss for randomly binned data is visualized in Figure~\ref{fig:spatlossdemo2}. We see that in random binning there are pairs of points -- like those with dashed line segments -- that have been allocated in such a way that they are closer to their partner's bin center than their own. We see that the binned scatterplot remains identical if these points are swapped back to the closer centers; however, the total spatial loss is smaller after the random allocation is post-processed. To appropriately reflect the perceived loss of spatial information we use the \textit{net spatial loss}, $L^S_{net}$, which is the minimum total spatial loss from all binning allocations that result in the same reduced binned data, and thus the same binned scatterplot. For standard binned data, the net spatial loss is always equivalent to the total spatial loss due to the deterministic bin allocations. For random binned data, the net spatial loss is achieved by first exchanging bin assignments for all pairs of points in neighboring bins that exist further from their own bin center than from their partner's bin center, then calculating the total spatial loss from this post-processed binned data. 
 
 The spatial loss is a Euclidean distance, but the units affiliated with this distance are based on the units on which each variable is recorded. If the two variables in the binned scatterplot share the same units this leads to direct interpretability of the spatial loss.  However, if the two variables do not share the same units or the same magnitude of values it is advisable to standardize the variables prior to binning, thus making the spatial loss more universally interpretable as a distance in units of standard deviations. 
 
