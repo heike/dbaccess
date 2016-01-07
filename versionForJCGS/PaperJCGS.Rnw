@@ -23,7 +23,7 @@
 
 %\pdfminorversion=4
 % NOTE: To produce blinded version, replace "0" with "1" below.
-\newcommand{\blind}{0}
+\newcommand{\blind}{1}
 \newcommand{\ktm}[1]{{\color{red} #1}} %red comments: Karsten
 \newcommand{\hh}[1]{{\color{blue} #1}} %blue comments: Heike
 
@@ -48,13 +48,9 @@
 
 \if1\blind
 {
-  \bigskip
-  \bigskip
-  \bigskip
-  \begin{center}
-    {\LARGE\bf Binning Strategies and Related Loss for Large Data}
-\end{center}
-  \medskip
+\title{Binning Strategies and Related Loss for Large Data}
+\author{Author A$^1$, Author B$^{2,3}$, Author C$^2$\\$^1$Affiliation X \\$^2$Affiliation Y \\$^3$Affiliation Z}
+  \maketitle
 } \fi
 
 %-----------------------------------------------------------------------------------------------------
@@ -1523,7 +1519,7 @@ Future implementations of software for constructing binned scatterplots would be
 %----------------------------------------------------------------------------
 \newpage
 \begin{appendix}
-\section{Appendix for Optimal Offset for Uniform Data Recorded to Resolution $\alpha$}  
+\section{Appendix for Origin Offset Proof}  
 %----------------------------------------------------------------------------
 %\subsection{}
 \label{proof:offset}
@@ -1544,7 +1540,7 @@ $ \Rightarrow 2x_1 - 2\theta + k\alpha = (x_1 + (\lceil\frac{k+1}{2}\rceil - 1)\
 $ \Rightarrow -2\theta + k\alpha = (\lceil\frac{k+1}{2}\rceil - 1)\alpha  + (\lfloor\frac{k+1}{2}\rfloor - 1)\alpha  $ \\
 $ \Rightarrow -2\theta + k\alpha = ((k+1) - 2)\alpha  $ \\
 $ \Rightarrow -2\theta = -\alpha $ \\
-$ \Rightarrow \theta = \alpha/2 $ \\
+$ \Rightarrow \theta = \alpha/2 $ 
 
 Thus the optimal offset for reducing spatial loss in this scenario is $\theta = \alpha/2$.  This result holds for data that is symmetrically distributed within the bin since the median will not change.  It extends to multiple contiguous bins with resolution $\alpha$ data that has symmetrically distributed data withing each bin. 
 
