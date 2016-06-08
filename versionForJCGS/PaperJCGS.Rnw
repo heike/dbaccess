@@ -74,18 +74,21 @@ Dealing with the data deluge of the Big Data Age is both exciting and challengin
 \label{Intro}
 
 <<setup4,echo=F,include=F,eval=T>>=
+
+library(dbData)
+library(devtools)
 library(ggplot2)
 library(gridExtra)
-library(dbData)
-library(reshape2)
-#library(multicore)
-library(devtools)
-library(xtable)
-library(RColorBrewer)
 library(hexbin)
+library(lubridate)
 library(MASS)
-library(scales)
 library(plyr)
+library(RColorBrewer)
+library(reshape2)
+library(scales)
+library(tidyr)
+library(xtable)
+
 #source in binning functions
 source("BinningLossFunctions.R")
 
@@ -610,7 +613,6 @@ Bin counts can be displayed using a continuous shading scale in HSV color space 
 
 <<FreqLossDemoPlot,echo=F,include=T,eval=T,fig.width=c(6,6), fig.height=c(6,3), out.width=c('.49\\linewidth','.5\\linewidth'), fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="(Left) Q: Which triangles are darker? A: All triangles same shade = 500. \\newline (Right) Continuous and standard rectangular binned frequency color scales.", fig.scap="Continuous and discrete color scales for counts.">>= 
 
-library(scales)
 #match color scales in each
 low = "#132B43"
 high = "#56B1F7"
@@ -707,7 +709,7 @@ Data sets were simulated from bivariate distributions to be used throughout this
 The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places; 6 decimal places in our simulate data. Real data is recorded to only the number of digits that measurement precision allows, and in many cases rounded even further.
 %
 <<SimDataScatterplots2,echo=F,include=F,eval=T,fig.width=8, fig.height=5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\\%, 98.7\\% and 99.1\\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.">>= 
-library(scales) 
+
 ### Try 2d binning with MVN data
 n=100000
 set.seed(31415)
@@ -807,7 +809,7 @@ If we view the binned scatterplot as a visual estimator of the bivariate density
 spatlossdatSquareBins <- read.csv("SpatialLossData.csv",header=TRUE)
 spatlossdatSquareBins$bintype <- factor(spatlossdatSquareBins$bintype, levels=c("standard","random"))
 
-library(tidyr)
+
 spatlossdatSquareBins2 <- gather(spatlossdatSquareBins, measure, value, c(totalSpatialLoss,binTime))
 spatlossdatSquareBins2$measure <- factor(spatlossdatSquareBins2$measure , labels=c("Net Spatial Loss","Binning Time (sec)"))
 # 
@@ -1364,7 +1366,7 @@ If we elect to use frequency binning to shade tiles ordinally, it is recommended
 
 Future implementations of software for constructing binned scatterplots would be well served to allow for choices in specification of binning algorithms. The findings of this research provide suggestions for reasonable default settings of binning parameters that maintain spatial and frequency information and lead to desirable visual properties in the binned scatterplot.
 
-%' 
+%' THE FOLLOWING SUBSECTION IS OMITTED FOR JCGS PAGE LIMIT CONSIDERATIONS
 %' %--------------------------------------------------------------------
 %' 
 %' \subsection{Big Data: Airline Departure Times}
