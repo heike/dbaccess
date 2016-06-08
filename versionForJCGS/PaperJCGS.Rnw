@@ -80,6 +80,7 @@ library(devtools)
 library(ggplot2)
 library(gridExtra)
 library(hexbin)
+library(Hmisc)
 library(lubridate)
 library(MASS)
 library(plyr)
@@ -88,6 +89,7 @@ library(reshape2)
 library(scales)
 library(tidyr)
 library(xtable)
+
 
 #source in binning functions
 source("BinningLossFunctions.R")
@@ -276,6 +278,7 @@ where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for
 The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming reduced data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c). The reduced binned data is sufficient for constructing the binned scatterplot. In cases of large data, binning greatly reduces the storage size for the information and the computation time needed to construct a binned scatterplot. Note that numerical attributes other than frequency of the binned data may also be recorded during binning, however only frequency is required to construct a binned scatterplot. Data reduction comes at the expense of spatial information of any of the individual points, which can only be recovered when minimally binned at the resolution of the data. The loss of information incurred from binning will be explored in following sections. 
 
 <<DataReduction,echo=FALSE,eval=FALSE,results='asis'>>=
+  # Generate tables for raw, binned and reduced binned data
 n=12
 param1 = 1
 param2 = 1.6
@@ -622,7 +625,6 @@ x <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
 y <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
 Shape <- c(rep("circle",200),rep("triangle",10),rep("circle",200),rep("triangle",10))
 
-require(ggplot2)
 qplot(x, y, colour=1000*Shade, size=I(5),shape=Shape) + theme_bw() + 
   xlab("") + ylab("")+
   theme(plot.margin = unit(c(0.1,0.1,0.1,.1),"cm"), aspect.ratio=1,
@@ -642,7 +644,7 @@ low = "#132B43"
 high = "#56B1F7"
 blueGradient <- matrix(seq_gradient_pal(high, low, "Lab")(0:4400/4400), byrow=TRUE,
        nrow=1000, ncol=4401)
-g <- rasterGrob(blueGradient, interpolate=TRUE)
+g <- grid::rasterGrob(blueGradient, interpolate=TRUE)
 
 p1 <- qplot(c(0,1000), 2, geom="blank") +   # just to set up the dimensions
   annotation_custom(g, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) +  
