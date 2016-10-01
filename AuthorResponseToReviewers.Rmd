@@ -23,6 +23,8 @@ The following document strives to address comments, questions and concerns made 
 
 *As a computer scientist, it is not clear to me, why the runtime is larger with lower numbers of bins (Section 5.1. lines 33ff.)  In my naïve implementation, I would iterate once over all data points and assign the respective bins by an adopted integer division. Consequently, the runtime would be in O(n d) with n being the number of data points and d the number of dimensions. Maybe, the authors could explain the runtime experiments more or discuss the used algorithm more. If the number of bins is 1, I would expect the fastest runtime.*
 
+- Your intuition is correct, but there was a misunderstanding about figure 3. The x-axis relates the the *size* of bins not the *number* of bins, meaning that the binning takes less time as the bin widths grows (ie the number of bins decreases). x=1 means using many 1X1 bins, not one large bin. The x-axis label has been edited to more clearly reflect that this is the size of the bin dimensions. 
+
 *In the application example, why are 50 bins chosen and why is standard rectangular binning chosen? How would other binning results differ from the presented binning. The different variants in Figure 11 are only different color mappings of density. I would include here a discussion of data properties (Scagnostics) together with some error measurements described by the authors beforehand.*
 
 *Minor remarks:Add color legend to Figure 7*
