@@ -1324,20 +1324,27 @@ binout1 <- RectBin2d(pitchdat$G,pitchdat$SO,.5,-.5,2,10,type="standard")
 binout1[[2]]$totalSpatialLoss / nrow(pitchdat)
 # spatial loss per observation ~ 2.598362 (units?)
 
+### Remaining code for comparison will be moot for minimal binning since loss after offset = 0
+
 # how much better is loss under origin at recommended offset?
 # compare loss on standardize scale with equivalent binning on standardized variables
 standG <- (pitchdat$G - mean(pitchdat$G))/sd(pitchdat$G)
 standSO <- (pitchdat$SO - mean(pitchdat$SO))/sd(pitchdat$SO)
-binoutSimpOrigin <- RectBin2d(standG,standSO,min(standG),min(standSO),2/mean(pitchdat$G),10/mean(pitchdat$SO),type="standard")
-binoutRecOrigin <- RectBin2d(standG,standSO,min(standG)-.5/mean(pitchdat$G),min(standSO)-.5/mean(pitchdat$SO),2/mean(pitchdat$G),10/mean(pitchdat$SO),type="standard")
-binoutRecOrigin[[2]]$totalSpatialLoss / binoutSimpOrigin[[2]]$totalSpatialLoss
-# spatial loss down 3% 
+binoutSimpOrigin <- RectBin2d(standG,standSO,min(standG),min(standSO),2/sd(pitchdat$G),10/sd(pitchdat$SO),type="standard")
+binoutRecOrigin <- RectBin2d(standG,standSO,min(standG)-.5/sd(pitchdat$G),min(standSO)-.5/sd(pitchdat$SO),2/sd(pitchdat$G),10/sd(pitchdat$SO),type="standard")
+binoutRecOrigin[[2]]$totalSpatialLoss / binoutSimpOrigin[[2]]$totalSpatialLoss # spatial loss down 9%
+
+# # how about loss over minimum binning?
+# binoutMinBin <- RectBin2d(standG,standSO,min(standG)-.5/sd(pitchdat$G),min(standSO)-.5/sd(pitchdat$SO),1/sd(pitchdat$G),1/sd(pitchdat$SO),type="standard")
+# binoutMinBin[[2]]$totalSpatialLoss / binoutRecOrigin[[2]]$totalSpatialLoss #
+
 standBaseballLoss2X10 <- binoutRecOrigin[[2]]$totalSpatialLoss
 standBaseballLoss2X10PerObs <- binoutRecOrigin[[2]]$totalSpatialLoss / nrow(pitchdat)
 @
 
-We now revisit the baseball data used earlier and construct binned scatterplots using the loss-based specification principles developed in the previous sections. We begin by specifying the bin dimensions and origin for standard rectangular binning. We use integer bin widths in each dimension of spatial bins to avoid artificial density stripes because each variable is recorded as an integer, corresponding to a one game by one strike-out data resolution. We desire relatively fine binning of approximately 50 bins in each dimension; the data range from 1 to 106 games and from 0 to 513 strike-outs, thus we set bin dimensions to two games by ten strikeouts. The origin offset of $(0.5,-0.5)$ is used to shift the binning back by a half game and down by one half strikeout to adjust for the data resolution. %The data has only 42,583 observations, so we can bin on a fine grid without taking an inordinate amount of computation time. 
-We find that we have approximately 3\% lower net spatial loss, after standardizing measurement units, for our binning specification using the recommended origin offset than if we were to naively set the binning origin at the minimum data values of one game and zero strikeouts. 
+We now revisit the baseball data used earlier and construct binned scatterplots using the loss-based specification principles developed in the previous sections. \ktm{In the spatial binning step we learned three rules of thumb: (1) use smaller bins to achieve lower loss of spatial information, (2) standard binning has less loss than random binning but we need to be careful to choose bin dimensions that align with data resolution, and (3) offset the origin by a factor of half the data resolution to better center point in bins.} 
+
+\ktm{For the baseball data this leads us to specify small standard rectangular bins for data that is recorded with a one game by one strike-out data resolution. The data has only 42,583 observations, so we can use minimal binning to match the data resolution without taking an inordinate amount of computation time. While minimal binning eliminates spatial loss, the miniscule physical size of the resulting tiles makes it difficult to see the frequency shade; Therefore slightly larger two game by ten strikout bins are used, providing approximately 50 bins per dimension. The origin offset of $(0.5,-0.5)$ is used to shift the binning back by a half game and down by one half strikeout to adjust for the data resolution. This offset for reduces the spatial loss by approximately 8\% for this bin size.}
 
 
 <<BaseballBinnedScatters2X10,echo=F,include=T,eval=T,fig.width=12, fig.height=4, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Binned scatterplots for games versus strikeouts.">>=  
@@ -1351,7 +1358,7 @@ p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
                                              legend.text=element_text(size=12),
                                             label.hjust=0.5,  
                                          title.position = "top")) + 
-  theme_bw() + theme(aspect.ratio=1, 
+  theme_bw() + theme(aspect.ratio=1,  
                      panel.grid= element_blank(),
                      plot.margin = unit(c(0.5,-.5,.1,-.5),"cm"),
                      legend.position="bottom")
@@ -1379,9 +1386,6 @@ p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutQuantF
                      legend.text=element_text(size=12) ) 
 
 
- 
-
-
 ## standard log freq binning
 binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=4, logCount=TRUE)
 binoutLogFreqGroups[[1]]$freqlabel <- factor(binoutLogFreqGroups[[1]]$freqlabel, 
@@ -1402,7 +1406,7 @@ p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutLogFre
                      panel.grid= element_blank(),
                      plot.margin = unit(c(0.5,-.5,.1,-.5),"cm"),
                      legend.text=element_text(size=12) ) 
-
+ 
 # plot three binned scatterplots (raw, standard log freq, quantile freq)
 grid.arrange(p1,p2,p3, nrow=1)
 

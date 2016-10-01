@@ -27,6 +27,8 @@ The following document strives to address comments, questions and concerns made 
 
 *In the application example, why are 50 bins chosen and why is standard rectangular binning chosen? How would other binning results differ from the presented binning. The different variants in Figure 11 are only different color mappings of density. I would include here a discussion of data properties (Scagnostics) together with some error measurements described by the authors beforehand.*
 
+- The beginning of section 5.3 has been rewritten to more explicitly tie the binning choices for the baseball example to the lessons learned in 5.1 and 5.2. 
+
 *Minor remarks:Add color legend to Figure 7*
 
 - Added as per request.
