@@ -29,6 +29,8 @@ The following document strives to address comments, questions and concerns made 
 
 *Minor remarks:Add color legend to Figure 7*
 
+- Added as per request.
+
 ### Responses to Reviewer 2 Comments/Questions
 
 *This paper reviews visualization methods for scatterplots and their strengths and weaknesses in handling large datasets. Section 2 notes that binned aggregation is the most widely used and effective way to visualize big bivariate data. In Section 3, the paper introduces three types of binning algorithms: standard rectangular, random and quantile. The main idea in this paper is presented in Section 4, where loss of information is characterized using two metrics: spatial loss and frequency loss. Spatial loss accounts for the loss of information about each individual point’s location; and frequency loss addresses the limitation of human perception in distinguishing frequencies represented using hues or saturation. Section 5 then presents some empirical results on how various factors may affect spatial loss and frequency loss based on three synthetic datasets. These factors include bin width and bin origin for spatial loss, and number of bins for frequency loss.*

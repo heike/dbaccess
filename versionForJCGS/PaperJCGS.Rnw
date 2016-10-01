@@ -966,20 +966,22 @@ The binning origin can also influence the spatial loss in the binned scatterplot
 #create binned data for fine exponential with 10X10 bins at good and bad origin
 binoutExp5 <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,0,0,10,10,type="standard")
 binoutExp5offset <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,-9,-9,10,10,type="standard")
-
-p1 <- qplot(binxs, binys, geom="tile", fill=log(binfreq), data=binoutExp5[[1]]) +  
+options(scipen=7)
+p1 <- qplot(binxs, binys, geom="tile", fill=log10(binfreq), data=binoutExp5[[1]]) +  
 #  ggtitle("Origin at (0,0)") +
-  scale_fill_gradient(low="#56B1F7", high="#132B43") + 
+scale_fill_gradient("", low="#56B1F7", high="#132B43", 
+                    limits=c(0,5),breaks=0:5, labels=10^(0:5)) + 
   theme_bw() + theme(plot.margin = unit(c(0.1,0.1,-0.5, 0.1),"cm"),
-                     legend.position="none",
+                     # legend.position="none",
                      aspect.ratio=1, panel.grid= element_blank()) +
   xlab("") + ylab("")+ geom_hline(yintercept=0) + geom_vline(xintercept=0)
 
-p2 <- qplot(binxs, binys, geom="tile", fill=log(binfreq), data=binoutExp5offset[[1]]) +  
+p2 <- qplot(binxs, binys, geom="tile", fill=log10(binfreq), data=binoutExp5offset[[1]]) +
 #  ggtitle("Origin at (-9,-9)") + 
-  scale_fill_gradient(low="#56B1F7", high="#132B43") + 
+scale_fill_gradient("", low="#56B1F7", high="#132B43", 
+                    limits=c(0,5),breaks=0:5, labels=10^(0:5)) + 
   theme_bw() + theme(plot.margin = unit(c(0.1,0.1,-0.5, 0.1),"cm"),
-                     legend.position="none",
+                     # legend.position="none",
                      aspect.ratio=1, panel.grid= element_blank()) +
   xlab("") + ylab("") + geom_hline(yintercept=0) + geom_vline(xintercept=0)
 
