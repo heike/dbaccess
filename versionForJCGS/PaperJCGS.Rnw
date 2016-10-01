@@ -75,7 +75,7 @@ Dealing with the data deluge of the Big Data Age is both exciting and challengin
 
 <<setup4,echo=F,include=F,eval=T>>=
 
-library(dbData)
+# library(dbData)
 library(devtools)
 library(ggplot2)
 library(gridExtra)
@@ -103,7 +103,9 @@ source("BinningLossFunctions.R")
 # names(d1) <- c( "G","SO","Freq")
 # save(d1, pitchdat, file="./data/pitching.Rdata")
 
+# Load all data: pitching and binning loss demo
 load("./data/pitching.Rdata")
+load("./data/BinningLossDemos.Rdata")
 @
 
 <<scatterplots, echo=F,include=F>>=
@@ -119,10 +121,10 @@ qplot(data=d1, x=G, y=SO, geom="point", size=I(3)) + theme_bw() + xlab("Games (C
   qplot(data=d1, x=G, y=SO, geom="point", shape="o", size=I(6)) + scale_shape_identity() + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/OverplottingCircles.png", width=5, height=5, dpi=300)
 
-# Hex binned scatterplot
-  qplot(data=pitchdat, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
-  scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
-  ggsave("./figure/HexBinning.png", width=5, height=5, dpi=300)
+# # Hex binned scatterplot
+#   qplot(data=pitchdat, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
+#   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
+#   ggsave("./figure/HexBinning.png", width=5, height=5, dpi=300)
 d1.hex.obj <- hexbin(pitchdat$G, pitchdat$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
@@ -808,7 +810,8 @@ If we view the binned scatterplot as a visual estimator of the bivariate density
 #   }
 # }
 # # write.csv(spatlossdat,"SpatialLossData.csv", row.names=FALSE)
-spatlossdatSquareBins <- read.csv("SpatialLossData.csv",header=TRUE)
+# spatlossdatSquareBins <- read.csv("SpatialLossData.csv",header=TRUE) 
+# NOTE: spatlossdatSquareBins saved to BinningLossDemos.Rdata which is read in chunk 1
 spatlossdatSquareBins$bintype <- factor(spatlossdatSquareBins$bintype, levels=c("standard","random"))
 
 
@@ -863,8 +866,9 @@ To demonstrate the importance of properly selecting binwidths we consider the co
 # allbindat <- rbind(binoutcoarse1,binoutcoarse4,binoutcoarse5,
 #                    binoutcoarse1Rand,binoutcoarse4Rand,binoutcoarse5Rand)
 # write.csv(allbindat,"StripeBinData.csv", row.names=FALSE)
+# allbindat <- read.csv("StripeBinData.csv",header=TRUE)
+# NOTE: allbindat saved to BinningLossDemos.Rdata which is read in chunk 1
 
-allbindat <- read.csv("StripeBinData.csv",header=TRUE)
 allbindat$BinningType <- factor(allbindat$BinningType, levels=c("Standard","Random"))
 allbindat$height <- 1 ; allbindat$width <- 1
 allbindat$height[which(allbindat$BinSize=="4 X 4 Unit")] <- 4
@@ -976,7 +980,12 @@ In practice the ($\alpha_x/2$,$\alpha_y/2$) origin offset is found to be a reaso
 #   }
 # }
 # write.csv(spatlossdatRound,"LossesByOriginBinwidth.csv", row.names=FALSE)
-lossOrigin <- read.csv("./data/LossesByOriginBinwidth.csv",header=TRUE)
+# lossOrigin <- read.csv("./data/LossesByOriginBinwidth.csv",header=TRUE)
+# Save the loss binning data objects into central Rdata file for simplicity
+# save(lossOrigin, spatlossdatSquareBins, allbindat, file="BinningLossDemos.Rdata")
+
+# NOTE: lossOrigin saved to BinningLossDemos.Rdata which is read in chunk 1
+
 mins <- ddply(lossOrigin, .(widthx, bintype, distrib), summarise,
               minx = max(originx[which(totalSpatialLoss == min(totalSpatialLoss))]),
               minloss = min(totalSpatialLoss))
@@ -1077,7 +1086,6 @@ Log transforming the frequencies prior to binning and using quantile based binni
 <<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=7, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively.",fig.scap="Lineplots for total frequency losses from standard and quantile binning for simulated bivariate data. ">>= 
 ### Loop over ncolors 1 to 10 and also over data distribution
 # find freq loss from standard, quantile, logCount
-source("BinningLossFunctions.R")
 freqLossSimDat <- NULL
 distrib <- c("Uniform", "Normal", "Exponential")
 for (distidx in 1:3){
