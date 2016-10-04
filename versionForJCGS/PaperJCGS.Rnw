@@ -90,6 +90,7 @@ library(tidyr)
 library(xtable)
 library(scagnostics)
  
+options(scipen=5, digits=5)
 #source in binning functions
 source("BinningLossFunctions.R")
 
@@ -104,7 +105,7 @@ source("BinningLossFunctions.R")
 
 # Load all data: pitching and binning loss demo
 load("./data/pitching.Rdata")
-# load("./data/BinningLossDemos.Rdata")
+load("./data/BinningLossDemos.Rdata")
 @
 
 <<scatterplots, echo=F,include=F>>=
@@ -848,7 +849,7 @@ If we view the binned scatterplot as a visual estimator of the bivariate density
 #       spatlossdat <- rbind(spatlossdat, binout[[2]])
 #       print(c(distrib[distindex],width))
 #   }
-# }
+# } 
 # # write.csv(spatlossdat,"SpatialLossData.csv", row.names=FALSE)
 # spatlossdatSquareBins <- read.csv("SpatialLossData.csv",header=TRUE) 
 # NOTE: spatlossdatSquareBins saved to BinningLossDemos.Rdata which is read in chunk 1
@@ -905,7 +906,7 @@ To demonstrate the importance of properly selecting binwidths we consider the co
 # allbindat <- rbind(binoutcoarse1,binoutcoarse4,binoutcoarse5,
 #                    binoutcoarse1Rand,binoutcoarse4Rand,binoutcoarse5Rand)
 # write.csv(allbindat,"StripeBinData.csv", row.names=FALSE)
-# allbindat <- read.csv("StripeBinData.csv",header=TRUE)
+# allbindat <- read.csv("StripeBinData.csv",header=TRUE) 
 # NOTE: allbindat saved to BinningLossDemos.Rdata which is read in chunk 1
 
 allbindat$BinningType <- factor(allbindat$BinningType, levels=c("Standard","Random"))
@@ -1017,7 +1018,7 @@ In practice the ($\alpha_x/2$,$\alpha_y/2$) origin offset is found to be a reaso
 #       binout[[2]]$distrib <- distrib[distindex]
 #       spatlossdatRound <- rbind(spatlossdatRound, binout[[2]])
 #       print(c(distrib[distindex],width,origin))
-#     }
+#     } 
 #   }
 # }
 # write.csv(spatlossdatRound,"LossesByOriginBinwidth.csv", row.names=FALSE)
@@ -1128,6 +1129,7 @@ Log transforming the frequencies prior to binning and using quantile based binni
 <<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=7, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively.",fig.scap="Lineplots for total frequency losses from standard and quantile binning for simulated bivariate data. ">>= 
 ### Loop over ncolors 1 to 10 and also over data distribution
 # find freq loss from standard, quantile, logCount
+options(digits=1, scipen=1) 
 freqLossSimDat <- NULL
 distrib <- c("Uniform", "Normal", "Exponential")
 for (distidx in 1:3){
@@ -1403,9 +1405,7 @@ grid.arrange(p1,p2,p3, nrow=1)
 
 @
  
-The leftmost plot in Figure~\ref{fig:BaseballBinnedScatters2X10} displays the binned scatterplot with a continuous shading of raw bin frequencies. The most striking feature in the frequency distribution is the dark spot in the bottom right of the plot representing a large number of pitchers that played very few games and had very few strikeouts. It is nearly impossible to distinguish the density structure across the remaining bins, representing better pitchers who played many games and earned many strikeouts. 
-%In this case there are two frequency binning options that we can employ to deal with this skewness of the distribution of bin counts. 
-Quantile frequency binning using four shade groups (center plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) allows us to visualizes the quartiles of the bin densities. Alternatively, standard log frequency binning using four shade groups (rightmost plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) uses the log transformation to diminish the visual impact of high density bins. Each frequency binning approach adds a layer of complexity to interpreting the shade, however they both effectively emphasize the forked ridges in the density structure. 
+The leftmost plot in Figure~\ref{fig:BaseballBinnedScatters2X10} displays the binned scatterplot with a continuous shading of raw bin frequencies. The most striking feature in the frequency distribution is the dark spot in the bottom right of the plot representing a large number of pitchers that played very few games and had very few strikeouts. It is nearly impossible to distinguish the density structure across the remaining bins, representing better pitchers who played many games and earned many strikeouts. \ktm{In this case there are the two frequency binning approaches from Section~\ref{FreqBinningSpec} that we can employ to deal with this skewness of the distribution of bin counts.} Quantile frequency binning using four shade groups (center plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) allows us to visualizes the quartiles of the bin densities. Alternatively, standard log frequency binning using four shade groups (rightmost plot of Figure~\ref{fig:BaseballBinnedScatters2X10}) uses the log transformation to diminish the visual impact of high density bins. Each frequency binning approach adds a layer of complexity to interpreting the shade, however they both effectively emphasize the forked ridges in the density structure. 
 
 %The interpretability of the net spatial loss in this scenario suffers because the units and scales of the two variables differ. To remedy this, the two variables can be standardized then binned equivalently by rescaling the bin dimension, where the net spatial loss is interpreted as a distance in units of standard deviations. The net spatial loss for the standardized data is the same for each plot in Figure~\ref{fig:BaseballBinnedScatters2X10} because they do not differ in location, only in frequency shading. The net spatial loss is \Sexpr{round(standBaseballLoss2X10,2)} standard deviations, an average of \Sexpr{round(standBaseballLoss2X10PerObs,4)} standard deviation per data point. We also find that we have approximately 3\% lower net spatial loss, on the standardized scale, for our binning specification using the recommended origin offset than if we were to naively set the binning origin at the minimum data values of one game and zero strikeouts. 
 
