@@ -23,7 +23,7 @@
 
 %\pdfminorversion=4
 % NOTE: To produce blinded version, replace "0" with "1" below.
-\newcommand{\blind}{1}
+\newcommand{\blind}{0}
 \newcommand{\ktm}[1]{{\color{red} #1}} %red comments: Karsten
 \newcommand{\hh}[1]{{\color{blue} #1}} %blue comments: Heike
 
@@ -115,7 +115,8 @@ qplot(data=d1, x=G, y=SO, geom="point", size=I(3)) + theme_bw() + xlab("Games (C
   ggsave("./figure/OverplottingCircles.png", width=5, height=5, dpi=300)
 
 # Hex binned scatterplot
-  qplot(data=pitchdat, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
+ggplot(data=pitchdat, aes(x=G, y=SO))+
+    geom_hex()+
   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
   ggsave("./figure/HexBinning.png", width=5, height=5, dpi=300)
 d1.hex.obj <- hexbin(pitchdat$G, pitchdat$SO)
