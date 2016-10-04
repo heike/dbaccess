@@ -74,7 +74,6 @@ Dealing with the data deluge of the Big Data Age is both exciting and challengin
 \label{Intro}
 
 <<setup4,echo=F,include=F,eval=T>>=
-
 # library(dbData)
 library(devtools)
 library(ggplot2)
@@ -105,7 +104,7 @@ source("BinningLossFunctions.R")
 
 # Load all data: pitching and binning loss demo
 load("./data/pitching.Rdata")
-load("./data/BinningLossDemos.Rdata")
+# load("./data/BinningLossDemos.Rdata")
 @
 
 <<scatterplots, echo=F,include=F>>=
@@ -121,27 +120,11 @@ qplot(data=d1, x=G, y=SO, geom="point", size=I(3)) + theme_bw() + xlab("Games (C
   qplot(data=d1, x=G, y=SO, geom="point", shape="o", size=I(6)) + scale_shape_identity() + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/OverplottingCircles.png", width=5, height=5, dpi=300)
 
-<<<<<<< HEAD
 # Hex binned scatterplot
 ggplot(data=pitchdat, aes(x=G, y=SO))+
     geom_hex()+
   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
   ggsave("./figure/HexBinning.png", width=5, height=5, dpi=300)
-=======
-# # Hex binned scatterplot
-#   qplot(data=pitchdat, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
-#   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
-#   ggsave("./figure/HexBinning.png", width=5, height=5, dpi=300)
->>>>>>> acda3f267be2fad0f7bcd6f8d4ae551464f83bcc
-d1.hex.obj <- hexbin(pitchdat$G, pitchdat$SO)
-d1.hex <- data.frame(hcell2xy(d1.hex.obj))
-names(d1.hex) <- c("G", "SO")
-d1.hex$Freq <-  d1.hex.obj@count
-
-# hex binned bubbleplot
-qplot(data=d1.hex, x=G, y=SO, geom="point", size=Freq+1) + 
-  scale_size_area("Frequency", max_size=4, trans="log", breaks=c(1, 10, 100, 1000, 10000))+ theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)") + theme(legend.position="bottom")
-ggsave("./figure/BinBubble.png", width=5, height=5, dpi=300)
 
 # minimally binned rectangular  
 qplot(G, SO, geom="tile", fill=Freq, data=d1) +
