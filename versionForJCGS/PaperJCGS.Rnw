@@ -20,7 +20,7 @@
  \usepackage{color}
  \usepackage{hyperref}
  \usepackage{mathrsfs}
-
+ 
 %\pdfminorversion=4
 % NOTE: To produce blinded version, replace "0" with "1" below.
 \newcommand{\blind}{0}
@@ -74,18 +74,23 @@ Dealing with the data deluge of the Big Data Age is both exciting and challengin
 \label{Intro}
 
 <<setup4,echo=F,include=F,eval=T>>=
+
+# library(dbData)
+library(devtools)
 library(ggplot2)
 library(gridExtra)
-library(dbData)
-library(reshape2)
-#library(multicore)
-library(devtools)
-library(xtable)
-library(RColorBrewer)
 library(hexbin)
+library(Hmisc)
+library(lubridate)
 library(MASS)
-library(scales)
 library(plyr)
+library(RColorBrewer)
+library(reshape2)
+library(scales)
+library(tidyr)
+library(xtable)
+library(scagnostics)
+ 
 #source in binning functions
 source("BinningLossFunctions.R")
 
@@ -98,7 +103,9 @@ source("BinningLossFunctions.R")
 # names(d1) <- c( "G","SO","Freq")
 # save(d1, pitchdat, file="./data/pitching.Rdata")
 
+# Load all data: pitching and binning loss demo
 load("./data/pitching.Rdata")
+load("./data/BinningLossDemos.Rdata")
 @
 
 <<scatterplots, echo=F,include=F>>=
@@ -114,11 +121,18 @@ qplot(data=d1, x=G, y=SO, geom="point", size=I(3)) + theme_bw() + xlab("Games (C
   qplot(data=d1, x=G, y=SO, geom="point", shape="o", size=I(6)) + scale_shape_identity() + theme_bw() + xlab("Games (Count)")+ ylab("Strike Outs (Count)")
   ggsave("./figure/OverplottingCircles.png", width=5, height=5, dpi=300)
 
+<<<<<<< HEAD
 # Hex binned scatterplot
 ggplot(data=pitchdat, aes(x=G, y=SO))+
     geom_hex()+
   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
   ggsave("./figure/HexBinning.png", width=5, height=5, dpi=300)
+=======
+# # Hex binned scatterplot
+#   qplot(data=pitchdat, x=G, y=SO, geom="hex", fill=..count.., group=1) +  
+#   scale_fill_gradient("Frequency", low="#56B1F7", high="#132B43", guide="legend", trans="log", breaks=c(1, 10, 100, 1000)) + theme_bw() + xlab("Games (Count)") + ylab("Strike Outs (Count)") + theme(legend.position="bottom")
+#   ggsave("./figure/HexBinning.png", width=5, height=5, dpi=300)
+>>>>>>> acda3f267be2fad0f7bcd6f8d4ae551464f83bcc
 d1.hex.obj <- hexbin(pitchdat$G, pitchdat$SO)
 d1.hex <- data.frame(hcell2xy(d1.hex.obj))
 names(d1.hex) <- c("G", "SO")
@@ -274,6 +288,7 @@ where $b^r_X(x_i)$ and $b^r_Y(y_i)$ are univariate random binning algorithms for
 The second stage of binning requires a frequency breakdown of the number of observations associated with each bin center, forming reduced data triples, $(x^\ast, y^\ast, c)$, where $c$ is the number of all observations assigned to bin center $(x^\ast,y^\ast)$. Table~\ref{DataReductionExample} makes use of a small set of simulated data to show the progression from the original data (a), to the binned data (b), to the reduced binned data (c). The reduced binned data is sufficient for constructing the binned scatterplot. In cases of large data, binning greatly reduces the storage size for the information and the computation time needed to construct a binned scatterplot. Note that numerical attributes other than frequency of the binned data may also be recorded during binning, however only frequency is required to construct a binned scatterplot. Data reduction comes at the expense of spatial information of any of the individual points, which can only be recovered when minimally binned at the resolution of the data. The loss of information incurred from binning will be explored in following sections. 
 
 <<DataReduction,echo=FALSE,eval=FALSE,results='asis'>>=
+  # Generate tables for raw, binned and reduced binned data
 n=12
 param1 = 1
 param2 = 1.6
@@ -611,7 +626,6 @@ Bin counts can be displayed using a continuous shading scale in HSV color space 
 
 <<FreqLossDemoPlot,echo=F,include=T,eval=T,fig.width=c(6,6), fig.height=c(6,3), out.width=c('.49\\linewidth','.5\\linewidth'), fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="(Left) Q: Which triangles are darker? A: All triangles same shade = 500. \\newline (Right) Continuous and standard rectangular binned frequency color scales.", fig.scap="Continuous and discrete color scales for counts.">>= 
 
-library(scales)
 #match color scales in each
 low = "#132B43"
 high = "#56B1F7"
@@ -621,7 +635,6 @@ x <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
 y <- c(rnorm(210, mean=0, sd=0.075), rnorm(210, mean=.5, sd=0.075))
 Shape <- c(rep("circle",200),rep("triangle",10),rep("circle",200),rep("triangle",10))
 
-require(ggplot2)
 qplot(x, y, colour=1000*Shade, size=I(5),shape=Shape) + theme_bw() + 
   xlab("") + ylab("")+
   theme(plot.margin = unit(c(0.1,0.1,0.1,.1),"cm"), aspect.ratio=1,
@@ -641,7 +654,7 @@ low = "#132B43"
 high = "#56B1F7"
 blueGradient <- matrix(seq_gradient_pal(high, low, "Lab")(0:4400/4400), byrow=TRUE,
        nrow=1000, ncol=4401)
-g <- rasterGrob(blueGradient, interpolate=TRUE)
+g <- grid::rasterGrob(blueGradient, interpolate=TRUE)
 
 p1 <- qplot(c(0,1000), 2, geom="blank") +   # just to set up the dimensions
   annotation_custom(g, xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) +  
@@ -693,9 +706,10 @@ where $\mathscr{L}^\ast$ is the index set for all non-empty bins, which is done 
 
 \section{Exploring Properties of Loss}
 
-Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm as well as a choice of parameters associated with that binning algorithm. This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of scenarios. Some choices may be proven optimal through analytical properties, while other are data dependent and require empirical exploration of loss from binning.  Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices.
+Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm as well as a choice of parameters associated with that binning algorithm. This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of distributional scenarios. Some choices may be proven optimal through analytical properties, while other are data dependent and require empirical exploration of loss from binning. Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices.
 
-Data sets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform.  These distributions were selected for their variety in terms of shape, center and spread. 100,000 observation pairs were simulated for each data set from the following distributions: 
+
+Data sets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform. 100,000 observation pairs were simulated for each data set from the following distributions: 
 
 \begin{itemize}
 \item Set I: $x_i \sim \text{iid Exp}(\lambda), y_i \sim \text{iid Exp}(\lambda)$ with $\lambda = 11$
@@ -706,9 +720,10 @@ Data sets were simulated from bivariate distributions to be used throughout this
 \end{itemize}
 %
 The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places; 6 decimal places in our simulate data. Real data is recorded to only the number of digits that measurement precision allows, and in many cases rounded even further.
+
 %
 <<SimDataScatterplots2,echo=F,include=F,eval=T,fig.width=8, fig.height=5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\\%, 98.7\\% and 99.1\\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.">>= 
-library(scales) 
+
 ### Try 2d binning with MVN data
 n=100000
 set.seed(31415)
@@ -767,7 +782,54 @@ ggsave("./figure/SimScatters.png", width=8, height=5.5, dpi=300)
 %
 %Density changes are impossible to make out in the solid black areas of the plots. 97.4\%, 98.7\% and 99.1\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.
 %
-The \textit{data resolution} is defined as the smallest increment between successive data values. To observe loss from binning under more realistic conditions, we create three data sets by rounding the values from the originally simulated data sets to the nearest even number, thus a data resolution of 2 units in each dimension. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution at which data is recorded. 
+The \textit{data resolution} is defined as the smallest increment between successive data values. To observe loss from binning under more realistic conditions, we create three data sets by rounding the values from the originally simulated data sets to the nearest even number, hus a data resolution of 2 units in each dimension. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution at which data is recorded. 
+
+\ktm{These bivariate distributions were selected for the variety in their defining characteristics. \textit{Scagnostics} - a portmanteau for scatterplot diagnostics - are formalized metrics that have been used to numerically summarize key attributes of scatterplots, including: outying, skewness, clumpiness, sparsity, striation, convexity, skinniness, stringiness and monotonicity (\citealt{wilkinson2005graph};\citealt{wilkinson2008scagnostics}). The scagnostic scores in Table~\ref{tab:scagnostics} were calculated for the simulated data sets using the \texttt{scagnostics} package in R \citep{wilkinson2015package}. They show that these examples explore a variety of skewnesses, convexity and skinniness. This exploration uses bivariately independent distributions, thus the monotonicity and clumpiness are both near zero for these examples. The coarse data is rounded into striatations by definition, however the striation scagnostic score is low due to the relatively small scale of striation versus the magnitude of variability in each distribution. These minor striations will still prove problematic when binning is inconsistent with the data resolution. }
+
+<<SimDataScagnostics,echo=F,include=F,eval=F>>= 
+# help(package="scagnostics")
+head(alldat)
+scags <- data.frame(0,0,0,0,0,0,0,0,0,0,0)
+counter <- 0
+for (i in c("Exponential","Normal","Uniform")){
+  for(j in c("Fine","Coarse")){
+    counter <- counter + 1
+    tmp <- filter(alldat, type==i, record=="Fine")
+    print(dim(tmp))
+    if(j=="Fine") scags[counter,] <- c(i,j,round(as.vector(scagnostics(tmp$x,tmp$y)),2))
+    if(j=="Coarse") scags[counter,] <- c(i,j,round(as.vector(scagnostics(tmp$roundx,tmp$roundy)),2))   
+    names(scags) <- c("type","record",names(scagnostics(tmp$x,tmp$y)))
+  }
+}
+head(scags)
+
+print(xtable(scags, digits=c(0, 0, 3,3,3,3,3,3,3,3,3,3,3)), include.rownames=FALSE)
+@
+
+
+% latex table generated in R 3.3.0 by xtable 1.8-2 package
+% Sat Oct 01 11:29:18 2016
+\begin{table}[ht]
+\ktm{
+\centering \small
+\begin{tabular}{lrrrrrrrrr}
+  \hline
+Dist-Res & Outlie & Skew & Clump & Sparse & Striate & Convex & Skinny & String & Mono. \\ 
+  \hline
+  Exp-Fine &   0.15 & 0.67 & 0.01 & 0.02 & 0.02 & 0.47 & 0.55 & 0.36 & 0.00 \\ 
+  Exp-Coarse &  0.15 & 0.71 & 0.02 & 0.02 & 0.03 & 0.51 & 0.52 & 0.27  & 0.00  \\ 
+  Norm-Fine &   0.07 & 0.55 & 0.00 & 0.02 & 0.01 & 0.60 & 0.31 & 0.39 & 0.00  \\ 
+  Norm-Coarse &   0.08 & 0.59 & 0.01 & 0.02 & 0.02 & 0.60 & 0.33 & 0.35  & 0.00  \\ 
+  Unif-Fine &   0.00 & 0.52 & 0.00 & 0.03 & 0.00 & 0.68 & 0.15 & 0.36 & 0.00  \\ 
+  Unif-Coarse & 0.00 & 0.56 & 0.00 & 0.03 & 0.01 & 0.68 & 0.14 & 0.38  & 0.00  \\ 
+   \hline
+\end{tabular}
+} % end ktm highlighting
+\normalsize
+\caption{\ktm{Scagnostics scores for the six simulated datasets used in empirical exploration of spatial loss in binned scatterplots.}}
+\label{tab:scagnostics}
+\end{table}
+
 
 %-----------------------------------------------------------------------------
 
@@ -805,12 +867,12 @@ If we view the binned scatterplot as a visual estimator of the bivariate density
 #   }
 # }
 # # write.csv(spatlossdat,"SpatialLossData.csv", row.names=FALSE)
-spatlossdatSquareBins <- read.csv("SpatialLossData.csv",header=TRUE)
+# spatlossdatSquareBins <- read.csv("SpatialLossData.csv",header=TRUE) 
+# NOTE: spatlossdatSquareBins saved to BinningLossDemos.Rdata which is read in chunk 1
 spatlossdatSquareBins$bintype <- factor(spatlossdatSquareBins$bintype, levels=c("standard","random"))
-
-library(tidyr)
+ 
 spatlossdatSquareBins2 <- gather(spatlossdatSquareBins, measure, value, c(totalSpatialLoss,binTime))
-spatlossdatSquareBins2$measure <- factor(spatlossdatSquareBins2$measure , labels=c("Net Spatial Loss","Binning Time (sec)"))
+spatlossdatSquareBins2$measure <- factor(spatlossdatSquareBins2$measure , labels=c("Binning Time (sec)","Net Spatial Loss"))
 # 
 # p1 <- qplot(widthx,totalSpatialLoss,geom="path",colour=bintype, linetype=bintype,
 #       data=spatlossdatSquareBins,group=bintype, facets=.~distrib, size=I(1)) +
@@ -829,7 +891,7 @@ qplot(widthx,value,geom="path",colour=bintype, linetype=bintype,
   facet_grid(measure~distrib, scales="free_y" )+
   theme_bw() + theme(plot.margin = unit(c(0.1,0.1,0.1, 0.1),"cm")) + 
   ylab("Net Spatial Loss") +
-  xlab("Width/Height of Square Bins") 
+  xlab("Size of Bin Dimensions") 
 @
 %
 %All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. 
@@ -860,8 +922,9 @@ To demonstrate the importance of properly selecting binwidths we consider the co
 # allbindat <- rbind(binoutcoarse1,binoutcoarse4,binoutcoarse5,
 #                    binoutcoarse1Rand,binoutcoarse4Rand,binoutcoarse5Rand)
 # write.csv(allbindat,"StripeBinData.csv", row.names=FALSE)
+# allbindat <- read.csv("StripeBinData.csv",header=TRUE)
+# NOTE: allbindat saved to BinningLossDemos.Rdata which is read in chunk 1
 
-allbindat <- read.csv("StripeBinData.csv",header=TRUE)
 allbindat$BinningType <- factor(allbindat$BinningType, levels=c("Standard","Random"))
 allbindat$height <- 1 ; allbindat$width <- 1
 allbindat$height[which(allbindat$BinSize=="4 X 4 Unit")] <- 4
@@ -911,20 +974,22 @@ The binning origin can also influence the spatial loss in the binned scatterplot
 #create binned data for fine exponential with 10X10 bins at good and bad origin
 binoutExp5 <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,0,0,10,10,type="standard")
 binoutExp5offset <- RectBin2d(datlist[[3]]$x,datlist[[3]]$y,-9,-9,10,10,type="standard")
-
-p1 <- qplot(binxs, binys, geom="tile", fill=log(binfreq), data=binoutExp5[[1]]) +  
+options(scipen=7)
+p1 <- qplot(binxs, binys, geom="tile", fill=log10(binfreq), data=binoutExp5[[1]]) +  
 #  ggtitle("Origin at (0,0)") +
-  scale_fill_gradient(low="#56B1F7", high="#132B43") + 
+scale_fill_gradient("", low="#56B1F7", high="#132B43", 
+                    limits=c(0,5),breaks=0:5, labels=10^(0:5)) + 
   theme_bw() + theme(plot.margin = unit(c(0.1,0.1,-0.5, 0.1),"cm"),
-                     legend.position="none",
+                     # legend.position="none",
                      aspect.ratio=1, panel.grid= element_blank()) +
   xlab("") + ylab("")+ geom_hline(yintercept=0) + geom_vline(xintercept=0)
 
-p2 <- qplot(binxs, binys, geom="tile", fill=log(binfreq), data=binoutExp5offset[[1]]) +  
+p2 <- qplot(binxs, binys, geom="tile", fill=log10(binfreq), data=binoutExp5offset[[1]]) +
 #  ggtitle("Origin at (-9,-9)") + 
-  scale_fill_gradient(low="#56B1F7", high="#132B43") + 
+scale_fill_gradient("", low="#56B1F7", high="#132B43", 
+                    limits=c(0,5),breaks=0:5, labels=10^(0:5)) + 
   theme_bw() + theme(plot.margin = unit(c(0.1,0.1,-0.5, 0.1),"cm"),
-                     legend.position="none",
+                     # legend.position="none",
                      aspect.ratio=1, panel.grid= element_blank()) +
   xlab("") + ylab("") + geom_hline(yintercept=0) + geom_vline(xintercept=0)
 
@@ -973,13 +1038,19 @@ In practice the ($\alpha_x/2$,$\alpha_y/2$) origin offset is found to be a reaso
 #   }
 # }
 # write.csv(spatlossdatRound,"LossesByOriginBinwidth.csv", row.names=FALSE)
-lossOrigin <- read.csv("./data/LossesByOriginBinwidth.csv",header=TRUE)
+# lossOrigin <- read.csv("./data/LossesByOriginBinwidth.csv",header=TRUE)
+# Save the loss binning data objects into central Rdata file for simplicity
+# save(lossOrigin, spatlossdatSquareBins, allbindat, file="BinningLossDemos.Rdata")
+
+# NOTE: lossOrigin saved to BinningLossDemos.Rdata which is read in chunk 1
+
 mins <- ddply(lossOrigin, .(widthx, bintype, distrib), summarise,
               minx = max(originx[which(totalSpatialLoss == min(totalSpatialLoss))]),
               minloss = min(totalSpatialLoss))
 lossOrigin$binsize <- factor(paste(lossOrigin$widthx,"X",lossOrigin$widthx,sep=""),
-                             levels=c("2X2","4X4","6X6","8X8","10X10"))
-mins$binsize <- paste(mins$widthx,"X",mins$widthx,sep="")
+                             levels=c("2X2","4X4","6X6","8X8","10X10")) 
+mins$binsize <- factor(paste(mins$widthx,"X",mins$widthx,sep=""),
+                       levels=c("2X2","4X4","6X6","8X8","10X10"))
 
 # #Code to show percent of minimum loss at offset -1
 # spatlossatorigin1 <- data.frame(NULL)
@@ -1074,7 +1145,6 @@ Log transforming the frequencies prior to binning and using quantile based binni
 <<FreqLossCompare,echo=F,include=T,eval=T,fig.width=12, fig.height=7, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Lineplots for total frequency loss (top row) and total log frequency loss (bottom row) from standard and quantile binning of bin counts and log bin counts, respectively.",fig.scap="Lineplots for total frequency losses from standard and quantile binning for simulated bivariate data. ">>= 
 ### Loop over ncolors 1 to 10 and also over data distribution
 # find freq loss from standard, quantile, logCount
-source("BinningLossFunctions.R")
 freqLossSimDat <- NULL
 distrib <- c("Uniform", "Normal", "Exponential")
 for (distidx in 1:3){
@@ -1262,20 +1332,27 @@ binout1 <- RectBin2d(pitchdat$G,pitchdat$SO,.5,-.5,2,10,type="standard")
 binout1[[2]]$totalSpatialLoss / nrow(pitchdat)
 # spatial loss per observation ~ 2.598362 (units?)
 
+### Remaining code for comparison will be moot for minimal binning since loss after offset = 0
+
 # how much better is loss under origin at recommended offset?
 # compare loss on standardize scale with equivalent binning on standardized variables
 standG <- (pitchdat$G - mean(pitchdat$G))/sd(pitchdat$G)
 standSO <- (pitchdat$SO - mean(pitchdat$SO))/sd(pitchdat$SO)
-binoutSimpOrigin <- RectBin2d(standG,standSO,min(standG),min(standSO),2/mean(pitchdat$G),10/mean(pitchdat$SO),type="standard")
-binoutRecOrigin <- RectBin2d(standG,standSO,min(standG)-.5/mean(pitchdat$G),min(standSO)-.5/mean(pitchdat$SO),2/mean(pitchdat$G),10/mean(pitchdat$SO),type="standard")
-binoutRecOrigin[[2]]$totalSpatialLoss / binoutSimpOrigin[[2]]$totalSpatialLoss
-# spatial loss down 3% 
+binoutSimpOrigin <- RectBin2d(standG,standSO,min(standG),min(standSO),2/sd(pitchdat$G),10/sd(pitchdat$SO),type="standard")
+binoutRecOrigin <- RectBin2d(standG,standSO,min(standG)-.5/sd(pitchdat$G),min(standSO)-.5/sd(pitchdat$SO),2/sd(pitchdat$G),10/sd(pitchdat$SO),type="standard")
+binoutRecOrigin[[2]]$totalSpatialLoss / binoutSimpOrigin[[2]]$totalSpatialLoss # spatial loss down 9%
+
+# # how about loss over minimum binning?
+# binoutMinBin <- RectBin2d(standG,standSO,min(standG)-.5/sd(pitchdat$G),min(standSO)-.5/sd(pitchdat$SO),1/sd(pitchdat$G),1/sd(pitchdat$SO),type="standard")
+# binoutMinBin[[2]]$totalSpatialLoss / binoutRecOrigin[[2]]$totalSpatialLoss #
+
 standBaseballLoss2X10 <- binoutRecOrigin[[2]]$totalSpatialLoss
 standBaseballLoss2X10PerObs <- binoutRecOrigin[[2]]$totalSpatialLoss / nrow(pitchdat)
 @
 
-We now revisit the baseball data used earlier and construct binned scatterplots using the loss-based specification principles developed in the previous sections. We begin by specifying the bin dimensions and origin for standard rectangular binning. We use integer bin widths in each dimension of spatial bins to avoid artificial density stripes because each variable is recorded as an integer, corresponding to a one game by one strike-out data resolution. We desire relatively fine binning of approximately 50 bins in each dimension; the data range from 1 to 106 games and from 0 to 513 strike-outs, thus we set bin dimensions to two games by ten strikeouts. The origin offset of $(0.5,-0.5)$ is used to shift the binning back by a half game and down by one half strikeout to adjust for the data resolution. %The data has only 42,583 observations, so we can bin on a fine grid without taking an inordinate amount of computation time. 
-We find that we have approximately 3\% lower net spatial loss, after standardizing measurement units, for our binning specification using the recommended origin offset than if we were to naively set the binning origin at the minimum data values of one game and zero strikeouts. 
+We now revisit the baseball data used earlier and construct binned scatterplots using the loss-based specification principles developed in the previous sections. \ktm{In the spatial binning step we learned three rules of thumb: (1) use smaller bins to achieve lower loss of spatial information, (2) standard binning has less loss than random binning but we need to be careful to choose bin dimensions that align with data resolution, and (3) offset the origin by a factor of half the data resolution to better center point in bins.} 
+
+\ktm{For the baseball data this leads us to specify small standard rectangular bins for data that is recorded with a one game by one strike-out data resolution. The data has only 42,583 observations, so we can use minimal binning to match the data resolution without taking an inordinate amount of computation time. While minimal binning eliminates spatial loss, the miniscule physical size of the resulting tiles makes it difficult to see the frequency shade; Therefore slightly larger two game by ten strikout bins are used, providing approximately 50 bins per dimension. The origin offset of $(0.5,-0.5)$ is used to shift the binning back by a half game and down by one half strikeout to adjust for the data resolution. This offset for reduces the spatial loss by approximately 8\% for this bin size.}
 
 
 <<BaseballBinnedScatters2X10,echo=F,include=T,eval=T,fig.width=12, fig.height=4, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Binned scatterplots for games versus strikeouts.">>=  
@@ -1289,7 +1366,7 @@ p1 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=binout1[[1]],
                                              legend.text=element_text(size=12),
                                             label.hjust=0.5,  
                                          title.position = "top")) + 
-  theme_bw() + theme(aspect.ratio=1, 
+  theme_bw() + theme(aspect.ratio=1,  
                      panel.grid= element_blank(),
                      plot.margin = unit(c(0.5,-.5,.1,-.5),"cm"),
                      legend.position="bottom")
@@ -1317,9 +1394,6 @@ p2 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutQuantF
                      legend.text=element_text(size=12) ) 
 
 
- 
-
-
 ## standard log freq binning
 binoutLogFreqGroups <- freqBin(binout1, binType="standard", ncolor=4, logCount=TRUE)
 binoutLogFreqGroups[[1]]$freqlabel <- factor(binoutLogFreqGroups[[1]]$freqlabel, 
@@ -1340,7 +1414,7 @@ p3 <- qplot(binxs, binys, geom="tile", fill=factor(freqlabel), data=binoutLogFre
                      panel.grid= element_blank(),
                      plot.margin = unit(c(0.5,-.5,.1,-.5),"cm"),
                      legend.text=element_text(size=12) ) 
-
+ 
 # plot three binned scatterplots (raw, standard log freq, quantile freq)
 grid.arrange(p1,p2,p3, nrow=1)
 
@@ -1365,7 +1439,7 @@ If we elect to use frequency binning to shade tiles ordinally, it is recommended
 
 Future implementations of software for constructing binned scatterplots would be well served to allow for choices in specification of binning algorithms. The findings of this research provide suggestions for reasonable default settings of binning parameters that maintain spatial and frequency information and lead to desirable visual properties in the binned scatterplot.
 
-%' 
+%' THE FOLLOWING SUBSECTION IS OMITTED FOR JCGS PAGE LIMIT CONSIDERATIONS
 %' %--------------------------------------------------------------------
 %' 
 %' \subsection{Big Data: Airline Departure Times}
