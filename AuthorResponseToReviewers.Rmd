@@ -63,9 +63,15 @@ The following document strives to address comments, questions and concerns made 
 
 *Please provide quantified results on spatial loss when you talk about how binning origin affects spatial loss in Figure 7.*
 
+- The statement addressing the Figure already contains a quantified comparison of spatial loss under the two scenarios. **"As an example, Figure 7 displays the binned scatterplots of ten-by-ten unit bins for the fine exponential data where the binning origin at (0,0) incurs seven percent lower spatial loss than for the (-9,-9) origin due to the heavy overlap into negative regions"** The difference is given as a percent decrease in spatial loss because the relative spatial loss change seemed most pertinent.
+
 *In visualization practices, it is common to use both ordinal scales as well as continuous scales when mapping numbers to colors. How might you address the issue of frequency loss when continuous scales are used?*
 
-*I don’t buy the advice to “use between four and seven frequency”. There simply isn’t empirical evidence in the paper to support this claim.*
+- The need for future perception research to quantify the implicit frequency loss when using continuous shading scales is now noted in the discussion section of the paper. 
+
+*I don’t buy the advice to “use between four and seven frequency”. There simply isn’t empirical evidence in the paper to support this claim.* 
+
+- We do not want to allow more color bin than we can *easily* differentiate because the our expressed purpose for working with discretized color scales in this scenario is to have made loss of frequency information *entirely* explicit. While working with discretizing shades we found ourselves worrying about our ability to perfectly match bins to a legend after approximately 6 shades. We do not claim to have gathered empirical evidence, rather we defer to Healey and Enn's Theory on discernable colors (typically 4-7) to back out experience. Figure 9 was included for the reader to assess if they felt our suggestion was justifiable.
 
 *From a human-computer interaction perspective, it is also limiting when the paper talks about spatial loss and frequency loss without any mention of user tasks (e.g. comparison, outlier detection). Do these metric matter for all the tasks involved in reading the scatterplots?*
 
