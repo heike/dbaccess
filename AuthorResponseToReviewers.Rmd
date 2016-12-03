@@ -23,7 +23,7 @@ The following document strives to address comments, questions and concerns made 
 
 *As a computer scientist, it is not clear to me, why the runtime is larger with lower numbers of bins (Section 5.1. lines 33ff.)  In my naïve implementation, I would iterate once over all data points and assign the respective bins by an adopted integer division. Consequently, the runtime would be in O(n d) with n being the number of data points and d the number of dimensions. Maybe, the authors could explain the runtime experiments more or discuss the used algorithm more. If the number of bins is 1, I would expect the fastest runtime.*
 
-- Your intuition is correct, but there was a misunderstanding about figure 3. The x-axis relates the the *size* of bins not the *number* of bins, meaning that the binning takes less time as the bin widths grows (ie the number of bins decreases). x=1 means using many 1X1 bins, not one large bin. The x-axis label has been edited to more clearly reflect that this is the size of the bin dimensions. 
+- Your intuition is correct, but there was a misunderstanding about Figure 5. The x-axis relates the the *size* of bins not the *number* of bins, meaning that the binning takes less time as the bin widths grows (ie the number of bins decreases). x=1 means using many 1X1 bins, not one large bin. The x-axis label has been edited to more clearly reflect that this is the size of the bin dimensions. 
 
 *In the application example, why are 50 bins chosen and why is standard rectangular binning chosen? How would other binning results differ from the presented binning. The different variants in Figure 11 are only different color mappings of density. I would include here a discussion of data properties (Scagnostics) together with some error measurements described by the authors beforehand.*
 
@@ -43,6 +43,8 @@ The following document strives to address comments, questions and concerns made 
 *Section 2 and 3 do a good job in reviewing the concepts of binned aggregation and varieties of binning algorithms. However these are fairly well known and the discussion does not seem to contribute novel ideas. The only thing that I haven’t seen before is the random binning approach. Is this a new idea proposed by you? If so, please state clearly. I also wonder how and why random binning can be useful. Please provide scenarios in which it would make sense to use random binning.* 
 
 *For the other ideas covered in these two sections, please properly cite relevant work.*
+
+- You are correct that many of the ideas in Sections 2 and 3 are not original, with the exception of the random binning approach, where the methodology for random-binned aggregation is original to my best knowledge. The goal of these sections is to bring many binning related concepts under a unified notation for the benefit of clarity in the sections to follow. For the random binning, a statement has been added to address the motivation for its introduction: deterministic one-sided interval bins lead to lopsided allocation of points on bin boundaries, whereas a random assignment is expected to split the points evenly across bins. For the unoriginal ideas, additional citations have been made to place the unifying notation better within the existing literature. 
 
 *Unconvincing Results:*
 *In Section 4.1, you propose the idea of spatial loss as a metric to account for the loss of information. Please explain how this approach is related to Scott’s approach of using mean integrated square error. What makes your definition a better choice?*
