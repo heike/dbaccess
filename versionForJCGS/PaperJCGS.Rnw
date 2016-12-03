@@ -647,7 +647,7 @@ p1 <- qplot(c(0,1000), 2, geom="blank") +   # just to set up the dimensions
         axis.ticks=element_blank(),axis.text.y=element_blank(),
         panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
         panel.background=element_blank()
-        ) + scale_x_continuous("", breaks=c(0,250,500,750,1000), labels=c(0,250,500,750,1000)) + 
+        ) + scale_x_continuous("", breaks=c(0,200,400,600,800,1000), labels=c(0,200,400,600,800,1000)) + 
   ylab("Continuous") 
 p2 <- qplot(id2, 1.8, geom="tile", fill=-fill2) +  
   theme(plot.margin = unit(c(0.1,1,0.1, 1),"cm"), 
@@ -655,7 +655,7 @@ p2 <- qplot(id2, 1.8, geom="tile", fill=-fill2) +
         axis.ticks=element_blank(),axis.text.y=element_blank(),
         panel.grid.major= element_blank(),panel.grid.minor= element_blank(),
         panel.background=element_blank())  + 
-  ylab("Discrete") + xlab("")
+  ylab("Discrete") + scale_x_continuous("", breaks=c(0,200,400,600,800,1000), labels=c(0,200,400,600,800,1000))
 
 grid.arrange(p1,p2,nrow=2)
 #ggsave("./figure/FreqBinDemo.png",width=5, height=1.5, dpi=300)
@@ -675,7 +675,7 @@ The goal of binning the frequencies and using a ordinal shading scheme is to qua
 L^F = \sum_{\ell=1}^{\mathscr{L}} L_\ell^F = \sum_{\ell=1}^{\mathscr{L}} (c_\ell-b_c(c_\ell))^2
 \end{eqnarray}  
 %
-where $L_\ell^F$ is the frequency loss for the $\ell^{th}$ bin. Note that this is effectively a sum of squared error from binning frequencies. While this numerical assessment of frequency loss does not exactly account for limitations in human perceptual ability, it does provide a more realistic model for the loss in perception that does occur.
+where $L_\ell^F$ is the frequency loss for the $\ell^{th}$ bin. Note that this is effectively a sum of squared \ktm{deviations between true frequencies to the centers of frequency bins. For example, in the discretized color scale in Figure~\ref{fig:FreqLossDemoPlot} that uses bins with bounds $\{0,200,400,600,800,1000\}$ the frequency deviation for each spatial bin would be compared to the corresponding bin centers at $\{100,300,500,700,900\}$.} While this numerical assessment of frequency loss does not exactly account for limitations in human perceptual ability, it does provide a more realistic model for the loss in perception that does occur.
 
 Frequency data consists of counts, which commonly exhibit skew densities, i.e.\ there are usually a lot of bins with small bin counts and a few bins with extremely large frequencies. The use of quantile binning is promising in the case of frequency binning because it seeks to place the same number of bins in each shaded group. An alternative is to use a log transformation which produces a more symmetric distribution of frequency information, increasing perceptual resolution. This is consistent with the Weber-Fechner law which suggests that increased stimulus intensity is perceptually mapped on the log scale \citep{sp}. Using a logarithmic mapping of frequency to the shade aesthetic provides a more natural perceptual experience and simultaneously increases the perceptual resolution of the graph. The \textit{log frequency loss}, $L^{\log F}$, is defined as
 %

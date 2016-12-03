@@ -53,6 +53,8 @@ The following document strives to address comments, questions and concerns made 
 
 *I do not understand how binned frequencies (as compared to true frequencies) are calculated in Section 4.2 on frequency loss. Please provide an example. Also please clarify is binned frequencies are measures of frequencies perceived by a human.*
 
+- A clarifying example using the visual from Figure 3 has been added to Section 4.2. 
+
 *The first paragraph of Section 5.1 shows that spatial loss increases as bin size increases, this seems hardly surprising. In the second paragraph, you talk about three properties of visual estimator: unbiasedness, consistency and efficiency, I think these properties are interesting, but the rest of the paper does not address them sufficiently.*
 
 *I also fail to understand how the discussion on artificial striping in Section 5.1 is relevant for spatial loss.*
