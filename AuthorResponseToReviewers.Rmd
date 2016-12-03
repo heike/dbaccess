@@ -49,6 +49,8 @@ The following document strives to address comments, questions and concerns made 
 *Unconvincing Results:*
 *In Section 4.1, you propose the idea of spatial loss as a metric to account for the loss of information. Please explain how this approach is related to Scott’s approach of using mean integrated square error. What makes your definition a better choice?*
 
+- The comparison and benefit over Scotts MISE is not included to the discussion leading into Section 4. 
+
 *I do not understand how binned frequencies (as compared to true frequencies) are calculated in Section 4.2 on frequency loss. Please provide an example. Also please clarify is binned frequencies are measures of frequencies perceived by a human.*
 
 *The first paragraph of Section 5.1 shows that spatial loss increases as bin size increases, this seems hardly surprising. In the second paragraph, you talk about three properties of visual estimator: unbiasedness, consistency and efficiency, I think these properties are interesting, but the rest of the paper does not address them sufficiently.*
