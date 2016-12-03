@@ -93,6 +93,7 @@ library(scagnostics)
 options(scipen=5, digits=5)
 #source in binning functions
 source("BinningLossFunctions.R")
+source("BinPackageFunctions.R")
 
 # # Downloaded from http://seanlahman.com/baseball-archive/statistics 2014 update
 # pitchdat <- read.csv("./data/Pitching2014.csv")[,c("G","SO")]
@@ -691,20 +692,6 @@ where $\mathscr{L}^\ast$ is the index set for all non-empty bins, which is done 
 \section{Exploring Properties of Loss}
 
 Binning data for the purpose of creating a binned scatterplot requires a choice of algorithm as well as a choice of parameters associated with that binning algorithm. This section aims to compare binning algorithms and identify the best parameter choices for minimizing loss under a number of distributional scenarios. Some choices may be proven optimal through analytical properties, while other are data dependent and require empirical exploration of loss from binning. Whether analytical or empirical, data is needed to demonstrate how loss is impacted by binning choices.
-
-
-Data sets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform. 100,000 observation pairs were simulated for each data set from the following distributions: 
-
-\begin{itemize}
-\item Set I: $x_i \sim \text{iid Exp}(\lambda), y_i \sim \text{iid Exp}(\lambda)$ with $\lambda = 11$
-
-\item Set II: $x_i \sim \text{iid Normal}(\mu,\sigma^2), y_i \sim \text{iid Normal}(\mu,\sigma^2)$ with $\mu = 50$ and $\sigma=11$
-
-\item Set III: $x_i \sim \text{iid Uniform}(a,b), y_i \sim \text{iid Uniform}(a,b)$ with $a =0$ and $b=100$
-\end{itemize}
-%
-The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places; 6 decimal places in our simulate data. Real data is recorded to only the number of digits that measurement precision allows, and in many cases rounded even further.
-
 %
 <<SimDataScatterplots2,echo=F,include=F,eval=T,fig.width=8, fig.height=5, out.width='.8\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Scatterplots of fine and coarse versions of the simulated bivariate data. Density changes are impossible to make out in the solid black areas of the plots. 97.4\\%, 98.7\\% and 99.1\\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.">>= 
 
@@ -755,20 +742,30 @@ qplot(x,y,geom="point",data=alldat,facets=record~type, size=I(1))+
   scale_x_continuous(breaks=c(0,25,50,75,100)) + 
   scale_y_continuous(breaks=c(0,25,50,75,100))
 
-ggsave("./figure/SimScatters.png", width=8, height=5.5, dpi=300)
+ggsave("./figure/SimScatters.png", width=9, height=5.5, dpi=300)
 @
 \begin{figure}[hbtp]
 \begin{center}
- \includegraphics[keepaspectratio=TRUE,width=.9\textwidth]{./figure/SimScatters.png}
+ \includegraphics[keepaspectratio=TRUE,width=.8\textwidth]{./figure/SimScatters.png}
 	\caption[Scatterplots of fine and coarse versions of the simulated bivariate data.]{\label{fig:SimDataScatterplots} Scatterplots of fine and coarse versions of the simulated bivariate data. }
 	\end{center}
 \end{figure}
 %
+Data sets were simulated from bivariate distributions to be used throughout this section: Exponential, Normal and Uniform. 100,000 observation pairs were simulated for each data set from the following distributions: 
+
+\begin{itemize}
+\item Set I: $x_i \sim \text{iid Exp}(\lambda), y_i \sim \text{iid Exp}(\lambda)$ with $\lambda = 11$
+
+\item Set II: $x_i \sim \text{iid Normal}(\mu,\sigma^2), y_i \sim \text{iid Normal}(\mu,\sigma^2)$ with $\mu = 50$ and $\sigma=11$
+
+\item Set III: $x_i \sim \text{iid Uniform}(a,b), y_i \sim \text{iid Uniform}(a,b)$ with $a =0$ and $b=100$
+\end{itemize}
+%
+The parameters were selected to have data values roughly span the region $[0,100]^2$. The simulated data can be found in the top row of Figure~\ref{fig:SimDataScatterplots}. These simulated data sets are from continuous distributions, and thus the values are recorded to many decimal places; 6 decimal places in our simulate data. Real data is recorded to only the number of digits that measurement precision allows, and in many cases rounded even further.
+
 %Density changes are impossible to make out in the solid black areas of the plots. 97.4\%, 98.7\% and 99.1\% of the points are completely hidden behind at least one other point due to over-plotting in the coarse data for the uniform, normal and exponential simulations, respectively.
 %
 The \textit{data resolution} is defined as the smallest increment between successive data values. To observe loss from binning under more realistic conditions, we create three data sets by rounding the values from the originally simulated data sets to the nearest even number, hus a data resolution of 2 units in each dimension. This coarse version of the original simulated data is displayed in the bottom row of Figure~\ref{fig:SimDataScatterplots}. By exploring the loss properties for both the \textit{fine} and \textit{coarse} versions of the data, we identify which binning options are robust to the resolution at which data is recorded. 
-
-\ktm{These bivariate distributions were selected for the variety in their defining characteristics. \textit{Scagnostics} - a portmanteau for scatterplot diagnostics - are formalized metrics that have been used to numerically summarize key attributes of scatterplots, including: outying, skewness, clumpiness, sparsity, striation, convexity, skinniness, stringiness and monotonicity (\citealt{wilkinson2005graph};\citealt{wilkinson2008scagnostics}). The scagnostic scores in Table~\ref{tab:scagnostics} were calculated for the simulated data sets using the \texttt{scagnostics} package in R \citep{wilkinson2015package}. They show that these examples explore a variety of skewnesses, convexity and skinniness. This exploration uses bivariately independent distributions, thus the monotonicity and clumpiness are both near zero for these examples. The coarse data is rounded into striatations by definition, however the striation scagnostic score is low due to the relatively small scale of striation versus the magnitude of variability in each distribution. These minor striations will still prove problematic when binning is inconsistent with the data resolution. }
 
 <<SimDataScagnostics,echo=F,include=F,eval=F>>= 
 # help(package="scagnostics")
@@ -789,7 +786,6 @@ head(scags)
 
 print(xtable(scags, digits=c(0, 0, 3,3,3,3,3,3,3,3,3,3,3)), include.rownames=FALSE)
 @
-
 
 % latex table generated in R 3.3.0 by xtable 1.8-2 package
 % Sat Oct 01 11:29:18 2016
@@ -813,6 +809,9 @@ Dist-Res & Outlie & Skew & Clump & Sparse & Striate & Convex & Skinny & String &
 \caption{\ktm{Scagnostics scores for the six simulated datasets used in empirical exploration of spatial loss in binned scatterplots.}}
 \label{tab:scagnostics}
 \end{table}
+
+\ktm{These bivariate distributions were selected for the variety in their defining characteristics. \textit{Scagnostics} - a portmanteau for scatterplot diagnostics - are formalized metrics that have been used to numerically summarize key attributes of scatterplots, including: \textit{outying, skewness, clumpiness, sparsity, striation, convexity, skinniness, stringiness} and \textit{monotonicity} (\citealt{wilkinson2005graph};\citealt{wilkinson2008scagnostics}). The scagnostic scores in Table~\ref{tab:scagnostics} were calculated for the simulated data sets using the \texttt{scagnostics} package in R \citep{wilkinson2015package}. They show that these examples explore a variety of \textit{skewnesses}, \textit{convexity} and \textit{skinniness}. This exploration uses bivariately independent distributions, thus the monotonicity and clumpiness are both near zero for these examples. The coarse data is rounded into striatations by definition, however the striation scagnostic score is low due to the relatively small scale of striation versus the magnitude of variability in each distribution. These minor striations will still prove problematic when binning is inconsistent with the data resolution. }
+
 
 
 %-----------------------------------------------------------------------------
@@ -885,8 +884,7 @@ While bin widths can be chosen as any positive real value, bin widths should be 
 
 To demonstrate the importance of properly selecting binwidths we consider the coarse version of the simulated bivariate-uniform data which is recorded to a resolution of two units in each dimension. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with one-by-one unit bins, vertical and horizontal artificial stripes with five-by-five unit bins, and the appropriate view of an evenly spread density with four-by-four unit bins.  Note that random binning is effective at smoothing out the artificial striping patterns when non-integer multiples of the data resolution are selected.
 
-
-<<UniformStripes, echo=F,include=T,eval=T,fig.width=7, fig.height=3, out.width='.99\\linewidth', fig.pos='hbtp',fig.align='center',tidy=F, cache=TRUE, fig.show='hold',fig.cap="Binned scatterplots of coarse uniform data.">>= 
+<<UniformStripes, echo=F,include=F, cache=TRUE>>=
 # Commented out code for data generation: run once then recomment
 ### Create data to demonstrate stripes from improper binwidths
 # binoutcoarse1 <- RectBin2d(datlist[[1]]$roundx,datlist[[1]]$roundy,0,0,1,1,type="standard")[[1]]
@@ -924,8 +922,11 @@ ggplot(aes(x=binxs, y=binys), data=allbindat) +
                       limits=c(0, 450),name="Bin Count") + 
   theme_bw() + theme(plot.margin = unit(c(0.1,0.1,-0.5, 0.1),"cm"),
                      aspect.ratio=1,
-                     panel.grid= element_blank())
+                     panel.grid= element_blank()) +
+  theme(legend.position="bottom")
 
+  ggsave("./figure/CoarseUnif.png", width=6, height=4, dpi=300)
+  
 # p2 <- qplot(binxs, binys, geom="tile", fill=binfreq, data=subset(allbindat,BinSize=="4 X 4 Unit")) +
 #   facet_grid(BinningType~BinSize)+
 #   ggtitle(" ") +   xlab("") + ylab("") +
@@ -946,8 +947,59 @@ ggplot(aes(x=binxs, y=binys), data=allbindat) +
 # 
 # grid.arrange(p1,p2,p3, nrow=1)
 
+# NEED TO SAVE TO BinningLossDemos.Rdata which is read in chunk 1
+losses <- data.frame( bintype=NA, binsize=NA, type=NA, record=NA,
+                      avg_loss=NA, avg_standardized_loss=NA,
+                      avg_loss_x=NA,avg_loss_y=NA)
+counter=0
+
+for(type in "Uniform"){
+  for(record in "Coarse"){
+    for(binsize in seq(.5,8.5,by=.05)){
+      counter = counter + 1
+      alldatsub <- alldat[which(alldat$type==type & alldat$record==record),]
+      reduced_data <- rect_bin_2d(data=alldatsub, xcol="x", ycol="y",originx=-1,originy=-1,
+                                  widthx=binsize,widthy=binsize, output="reduced")
+      losses[counter,] <- c("Standard",binsize,type,record, bin_loss(reduced_data))
+      counter = counter + 1
+      reduced_data <- rand_rect_bin_2d(data=alldatsub, xcol="x", ycol="y",originx=-1,originy=-1,
+                                  widthx=binsize,widthy=binsize, output="reduced")
+      losses[counter,] <- c("Random",binsize,type,record, bin_loss(reduced_data))
+    }
+  }
+}
+
+ggplot()+ 
+  geom_line(aes(x=as.numeric(binsize), y=as.numeric(avg_loss), 
+                color=bintype,group=bintype), data=losses,size=.5) +
+  geom_smooth(aes(x=as.numeric(binsize), y=as.numeric(avg_loss), 
+                  color=bintype,group=bintype),size=.25, alpha=.2,
+              se=FALSE, data=losses,method="lm")+
+  geom_point(aes(x=as.numeric(binsize), y=as.numeric(avg_loss), 
+                 color=bintype,group=bintype),
+             size=2,data=losses[losses$binsize %in% c(1,4,5), ])+
+#   geom_text(aes(x=as.numeric(binsize), y=as.numeric(avg_loss), 
+#                 label=paste(binsize,"X",binsize,sep=""),color=bintype,group=bintype),
+#             size=10,data=losses[losses$binsize %in% c(1,4,5), ], 
+#             nudge_x=rep())
+  theme_bw() +
+  scale_color_manual("",values=c("red","black"))+
+  scale_x_continuous("Bin Sizes", breaks=1:8, labels=paste(1:8,"X",1:8,sep=""))+
+  annotate("text", x=c(3, 6.5), y=c(2.5,1.75), label=c("Random","Standard"),
+           color=c("red","black"),size=6)+
+  theme(legend.position="none", 
+         panel.grid.minor.x=element_blank()) + ylab("Average Spatial Loss")
+
+  ggsave("./figure/CoarseUnifLosses.png", width=4, height=5, dpi=300)
+
 @
 
+\begin{figure}[hbtp]
+\centering
+  \subfloat[Binned scatterplots]{\includegraphics[keepaspectratio=TRUE,width=.66\textwidth]{./figure/CoarseUnif.png}}
+  \subfloat[Spatial loss vs bin sizes]{\includegraphics[keepaspectratio=TRUE,width=.32\textwidth]{./figure/CoarseUnifLosses.png}} 
+  \caption[Traditional and adapted scatterplots for games vs. strikeouts data.]{\label{fig:UniformStripes} Binned scatterplots and spatial losses for various sized bins with coarse uniform data. Note the slight dip in loss at even integers, when bins are aligned with data resolution.}}
+\end{figure}
 
 The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density near a natural boundary -- e.g. weights of small items bounded below at 0 -- where the origin should align with the boundary so that the outermost bins do not cover empty density regions. As an example, Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of ten-by-ten unit bins for the fine exponential data where the binning origin at (0,0) incurs seven percent lower spatial loss than for the (-9,-9) origin due to the heavy overlap into negative regions.
 %The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are largely empty due to the negative regions. 
