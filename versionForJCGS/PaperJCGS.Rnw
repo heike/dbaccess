@@ -946,41 +946,42 @@ ggplot(aes(x=binxs, y=binys), data=allbindat) +
 #                      panel.grid= element_blank())
 # 
 # grid.arrange(p1,p2,p3, nrow=1)
-
-# NEED TO SAVE TO BinningLossDemos.Rdata which is read in chunk 1
-losses <- data.frame( bintype=NA, binsize=NA, type=NA, record=NA,
-                      avg_loss=NA, avg_standardized_loss=NA,
-                      avg_loss_x=NA,avg_loss_y=NA)
-counter=0
-
-for(type in "Uniform"){
-  for(record in "Coarse"){
-    for(binsize in seq(.5,8.5,by=.05)){
-      counter = counter + 1
-      alldatsub <- alldat[which(alldat$type==type & alldat$record==record),]
-      reduced_data <- rect_bin_2d(data=alldatsub, xcol="x", ycol="y",originx=-1,originy=-1,
-                                  widthx=binsize,widthy=binsize, output="reduced")
-      losses[counter,] <- c("Standard",binsize,type,record, bin_loss(reduced_data))
-      counter = counter + 1
-      reduced_data <- rand_rect_bin_2d(data=alldatsub, xcol="x", ycol="y",originx=-1,originy=-1,
-                                  widthx=binsize,widthy=binsize, output="reduced")
-      losses[counter,] <- c("Random",binsize,type,record, bin_loss(reduced_data))
-    }
-  }
-}
+  
+#   
+# lossesUnif <- data.frame( bintype=NA, binsize=NA, type=NA, record=NA,
+#                       avg_loss=NA, avg_standardized_loss=NA,
+#                       avg_loss_x=NA,avg_loss_y=NA)
+# counter=0
+# 
+# for(type in "Uniform"){
+#   for(record in "Coarse"){
+#     for(binsize in seq(.5,8.5,by=.05)){
+#       counter = counter + 1 
+#       alldatsub <- alldat[which(alldat$type==type & alldat$record==record),]
+#       reduced_data <- rect_bin_2d(data=alldatsub, xcol="x", ycol="y",originx=-1,originy=-1,
+#                                   widthx=binsize,widthy=binsize, output="reduced")
+#       lossesUnif[counter,] <- c("Standard",binsize,type,record, bin_loss(reduced_data))
+#       counter = counter + 1
+#       reduced_data <- rand_rect_bin_2d(data=alldatsub, xcol="x", ycol="y",originx=-1,originy=-1,
+#                                   widthx=binsize,widthy=binsize, output="reduced")
+#       lossesUnif[counter,] <- c("Random",binsize,type,record, bin_loss(reduced_data))
+#     }
+#   }
+# }
+# # lossesUnif saved to BinningLossDemos.Rdata which is loaded in startup chunck
 
 ggplot()+ 
   geom_line(aes(x=as.numeric(binsize), y=as.numeric(avg_loss), 
-                color=bintype,group=bintype), data=losses,size=.5) +
+                color=bintype,group=bintype), data=lossesUnif,size=.5) +
   geom_smooth(aes(x=as.numeric(binsize), y=as.numeric(avg_loss), 
                   color=bintype,group=bintype),size=.25, alpha=.2,
-              se=FALSE, data=losses,method="lm")+
+              se=FALSE, data=lossesUnif,method="lm")+
   geom_point(aes(x=as.numeric(binsize), y=as.numeric(avg_loss), 
                  color=bintype,group=bintype),
-             size=2,data=losses[losses$binsize %in% c(1,4,5), ])+
+             size=2,data=lossesUnif[lossesUnif$binsize %in% c(1,4,5), ])+
 #   geom_text(aes(x=as.numeric(binsize), y=as.numeric(avg_loss), 
 #                 label=paste(binsize,"X",binsize,sep=""),color=bintype,group=bintype),
-#             size=10,data=losses[losses$binsize %in% c(1,4,5), ], 
+#             size=10,data=lossesUnif[lossesUnif$binsize %in% c(1,4,5), ], 
 #             nudge_x=rep())
   theme_bw() +
   scale_color_manual("",values=c("red","black"))+
@@ -1076,7 +1077,7 @@ In practice the ($\alpha_x/2$,$\alpha_y/2$) origin offset is found to be a reaso
 # write.csv(spatlossdatRound,"LossesByOriginBinwidth.csv", row.names=FALSE)
 # lossOrigin <- read.csv("./data/LossesByOriginBinwidth.csv",header=TRUE)
 # Save the loss binning data objects into central Rdata file for simplicity
-# save(lossOrigin, spatlossdatSquareBins, allbindat, file="BinningLossDemos.Rdata")
+# save(lossOrigin, spatlossdatSquareBins, allbindat, lossesUnif, file="./data/BinningLossDemos.Rdata")
 
 # NOTE: lossOrigin saved to BinningLossDemos.Rdata which is read in chunk 1
 
