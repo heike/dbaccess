@@ -880,9 +880,9 @@ qplot(widthx,value,geom="path",colour=bintype, linetype=bintype,
 %All rectangular binning algorithms require the specification of a bin width for each dimension and a binning origin. 
 While using smaller bin widths leads to smaller spatial losses, reducing bin sizes comes at the cost of computation time; a potentially non-negligible consideration in settings with truly massive data. Figure~\ref{fig:SpatialLossCompare} also shows that the computation time needed to bin the simulated data sets is a decreasing function of the bin size and that random binning is marginally slower than standard binning across all bin sizes.\footnote{Computation times using a commercial Asus laptop with an Intel Core i7 processor running at 2.80 GHz.} Larger bins may also be reasonable to use if we are primary interested visualizing the large scale density structure and wish to smooth over fine structural noise.
 
-While bin widths can be chosen as any positive real value, bin widths should be specified as an integer multiple of the resolution of the data because non-integer multiples of the data resolution lead to systematically different numbers of possible data values per bin. For bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of tiles in the binned scatterplot. While these gaps do exist in the data, they are undesirable because they create visual discontinuity that interferes with the interpretation of bivariate density and could also create the Hermann-grid optical illusion~\citep{hermann:1870, spillmann:1994}. More seriously, bin dimensions that are non-integer multiples larger than the data resolution lead to \textit{artificial striping} -- an oscillating density pattern imposed by the binning that does not exist in the raw data.  
+While bin widths can be chosen as any positive real value, bin widths should be specified as an integer multiple of the resolution of the data because non-integer multiples of the data resolution lead to systematically different numbers of possible data values per bin. For bin dimensions are smaller than the resolution of the data, there will be empty rows or columns of tiles in the binned scatterplot. While these gaps do exist in the data, they are undesirable because they create visual discontinuity that interferes with the interpretation of bivariate density and could also create the Hermann-grid optical illusion~\citep{hermann:1870, spillmann:1994}. More seriously, bin dimensions that are non-integer multiples larger than the data resolution lead to \textit{artificial striping} -- an oscillating density pattern imposed by the binning that does not exist in the raw data.
 
-To demonstrate the importance of properly selecting binwidths we consider the coarse version of the simulated bivariate-uniform data which is recorded to a resolution of two units in each dimension. Figure~\ref{fig:UniformStripes} displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with one-by-one unit bins, vertical and horizontal artificial stripes with five-by-five unit bins, and the appropriate view of an evenly spread density with four-by-four unit bins.  Note that random binning is effective at smoothing out the artificial striping patterns when non-integer multiples of the data resolution are selected.
+To demonstrate the importance of properly selecting binwidths we consider the coarse version of the simulated bivariate-uniform data which is recorded to a resolution of two units in each dimension \ktm{-- thus even integer sized bins are most desireable. Figure~\ref{fig:UniformStripes}(a) displays the binned scatterplots under several scenarios. Under standard binning we see the white-space gaps with one-by-one unit bins, vertical and horizontal artificial stripes with five-by-five unit bins, and the appropriate view of an evenly spread density with four-by-four unit bins. Figure~\ref{fig:UniformStripes}(b) demonstates that with coarse data resolution there are departures from the linear relationship between spatial loss and bin sizes; with small spikes in spatial loss where the bin size is highly misaligned with the data resolution and slight drops in spatial loss when aligned perfectly. In this we can see that artificial striping is a symptom of poorly aligned bin specification.} 
 
 <<UniformStripes, echo=F,include=F, cache=TRUE>>=
 # Commented out code for data generation: run once then recomment
@@ -919,11 +919,10 @@ ggplot(aes(x=binxs, y=binys), data=allbindat) +
   facet_grid(BinningType~BinSize, scales="free", space="free")+
   ggtitle(" ") +   xlab("") + ylab("") +
   scale_fill_gradient(low="#56B1F7", high="#132B43",
-                      limits=c(0, 450),name="Bin Count") + 
+                      limits=c(0, 450),name="Bin \n Count") + 
   theme_bw() + theme(plot.margin = unit(c(0.1,0.1,-0.5, 0.1),"cm"),
                      aspect.ratio=1,
-                     panel.grid= element_blank()) +
-  theme(legend.position="bottom")
+                     panel.grid= element_blank())
 
   ggsave("./figure/CoarseUnif.png", width=6, height=4, dpi=300)
   
@@ -997,10 +996,13 @@ ggplot()+
 
 \begin{figure}[hbtp]
 \centering
-  \subfloat[Binned scatterplots]{\includegraphics[keepaspectratio=TRUE,width=.66\textwidth]{./figure/CoarseUnif.png}}
-  \subfloat[Spatial loss vs bin sizes]{\includegraphics[keepaspectratio=TRUE,width=.32\textwidth]{./figure/CoarseUnifLosses.png}} 
-  \caption[Traditional and adapted scatterplots for games vs. strikeouts data.]{\label{fig:UniformStripes} Binned scatterplots and spatial losses for various sized bins with coarse uniform data. Note the slight dip in loss at even integers, when bins are aligned with data resolution.}}
+  \subfloat[Binned scatterplots]{\includegraphics[keepaspectratio=TRUE,width=.63\textwidth]{./figure/CoarseUnif.png}} 
+  \hspace{.05\textwidth}
+  \subfloat[Spatial loss vs bin sizes]{\includegraphics[keepaspectratio=TRUE,width=.31\textwidth]{./figure/CoarseUnifLosses.png}} 
+  \caption[Traditional and adapted scatterplots for games vs. strikeouts data.]{\label{fig:UniformStripes} \ktm{Binned scatterplots and spatial losses for various sized bins with coarse uniform data. Note the slight dip in loss at even integers, when bins are aligned with data resolution.}}
 \end{figure}
+
+Note that random binning is effective at smoothing out the artificial striping patterns \ktm{when many point fell along bin boundaries -- accomplishing the motiviation for its development. However due to inflated spatial loss due to the stocastic bin assignment, standard binning with properly selected bin dimension is the better option}.
 
 The binning origin can also influence the spatial loss in the binned scatterplot.  For data with fine resolution compared to the bin dimensions, the origin is only largely consequential for distributions with high density near a natural boundary -- e.g. weights of small items bounded below at 0 -- where the origin should align with the boundary so that the outermost bins do not cover empty density regions. As an example, Figure~\ref{fig:ExponentialOriginPlots} displays the binned scatterplots of ten-by-ten unit bins for the fine exponential data where the binning origin at (0,0) incurs seven percent lower spatial loss than for the (-9,-9) origin due to the heavy overlap into negative regions.
 %The binning beginning at the (-9,-9) origin suffers visually from the illusion that the density drops off near the lower bounds due to the fact that these lowest bins in each dimension are largely empty due to the negative regions. 
@@ -1390,7 +1392,7 @@ standBaseballLoss2X10PerObs <- binoutRecOrigin[[2]]$totalSpatialLoss / nrow(pitc
 
 We now revisit the baseball data used earlier and construct binned scatterplots using the loss-based specification principles developed in the previous sections. \ktm{In the spatial binning step we learned three rules of thumb: (1) use smaller bins to achieve lower loss of spatial information, (2) standard binning has less loss than random binning but we need to be careful to choose bin dimensions that align with data resolution, and (3) offset the origin by a factor of half the data resolution to better center point in bins.} 
 
-\ktm{For the baseball data this leads us to specify small standard rectangular bins for data that is recorded with a one game by one strike-out data resolution. The data has only 42,583 observations, so we can use minimal binning to match the data resolution without taking an inordinate amount of computation time. While minimal binning eliminates spatial loss, the miniscule physical size of the resulting tiles makes it difficult to see the frequency shade; Therefore slightly larger two game by ten strikout bins are used, providing approximately 50 bins per dimension. The origin offset of $(0.5,-0.5)$ is used to shift the binning back by a half game and down by one half strikeout to adjust for the data resolution. This offset for reduces the spatial loss by approximately 8\% for this bin size.}
+\ktm{For the baseball data this leads us to specify small standard rectangular bins for data that is recorded with a one game by one strike-out data resolution. The data has only 42,583 observations, so we can use minimal binning to match the data resolution without taking an inordinate amount of computation time. While minimal binning eliminates spatial loss, the minuscule physical size of the resulting tiles makes it difficult to see the frequency shade; Therefore slightly larger two game by ten strikeout bins are used, providing approximately 50 bins per dimension. The origin offset of $(0.5,-0.5)$ is used to shift the binning back by a half game and down by one half strikeout to adjust for the data resolution. This offset for reduces the spatial loss by approximately 8\% for this bin size.}
 
 
 <<BaseballBinnedScatters2X10,echo=F,include=T,eval=T,fig.width=12, fig.height=4, out.width='.99\\linewidth', fig.pos='h',fig.align='center',tidy=F, cache=TRUE, warning=F, fig.show='hold',fig.cap="Binned scatterplots for games versus strikeouts.">>=  

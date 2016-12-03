@@ -59,6 +59,8 @@ The following document strives to address comments, questions and concerns made 
 
 *I also fail to understand how the discussion on artificial striping in Section 5.1 is relevant for spatial loss.*
 
+- Artificial striping is a symptom of poorly aligned bin sizes and the data resolution, which will lead to imbalanced bin allocation and thus more spatial loss. A clarification of this idea and a visual comparison of bin sizes and spatial loss have been added to section 5.1 in the context of Figure 6.  
+
 *Please provide quantified results on spatial loss when you talk about how binning origin affects spatial loss in Figure 7.*
 
 *In visualization practices, it is common to use both ordinal scales as well as continuous scales when mapping numbers to colors. How might you address the issue of frequency loss when continuous scales are used?*
