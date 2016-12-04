@@ -75,3 +75,15 @@ The following document strives to address comments, questions and concerns made 
 
 *From a human-computer interaction perspective, it is also limiting when the paper talks about spatial loss and frequency loss without any mention of user tasks (e.g. comparison, outlier detection). Do these metric matter for all the tasks involved in reading the scatterplots?*
 
+*Summary*
+*This paper feels like a survey paper but the references are not properly cited. As a research paper, it is not clear to me what are the main contributions, and how these contributions build on top of prior work (given that there is no “related work” section in the paper). While the two loss metrics seem potentially interesting, I think more empirical studies are needed with real human participants. It will also improve the paper if the authors can provide take-away guidelines or algorithms that can be applied to real-world problems.*
+
+- The main result from the paper is to provide simple adjustment recommendations for binning specification for reducing loss in binned scatterplots. To emphasize these recommendations, the baseball plot example in Section 5.3 has been reworked to highlight the take-home message. To your other point, we agree that future work to quantify the implicit loss of information (e.g. the imprecise ability to map continuously shaded tiles to a frequency legend) in reading binned scatterplots is needed; however, the current work strives to quantify explicit loss of information when the perception tasks are more simple (e.g. mapping distinguishably-discrete shaded tiles to an interval on the frequency legend). 
+
+
+### Responses to Editors Comments/Questions
+*Editor's Comments to Author:*
+
+*Associate Editor - Comments to the Author:*
+*The paper in its current form does not provide a sufficiently thorough coverage of either review material or novel material to warrant publication.  However, the reviewers have some useful suggestions for ways in which a different paper (or two) could possibly be produced by expanding on different parts of this submission.*
+
