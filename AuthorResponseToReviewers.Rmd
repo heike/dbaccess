@@ -21,7 +21,7 @@ The following document strives to address comments, questions and concerns made 
 
 *In Section 4.2, a discussion on contrast effects hindering the perception of the encoded values is missing. Nearby colored points, will change the color impression. These effects can be modelled and estimated and maybe interesting to investigate a little further.*
 
-- Citations to refer readers to Adelson and Fairchild as example of work on contrast effects has been added to Section 4.2 and related future work has been added to the discussion in Section 6.
+- Citations to refer readers to Bartelson & Breneman, Adelson, and Fairchild as example of work on contrast effects has been added to Section 4.2 and related future work has been added to the discussion in Section 6.
 
 *As a computer scientist, it is not clear to me, why the runtime is larger with lower numbers of bins (Section 5.1. lines 33ff.)  In my naïve implementation, I would iterate once over all data points and assign the respective bins by an adopted integer division. Consequently, the runtime would be in O(n d) with n being the number of data points and d the number of dimensions. Maybe, the authors could explain the runtime experiments more or discuss the used algorithm more. If the number of bins is 1, I would expect the fastest runtime.*
 
