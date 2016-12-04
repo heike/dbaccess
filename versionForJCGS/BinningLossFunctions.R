@@ -1,3 +1,10 @@
+### The following file contains functions were constructed in the process of writing the manuscipt and are required
+# to compile the PDF document.
+#
+# A cleaned subset of these functions have been packaged for dissemination as an R package designed to accompany
+# the paper. While the package is already available through Github it is not possible to anonymize the source for the
+# blinded review process, hence the are hosted in the BinPackageFunction.R file that also supplements the manuscript.
+# ---------------------------------------------------------------------------------------------------------------
 ### Preliminaries 
 
 library(ggplot2)
@@ -220,30 +227,4 @@ freqBin <- function(binout, binType="standard", ncolor, logCount=FALSE){
 # # Plot with LogCount Binned Frequencies
 # qplot(binxs, binys, geom="tile", fill=freqgroup, data=binoutLogFreqGroups[[1]]) +
 #   scale_fill_gradient(low="#56B1F7", high="#132B43", guide="legend", breaks=unique(binoutLogFreqGroups[[1]]$freqgroup))
-
-
-
-
-
-### Create binning function that does not calculate loss
-# to be used to track computation time for binning
-
-## 2d Rectangular Binning (for either Standard or Random)
-# standard is straight forward extension of 1d binning
-# random binning needs post processing to calculate minimum spatial loss
-RectBin2dNoLoss <- function(xs,ys, originx, originy, widthx, widthy, type="standard"){
-  if(type=="standard"){
-  tempdat <- data.frame(xs = xs, ys=ys,
-                        binxs = StandRectBin1d(xs,originx,widthx),
-                        binys = StandRectBin1d(ys,originy,widthy))
-  }
-  if(type=="random"){
-    tempdat<- data.frame(xs = xs, ys=ys,
-                          binxs =  RandRectBin1d(xs,originx,widthx),
-                          binys =  RandRectBin1d(ys,originy,widthy))
-  }
-  outdat <- ddply(tempdat, .(binxs,binys), summarise,
-                  binfreq = length(xs))
-  return(outdat[,1:3])
-}
 

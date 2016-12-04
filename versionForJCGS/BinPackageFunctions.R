@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------------------
-### Binning functions: 
+### Binning functions:
 # 1d binning
   # Binning by definition (bounds and centers)
   # Creating bin definition lists from vectors of bounds and centers
@@ -12,10 +12,10 @@
 # 2d binning
   # Independant 1d binning grid
   # Iterative conditional binning
-
-# Binned Scatterplot Functions
   # Reduced binned data - one row per x/y bin
   # Frequency binning - add freq bins to reduced data
+
+# Binned Scatterplot Functions
   # Plot construction from reduced binned
   # Plot construction from raw data and bin specs
 
@@ -37,13 +37,13 @@ bin_by_def <- function(new_data_vec, bin_definition, output="centers"){
   names(data_bins) <- names(new_data_vec)
   # Add bin labels
   labs <-  paste(c("[",rep("(",(length(bin_definition$bin_bounds)-2))),
-                   bin_definition$bin_bounds[1:(length(bin_definition$bin_bounds)-1)],
-                   ",",bin_definition$bin_bounds[2:length(bin_definition$bin_bounds)],
-                   "]",sep="")
+                 bin_definition$bin_bounds[1:(length(bin_definition$bin_bounds)-1)],
+                 ",",bin_definition$bin_bounds[2:length(bin_definition$bin_bounds)],
+                 "]",sep="")
   bin_labels <- factor(.bincode(new_data_vec,bounds,right=FALSE,include.lowest=TRUE),
                        levels= 1:(length(bounds)-1),
                        labels= labs)
-  
+
   if(output=="centers") return(data_bins)
   if(output=="definition") return(bin_definition)
   if(output=="all") return(list(data_bins=data_bins,bin_labels=bin_labels,bin_definition=bin_definition))
@@ -106,7 +106,7 @@ rand_rect_bin_1d <- function(xs, origin, width, output="centers"){
   ubs <- bin_centers[1] + width*ceiling((xs-bin_centers[1])/width)
   # initially assign all values to upper bound
   data_bins <- ubs
-  # then use runif to reassign based on distance from 
+  # then use runif to reassign based on distance from
   plower <- (ubs - xs)/width
   lowerindex <- (plower > runif(length(xs), 0, 1))
   data_bins[lowerindex] <- lbs[lowerindex]
@@ -129,7 +129,7 @@ library(ggplot2)
 xcol <- "carat" ; ycol <- "price" ; originx=0 ; originy=0 ; widthx=1 ; widthy=1000
 
 rect_bin_2d <- function(data, xcol, ycol, originx, originy, widthx, widthy, output="full"){
-  tempdat <- data.frame(xs = data.frame(data)[,xcol], 
+  tempdat <- data.frame(xs = data.frame(data)[,xcol],
                         ys=data.frame(data)[,ycol],
                         binxs = rect_bin_1d(data.frame(data)[,xcol],originx,widthx),
                         binys = rect_bin_1d(data.frame(data)[,ycol],originy,widthy))
@@ -149,7 +149,7 @@ rect_bin_2d <- function(data, xcol, ycol, originx, originy, widthx, widthy, outp
                 bin_standardized_spat_loss =  sum(sqrt((standarizedxs-standarizedbinxs)^2+(standarizedxs-standarizedbinys)^2)))
       return(data.frame(reduced_binned))
   }
-} 
+}
 # # Test function
 # reduced_data <- rect_bin_2d(data=diamonds, xcol="carat", ycol="price",originx=0,originy=0,widthx=.5,widthy=1000, output="reduced")
 # head(reduced_data)
@@ -162,7 +162,7 @@ library(ggplot2)
 xcol <- "carat" ; ycol <- "price" ; originx=0 ; originy=0 ; widthx=1 ; widthy=1000
 
 rand_rect_bin_2d <- function(data, xcol, ycol, originx, originy, widthx, widthy, output="full"){
-  tempdat <- data.frame(xs = data.frame(data)[,xcol], 
+  tempdat <- data.frame(xs = data.frame(data)[,xcol],
                         ys=data.frame(data)[,ycol],
                         binxs = rand_rect_bin_1d(data.frame(data)[,xcol],originx,widthx),
                         binys = rand_rect_bin_1d(data.frame(data)[,ycol],originy,widthy))
@@ -182,17 +182,17 @@ rand_rect_bin_2d <- function(data, xcol, ycol, originx, originy, widthx, widthy,
                 bin_standardized_spat_loss =  sum(sqrt((standarizedxs-standarizedbinxs)^2+(standarizedxs-standarizedbinys)^2)))
     return(data.frame(reduced_binned))
   }
-} 
+}
 # # Test function
 # reduced_data <- rand_rect_bin_2d(data=diamonds, xcol="carat", ycol="price",originx=0,originy=0,widthx=.5,widthy=1000, output="reduced")
 # head(reduced_data)
 
 #----------------------------------
-## Frequency Binning  
+## Frequency Binning
 # allows for standard or quantile binning of counts that may be raw,log,log10 (6 combinations)
 # input requires binned data output, number of freq breaks and type of freq binning
 # output of frequency bin values, labels and loss are attached the original then returned
-freq_bin <- function(reduced_data, bin_type="standard", count_type="raw", n_freq=5, pretty=FALSE, freq_col="freq"){ 
+freq_bin <- function(reduced_data, bin_type="standard", count_type="raw", n_freq=5, pretty=FALSE, freq_col="freq"){
   # Apply count transformations if needed
   cs <- as.data.frame(reduced_data)[,freq_col]
   if(count_type=="log")  cs <- log(cs)
@@ -213,14 +213,26 @@ freq_bin <- function(reduced_data, bin_type="standard", count_type="raw", n_freq
   }
   # Make bins and labels
   temp <- gen_rect_bin_1d(cs, bounds, output="all")
-  if(count_type=="log") reduced_data$log_freq <- cs
-  if(count_type=="log10") reduced_data$log10_freq <- cs
+  if(count_type=="raw") reduced_data$freq_loss <- (cs-temp$data_bins)^2
+  if(count_type=="log"){
+    reduced_data$log_freq <- cs
+    reduced_data$log_freq_loss <- (cs-temp$data_bins)^2
+  }
+  if(count_type=="log10"){
+    reduced_data$log10_freq <- cs
+    reduced_data$log10_freq_loss <- (cs-temp$data_bins)^2
+  }
   reduced_data$freq_bins <- factor(temp$data_bins, levels=temp$bin_definition$bin_centers)
   reduced_data$freq_bin_labs <- temp$bin_labels
   return(reduced_data)
 }
 # Test out frequency binning function
-# 
+# reduced_data <- rect_bin_2d(data=diamonds, xcol="carat", ycol="price",originx=0,originy=0,widthx=.5,widthy=1000, output="reduced")
+# freq_red_data <- freq_bin(reduced_data, bin_type="standard", count_type="raw", n_freq=5, pretty=FALSE, freq_col="freq")
+# head(freq_red_data)
+# freq_log10_red_data <- freq_bin(reduced_data, bin_type="standard", count_type="log10", n_freq=5, pretty=FALSE, freq_col="freq")
+# head(freq_log10_red_data)
+# sum(freq_log10_red_data$log10_freq_loss)
 
 #----------------------------------
 ### Loss Summary Function
@@ -229,7 +241,7 @@ bin_loss <- function(reduced_data){
   loss_avgs <- with(reduced_data,
                          c(avg_loss = sum(bin_spat_loss)/sum(freq),
                          avg_standardized_loss = sum(bin_standardized_spat_loss)/sum(freq),
-                         avg_loss_x = sum(bin_spat_loss_X)/sum(freq), 
+                         avg_loss_x = sum(bin_spat_loss_X)/sum(freq),
                          avg_loss_y = sum(bin_spat_loss_Y)/sum(freq)))
   return(loss_avgs)
 }
@@ -239,7 +251,7 @@ str(bin_loss(reduced_data))
 
 #----------------------------------
 ## Plot building Function
-# Takes in either reduced-binned data with raw counts 
+# Takes in either reduced-binned data with raw counts
 # or with frequency-binned counts. Allow for raw/log/log10 scaling
 binned_scatter <- function(reduced_data, count_scale="identity", freq_binned=FALSE){
   color_lab <- "Frequency"
@@ -251,10 +263,10 @@ binned_scatter <- function(reduced_data, count_scale="identity", freq_binned=FAL
       geom_tile(aes(x=binxs, y=binys, fill=freq), data=reduced_data) +
       scale_fill_gradient(color_lab,low="#56B1F7", high="#132B43", trans=count_scale) +
       theme_bw() +
-      theme(legend.position="bottom", 
-            legend.key.width = unit(3, "cm")) 
+      theme(legend.position="bottom",
+            legend.key.width = unit(3, "cm"))
   }
-  
+
   if(freq_binned==TRUE){
     nf <- length(levels(reduced_data$freq_bins))
     p1 <- ggplot()+
@@ -265,14 +277,14 @@ binned_scatter <- function(reduced_data, count_scale="identity", freq_binned=FAL
                                              keyheight=0.5,
                                              default.unit="inch",
                                              label.position="bottom",
-                                             label.hjust=.5,  
+                                             label.hjust=.5,
                                              title.position = "top"),
                         values=seq_gradient_pal("#56B1F7", "#132B43")((1:nf)/nf),
                         labels=levels(reduced_data$freq_bin_labs),
                         drop=FALSE) +
       theme_bw() +
       theme(legend.key.width = unit(nf*.8, "cm"),
-            legend.position="bottom") 
+            legend.position="bottom")
   }
 return(p1)
 }
@@ -280,9 +292,9 @@ return(p1)
 # n_freq <-5
 # red_data <- rect_bin_2d(data=diamonds, xcol="carat",ycol="price",originx=0,originy=0,widthx=.25,widthy=1000, output="reduced")
 # red_freq_data <- freq_bin(red_data,  bin_type="standard", count_type="log10", n_freq=n_freq, pretty=FALSE, freq_col="freq")
-# 
+#
 # binned_scatter(red_freq_data, count_scale="log10", freq_binned = FALSE)
-# 
+#
 # binned_scatter(red_freq_data, count_scale="log10",freq_binned = TRUE) +
 #   xlab("Carat Weight") + ylab("Price (dollars)") +
 #   ggtitle("Binned Scatterplot of Diamond Price By Carat Weight")
@@ -291,19 +303,19 @@ return(p1)
 
 #----------------------------------
 ## All-in-one Binning and Scatterplot Creating Super Function
-# Need to specify all origins, widths, transformations, frequency bins, 
+# Need to specify all origins, widths, transformations, frequency bins,
 binned_scatter_raw <- function(data, xcol, ycol, originx, originy, widthx, widthy, count_type="raw",
                                freq_binned=FALSE, freq_bin_type="standard",  n_freq=1, pretty=FALSE){
   red_data <- rect_bin_2d(data=data, xcol=xcol, ycol=ycol, originx=originx,originy=originy,widthx=widthx,widthy=widthy, output="reduced")
   red_freq_data <- freq_bin(red_data,  bin_type=freq_bin_type, count_type=count_type, n_freq=n_freq, pretty=pretty, freq_col="freq")
-  count_scale <- "identity" 
+  count_scale <- "identity"
   if(count_type != "raw") count_scale <- count_type
   return(binned_scatter(red_freq_data, count_scale=count_scale, freq_binned = freq_binned))
 }
 # # Testing Code
 # binned_scatter_raw(data=diamonds, xcol="carat", ycol="price", originx=0,
 #                    originy=0, widthx=.25, widthy=1000, count_type = "log10")
-# 
+#
 # binned_scatter_raw(data=diamonds, xcol="carat", ycol="price", originx=0,
 #                    originy=0, widthx=.25, widthy=1000, count_type="raw",
 #                    freq_binned=TRUE, freq_bin_type="quantile", n_freq=5, pretty=FALSE)
@@ -317,40 +329,40 @@ binned_scatter_raw <- function(data, xcol, ycol, originx, originy, widthx, width
 # END OF FUNCTIONS: unused code below (may be useful so not deleted) #
 #---------------------------------------------------------------------
 # #---------------------------------------------------------------------
-# 
+#
 # # average standardized spatial loss = .584 standard deviations
 # sum(red_data$bin_standardized_spat_loss)/sum(red_data$freq)
-# # In context this is an average of .28 carats and $0 dollars or 
-# #  $500 (max loss for $)   
+# # In context this is an average of .28 carats and $0 dollars or
+# #  $500 (max loss for $)
 # # in lost information for the average diamonds
 # sd(diamonds$carat)*.584
-# 
-# 
+#
+#
 # head(rect_bin_2d(xs=diamonds$carat,ys=diamonds$price,originx=0,originy=0,widthx=1,widthy=1000, output="centers"))
 # head(rect_bin_2d(xs=diamonds$carat,ys=diamonds$price,0,0,1,1000))
-# 
-# 
-# 
+#
+#
+#
 # reduced_bin <- function(xs, ys, originx, originy, widthx, widthy, loss="spatial average")
 #   reduced_binned <- rect_bin_2d(xs, ys, originx, originy, widthx, widthy, output="full") %>%
 #     group_by(binxs,binys) %>%
 #     summarize(freq = n(),
 #               binSpatial = sum(sqrt((xs-binxs)^2+(ys-binys)^2)) )
-# 
-#   summarydata <- data.frame( originx = originx, originy = originy, 
+#
+#   summarydata <- data.frame( originx = originx, originy = originy,
 #                              widthx = widthx, widthy = widthy,
 #                              totalSpatialLoss = sum(outdat$binspatialloss))
 #   templist <- list(bindat = outdat[,1:3],
 #                    summarydata)
 #   return(templist)
 # }
-# 
-# 
+#
+#
 # rect_bin_2d <- function(xs,ys, originx, originy, widthx, widthy, type="standard"){
 #   tempdat <- data.frame(xs = xs, ys=ys,
 #                         binxs = StandRectBin1d(xs,originx,widthx),
 #                         binys = StandRectBin1d(ys,originy,widthy))
-#   
+#
 #   if(type=="random"){
 #     tempdat<- data.frame( tempdat,
 #                           randbinxs = RandRectBin1d(xs,originx,widthx),
@@ -363,7 +375,7 @@ binned_scatter_raw <- function(data, xcol, ycol, originx, originy, widthx, width
 #     mismatchindex <- which(tempdat$binxs != tempdat$randbinxs | tempdat$binys != tempdat$randbinys )
 #     mmdat <- tempdat[mismatchindex,]
 #     # identify which need to be swapped to standard for net spatial loss
-#     
+#
 #     #loop over all neighboring bin pairs (shift all xs over by 1 then all )
 #     xbins <- seq(min(c(tempdat$binxs,tempdat$randbinxs)) , max(c(tempdat$binxs,tempdat$randbinxs)), by=widthx)
 #     ybins <- seq(min(c(tempdat$binys,tempdat$randbinys)) , max(c(tempdat$binys,tempdat$randbinys)), by=widthy)
@@ -372,9 +384,9 @@ binned_scatter_raw <- function(data, xcol, ycol, originx, originy, widthx, width
 #                        nbrsxs = c(rep(xbins+widthx,length(ybins)),rep(xbins,length(ybins))),
 #                        nbrsys = c(rep(ybins,each=length(xbins)), rep(ybins+widthy,each=length(xbins))) )
 #     nbrs$binname <- paste(nbrs$binxs,nbrs$binys)
-#     nbrs$nbrsname <- paste(nbrs$nbrsxs,nbrs$nbrsys)   
-#     
-#     swapindex <- NULL    
+#     nbrs$nbrsname <- paste(nbrs$nbrsxs,nbrs$nbrsys)
+#
+#     swapindex <- NULL
 #     for (i in 1:nrow(nbrs)){
 #       #id points in standard bin i assigned to bin j
 #       itoj <- which(mmdat$binname == nbrs$binname[i] & mmdat$randbinname == nbrs$nbrsname[i])
@@ -384,7 +396,7 @@ binned_scatter_raw <- function(data, xcol, ycol, originx, originy, widthx, width
 #       nswap <- min(length(itoj), length(jtoi))
 #       # if there are points to swap, then pick the ones with largest distance
 #       # from point to random bin center
-#       if(nswap > 0){ 
+#       if(nswap > 0){
 #         swapindex <- c(swapindex,mmdat$index[itoj][order(mmdat$randdist[itoj],decreasing=TRUE)[nswap]])
 #         swapindex <- c(swapindex,mmdat$index[jtoi][order(mmdat$randdist[jtoi],decreasing=TRUE)[nswap]])
 #       }
@@ -396,13 +408,13 @@ binned_scatter_raw <- function(data, xcol, ycol, originx, originy, widthx, width
 #   outdat <- ddply(tempdat, .(binxs,binys), summarise,
 #                   binfreq = length(xs),
 #                   binspatialloss = sum(sqrt((xs-binxs)^2+(ys-binys)^2)) )
-#   summarydata <- data.frame( originx = originx, originy = originy, 
+#   summarydata <- data.frame( originx = originx, originy = originy,
 #                              widthx = widthx, widthy = widthy,
 #                              totalSpatialLoss = sum(outdat$binspatialloss))
 #   templist <- list(bindat = outdat[,1:3],
 #                    summarydata)
 #   return(templist)
 # }
-# 
-# 
-# 
+#
+#
+#

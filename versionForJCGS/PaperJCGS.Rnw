@@ -503,8 +503,9 @@ p1 <- qplot(xcent, ycent, geom="point", size=I(5), shape=I(3), color=I("gray")) 
 
 # random bin centers
 set.seed(14)
-rxcent <- RandRectBin1d(x, -10, 10)
-rycent <- RandRectBin1d(y, -10, 10)
+
+rxcent <- rand_rect_bin_1d(x, -10, 10, output="centers")
+rycent <- rand_rect_bin_1d(y, -10, 10, output="centers")
 # point 1 and 11 are special 
 linecolor <- rep("blue", 12)
 linecolor[c(1,11)] <- "red"
