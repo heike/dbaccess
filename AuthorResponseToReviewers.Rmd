@@ -21,6 +21,8 @@ The following document strives to address comments, questions and concerns made 
 
 *In Section 4.2, a discussion on contrast effects hindering the perception of the encoded values is missing. Nearby colored points, will change the color impression. These effects can be modelled and estimated and maybe interesting to investigate a little further.*
 
+- Citations to refer readers to Adelson and Fairchild as example of work on contrast effects has been added to Section 4.2 and related future work has been added to the discussion in Section 6.
+
 *As a computer scientist, it is not clear to me, why the runtime is larger with lower numbers of bins (Section 5.1. lines 33ff.)  In my naïve implementation, I would iterate once over all data points and assign the respective bins by an adopted integer division. Consequently, the runtime would be in O(n d) with n being the number of data points and d the number of dimensions. Maybe, the authors could explain the runtime experiments more or discuss the used algorithm more. If the number of bins is 1, I would expect the fastest runtime.*
 
 - Your intuition is correct, but there was a misunderstanding about Figure 5. The x-axis relates the the *size* of bins not the *number* of bins, meaning that the binning takes less time as the bin widths grows (ie the number of bins decreases). x=1 means using many 1X1 bins, not one large bin. The x-axis label has been edited to more clearly reflect that this is the size of the bin dimensions. 
@@ -40,11 +42,9 @@ The following document strives to address comments, questions and concerns made 
 *In general, I think this paper addresses an important topic. Guidelines on choosing binning algorithms will be immensely helpful for practitioners dealing with big data. I am, however, reserved in recommending acceptance because of two main concerns: lack of novelty and unconvincing results.*
 
 *Lack of Novelty:*
-*Section 2 and 3 do a good job in reviewing the concepts of binned aggregation and varieties of binning algorithms. However these are fairly well known and the discussion does not seem to contribute novel ideas. The only thing that I haven’t seen before is the random binning approach. Is this a new idea proposed by you? If so, please state clearly. I also wonder how and why random binning can be useful. Please provide scenarios in which it would make sense to use random binning.* 
+*Section 2 and 3 do a good job in reviewing the concepts of binned aggregation and varieties of binning algorithms. However these are fairly well known and the discussion does not seem to contribute novel ideas. The only thing that I haven’t seen before is the random binning approach. Is this a new idea proposed by you? If so, please state clearly. I also wonder how and why random binning can be useful. Please provide scenarios in which it would make sense to use random binning. For the other ideas covered in these two sections, please properly cite relevant work.*
 
-*For the other ideas covered in these two sections, please properly cite relevant work.*
-
-- You are correct that many of the ideas in Sections 2 and 3 are not original, with the exception of the random binning approach, where the methodologies for random-binned aggregation and post processing for net spatial loss are original to our best knowledge. The goal of these sections is to bring many binning related concepts under a unified notation for the benefit of clarity in the sections to follow. For the random binning, clearer language of our idea and a statement has been added to address the motivation for its introduction: deterministic one-sided interval bins lead to lopsided allocation of points on bin boundaries, whereas a random assignment is expected to split the points evenly across bins. For the unoriginal ideas, additional citations have been made to place the unifying notation better within the existing literature. 
+- You are correct that many of the ideas in Sections 2 and 3 are not original, with the exception of the random binning approach, where the methodologies for random-binned aggregation and post processing for net spatial loss are original to our best knowledge. The goal of these sections is to bring many binning related concepts under a unified notation for the benefit of clarity in the sections to follow. For the random binning, clearer language of proposal of the idea and a statement has been added to address the motivation for its introduction. For the unoriginal ideas, additional citations have been made to place our unifying notation better within the existing literature. 
 
 *Unconvincing Results:*
 *In Section 4.1, you propose the idea of spatial loss as a metric to account for the loss of information. Please explain how this approach is related to Scott’s approach of using mean integrated square error. What makes your definition a better choice?*
@@ -56,6 +56,8 @@ The following document strives to address comments, questions and concerns made 
 - A clarifying example using the visual from Figure 3 has been added to Section 4.2. 
 
 *The first paragraph of Section 5.1 shows that spatial loss increases as bin size increases, this seems hardly surprising. In the second paragraph, you talk about three properties of visual estimator: unbiasedness, consistency and efficiency, I think these properties are interesting, but the rest of the paper does not address them sufficiently.*
+
+- The interesting parallels with common properties of statistical estimators were used as a motivating concept for the construction of binning loss functions. We felt that an extended exploration of this analog would distract from the exploration on optimizing bin specification. The need for future work on exploring this topic has been added to the discussion in Section 6. 
 
 *I also fail to understand how the discussion on artificial striping in Section 5.1 is relevant for spatial loss.*
 
@@ -87,3 +89,4 @@ The following document strives to address comments, questions and concerns made 
 *Associate Editor - Comments to the Author:*
 *The paper in its current form does not provide a sufficiently thorough coverage of either review material or novel material to warrant publication.  However, the reviewers have some useful suggestions for ways in which a different paper (or two) could possibly be produced by expanding on different parts of this submission.*
 
+- We hope that the revisions explanding review material and clarification of our contributions to the topic will meet the standards of your publication. If there are any additional comments, concerns or questions, our team is happy to address them.
