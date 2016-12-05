@@ -23,7 +23,7 @@
  
 %\pdfminorversion=4
 % NOTE: To produce blinded version, replace "0" with "1" below.
-\newcommand{\blind}{1}
+\newcommand{\blind}{0}
 \newcommand{\ktm}[1]{{\color{red} #1}} %red comments: Karsten
 \newcommand{\hh}[1]{{\color{blue} #1}} %blue comments: Heike
 
